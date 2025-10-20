@@ -44,3 +44,13 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 .DS_Store
+.dart_tool/
+.packages
+.flutter-plugins
+.idea/
+android/.gradle/
+ios/Pods/
+build/
+pubspec.lock
+.env
+*.iml
