@@ -213,131 +213,130 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+// -------------------------------------------------------------------------
+// LISTA DE ITENS CAPTURADOS
+// -------------------------------------------------------------------------
+Widget _buildItemsCard(HomeController controller) {
+  final items = controller.items;
+  final total = controller.total;
 
-  // -------------------------------------------------------------------------
-  // LISTA DE ITENS CAPTURADOS
-  // -------------------------------------------------------------------------
-  Widget _buildItemsCard(HomeController controller) {
-    final items = controller.items;
-    final total = controller.total;
-
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // header
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Color(0xFFF1F1F1), width: 1),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Itens Capturados",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "${items.length} ${items.length == 1 ? 'item' : 'itens'}",
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
-                ),
-              ],
+  return Container(
+    margin: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.06),
+          blurRadius: 12,
+          offset: const Offset(0, 3),
+        ),
+      ],
+    ),
+    child: Column(
+      children: [
+        // HEADER
+        Container(
+          padding: const EdgeInsets.fromLTRB(12, 6, 12, 4),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Color(0xFFF1F1F1), width: 1),
             ),
           ),
-
-          // lista
-          if (items.isEmpty)
-            SizedBox(
-              height: 140,
-              child: Center(
-                child: Text(
-                  "Nenhum item capturado ainda",
-                  style: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 14,
-                  ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Itens Capturados",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
               ),
-            )
-          else
-            ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
+              const SizedBox(height: 2),
+              Text(
+                "${items.length} ${items.length == 1 ? 'item' : 'itens'}",
+                style: const TextStyle(color: Colors.grey, fontSize: 11),
+              ),
+            ],
+          ),
+        ),
 
-                return TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0, end: 1),
-                  duration: Duration(milliseconds: 400 + (index * 80)),
-                  builder: (context, value, child) => Opacity(
-                    opacity: value,
-                    child: Transform.translate(
-                      offset: Offset(0, (1 - value) * 12),
-                      child: child,
+        // LISTA
+        if (items.isEmpty)
+          SizedBox(
+            height: 120,
+            child: Center(
+              child: Text(
+                "Nenhum item capturado ainda",
+                style: TextStyle(
+                  color: Colors.grey.shade400,
+                  fontSize: 11,
+                ),
+              ),
+            ),
+          )
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+
+              return TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: 1),
+                duration: Duration(milliseconds: 400 + (index * 80)),
+                builder: (context, value, child) => Opacity(
+                  opacity: value,
+                  child: Transform.translate(
+                    offset: Offset(0, (1 - value) * 10),
+                    child: child,
+                  ),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Color(0xFFF1F1F1), width: 1),
                     ),
                   ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(color: Color(0xFFF1F1F1), width: 1),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Captura ${index + 1}",
+                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            "Captura ${index + 1}",
-                            style: const TextStyle(color: Colors.grey, fontSize: 14),
-                          ),
+                      Text(
+                        "R\$ ${item.value.toStringAsFixed(2)}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: Color(0xFFF5A742),
                         ),
-                        Text(
-                          "R\$ ${item.value.toStringAsFixed(2)}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: Color(0xFFF5A742),
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: () => controller.deleteItem(index),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.08),
+                            shape: BoxShape.circle,
                           ),
+                          child: const Icon(Icons.delete, color: Colors.red, size: 16),
                         ),
-                        const SizedBox(width: 12),
-                        GestureDetector(
-                          onTap: () => controller.deleteItem(index),
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.08),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(Icons.delete, color: Colors.red, size: 20),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          ),
 
           // footer total
           Container(
