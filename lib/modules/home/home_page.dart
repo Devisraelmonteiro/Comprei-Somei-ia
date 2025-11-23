@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                   onTap: () => print("Banner clicado!"),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 4),
               _buildItemsCard(controller),
               const SizedBox(height: 40),
             ],
