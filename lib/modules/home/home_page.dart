@@ -24,33 +24,25 @@ class _HomePageState extends State<HomePage> {
     final controller = context.watch<HomeController>();
     final remaining = mockBudget - controller.total;
 
-    return BaseScaffold(
+   return BaseScaffold(
   currentIndex: 0,
   child: SafeArea(
     child: Stack(
       children: [
 
-        /// ░░░ FUNDO VERDE ATÉ A METADE DOS BOTÕES ░░░
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
+        /// ░░░ FUNDO DA TELA INTEIRA COM O LOGO ░░░
+        Positioned.fill(
           child: Container(
-            height: 320, // 👉 AQUI VOCÊ AJUSTA
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(34, 11, 107, 83),
-                  Color.fromARGB(95, 9, 76, 61),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+              image: DecorationImage(
+                image: AssetImage("assets/images/fundo.png"),
+                fit: BoxFit.cover,
               ),
             ),
           ),
         ),
 
-        /// ░░░ CONTEÚDO PRINCIPAL ░░░
+        /// ░░░ CONTEÚDO NORMAL POR CIMA ░░░
         SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.only(bottom: 120),
@@ -87,6 +79,7 @@ class _HomePageState extends State<HomePage> {
   ),
 );
 
+
   }
 
   Widget _buildTopBar(double remaining) {
@@ -105,8 +98,8 @@ class _HomePageState extends State<HomePage> {
 
     return Center(
       child: Container(
-        width: screenWidth * 0.65,
-        margin: const EdgeInsets.only(top: 8),
+        width: screenWidth * 0.70,
+        margin: const EdgeInsets.only(top: 4),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
           gradient: const LinearGradient(
@@ -122,8 +115,8 @@ class _HomePageState extends State<HomePage> {
             children: [
               Center(
                 child: SizedBox(
-                  width: screenWidth * 0.40,
-                  height: screenWidth * 0.40,
+                  width: screenWidth * 0.35,
+                  height: screenWidth * 0.35,
                   child: CustomPaint(
                     painter: _ScannerFramePainter(),
                   ),
@@ -170,7 +163,7 @@ class _HomePageState extends State<HomePage> {
   // -------------------------------------------------------------------------
   Widget _buildQuickActionsRow(BuildContext context, HomeController controller) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Column(
         children: [
           Row(
@@ -194,7 +187,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
@@ -205,7 +198,7 @@ class _HomePageState extends State<HomePage> {
                   onTap: () => _showMultiplySheet(context, controller),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: ButtonCompreiSomei(
                   icon: Icons.edit_note_rounded,
