@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'app/app.dart';
@@ -12,7 +13,18 @@ import 'modules/home/home_controller.dart';
 // import 'modules/login/login_controller.dart';
 // import 'modules/settings/settings_controller.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  /// 🔥 DEIXA A STATUS BAR (HORA, SINAL, BATERIA) VERDE + ÍCONES BRANCOS
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF0B6B53), // fundo verde
+      statusBarIconBrightness: Brightness.light, // ícones brancos no Android
+      statusBarBrightness: Brightness.dark, // ícones brancos no iOS
+    ),
+  );
+
   runApp(const AppRoot());
 }
 

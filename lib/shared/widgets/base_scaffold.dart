@@ -88,10 +88,7 @@ class BaseScaffold extends StatelessWidget {
                       icon: Icon(Icons.home),
                       label: 'Home',
                     ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.qr_code_scanner),
-                      label: 'Scanner',
-                    ),
+                   
                     BottomNavigationBarItem(
                       icon: Icon(Icons.list),
                       label: 'Lista',

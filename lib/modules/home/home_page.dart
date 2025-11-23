@@ -25,49 +25,68 @@ class _HomePageState extends State<HomePage> {
     final remaining = mockBudget - controller.total;
 
     return BaseScaffold(
-      currentIndex: 0, // 👉 TAB selecionada (Home)
-      child: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 120), // 👈 espaço pro footer
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  _buildTopBar(remaining),
-                  const SizedBox(height: 16),
+  currentIndex: 0,
+  child: SafeArea(
+    child: Stack(
+      children: [
 
-                  _buildScannerCard(context, controller),
-                  const SizedBox(height: 16),
-
-                  _buildQuickActionsRow(context, controller),
-                  const SizedBox(height: 20),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: PromoBannerWidget(
-                      onTap: () => print("Banner clicado!"),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  _buildItemsCard(controller),
-                  const SizedBox(height: 40),
+        /// ░░░ FUNDO VERDE ATÉ A METADE DOS BOTÕES ░░░
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 320, // 👉 AQUI VOCÊ AJUSTA
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(34, 11, 107, 83),
+                  Color.fromARGB(95, 9, 76, 61),
                 ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
-
-            if (controller.loading)
-              const Align(
-                alignment: Alignment.topCenter,
-                child: LinearProgressIndicator(minHeight: 2),
-              ),
-          ],
+          ),
         ),
-      ),
-    );
+
+        /// ░░░ CONTEÚDO PRINCIPAL ░░░
+        SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 120),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8),
+              _buildTopBar(remaining),
+              const SizedBox(height: 16),
+              _buildScannerCard(context, controller),
+              const SizedBox(height: 16),
+              _buildQuickActionsRow(context, controller),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: PromoBannerWidget(
+                  onTap: () => print("Banner clicado!"),
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildItemsCard(controller),
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
+
+        if (controller.loading)
+          const Align(
+            alignment: Alignment.topCenter,
+            child: LinearProgressIndicator(minHeight: 2),
+          ),
+      ],
+    ),
+  ),
+);
+
   }
 
   Widget _buildTopBar(double remaining) {

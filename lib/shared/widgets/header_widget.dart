@@ -37,9 +37,7 @@ class HeaderWidgetState extends State<HeaderWidget> {
         ),
       ),
       child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(24),
-        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
           child: Padding(
@@ -47,9 +45,9 @@ class HeaderWidgetState extends State<HeaderWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// ------------------------------------------------------------------
-                /// Avatar + "Olá, Israel" + Ícone do Olho
-                /// ------------------------------------------------------------------
+                //-----------------------------------------
+                // Avatar + "Olá, Fulano" + Olho
+                //-----------------------------------------
                 Row(
                   children: [
                     GestureDetector(
@@ -91,13 +89,10 @@ class HeaderWidgetState extends State<HeaderWidget> {
                     ),
 
                     GestureDetector(
-                      onTap: () {
-                        setState(() => showBalance = !showBalance);
-                      },
+                      onTap: () =>
+                          setState(() => showBalance = !showBalance),
                       child: Icon(
-                        showBalance
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                        showBalance ? Icons.visibility : Icons.visibility_off,
                         size: 20,
                         color: const Color.fromARGB(255, 231, 148, 4),
                       ),
@@ -107,6 +102,9 @@ class HeaderWidgetState extends State<HeaderWidget> {
 
                 const SizedBox(height: 8),
 
+                //-----------------------------------------
+                // Texto "Saldo"
+                //-----------------------------------------
                 const Text(
                   "Saldo",
                   style: TextStyle(
@@ -117,20 +115,21 @@ class HeaderWidgetState extends State<HeaderWidget> {
 
                 const SizedBox(height: 2),
 
+                //-----------------------------------------
+                // Valor / Oculto com Animação
+                //-----------------------------------------
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0, 0.15),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
-                      ),
-                    );
-                  },
+                  transitionBuilder: (child, animation) => FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 0.15),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  ),
                   child: Text(
                     showBalance
                         ? "R\$ ${widget.remaining.toStringAsFixed(2)}"
@@ -151,11 +150,12 @@ class HeaderWidgetState extends State<HeaderWidget> {
     );
   }
 
-  /// ------------------------------------------------------------------
-  /// MENU DO AVATAR
-  /// ------------------------------------------------------------------
+  //-------------------------------------------------------
+  // MENU DO AVATAR (Perfil, Configurações, Logout)
+  //-------------------------------------------------------
   void _openUserMenu(BuildContext context, Offset tapPosition) async {
-    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
 
     final result = await showMenu(
       context: context,
@@ -171,6 +171,8 @@ class HeaderWidgetState extends State<HeaderWidget> {
       ],
     );
 
-    if (result != null) debugPrint("MENU → $result");
+    if (result != null) {
+      debugPrint("MENU → $result");
+    }
   }
 }

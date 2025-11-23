@@ -16,33 +16,47 @@ class ButtonCompreiSomei extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return InkWell(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(18),
       onTap: onTap,
+      splashColor: color.withOpacity(0.15),
+      highlightColor: Colors.transparent,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        width: width * 0.30, // 👈 Tamanho 40% menor
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: Colors.black.withOpacity(0.06), // iOS-style
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            )
+              color: Colors.black.withOpacity(0.05), // iOS blur shadow
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 32),
+            Icon(
+              icon,
+              color: color,
+              size: 24, // 👈 Ícone menor e mais premium
+            ),
             const SizedBox(height: 6),
             Text(
               label,
               style: TextStyle(
                 color: Colors.black87,
-                fontSize: 13,
+                fontSize: 11, // 👈 Texto menor e mais elegante
                 fontWeight: FontWeight.w500,
+                letterSpacing: 0.2,
               ),
             ),
           ],
