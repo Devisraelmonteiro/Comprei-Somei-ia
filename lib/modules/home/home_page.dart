@@ -235,44 +235,35 @@ Widget _buildItemsCard(HomeController controller) {
     ),
     child: Column(
       children: [
-        // HEADER
-        Container(
-          padding: const EdgeInsets.fromLTRB(12, 6, 12, 4),
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Color(0xFFF1F1F1), width: 1),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Itens Capturados",
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                "${items.length} ${items.length == 1 ? 'item' : 'itens'}",
-                style: const TextStyle(color: Colors.grey, fontSize: 11),
-              ),
-            ],
-          ),
-        ),
+     // HEADER
+Container(
+  padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+  decoration: const BoxDecoration(
+    border: Border(
+      bottom: BorderSide(color: Color(0xFFF1F1F1), width: 1),
+    ),
+  ),
+  child: const Text(
+    "Itens Capturados",
+    style: TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: Colors.black87,
+    ),
+  ),
+),
+
 
         // LISTA
         if (items.isEmpty)
           SizedBox(
-            height: 120,
+            height: 100,
             child: Center(
               child: Text(
                 "Nenhum item capturado ainda",
                 style: TextStyle(
                   color: Colors.grey.shade400,
-                  fontSize: 11,
+                  fontSize: 10,
                 ),
               ),
             ),
@@ -297,10 +288,10 @@ Widget _buildItemsCard(HomeController controller) {
                   ),
                 ),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: const BoxDecoration(
                     border: Border(
-                      bottom: BorderSide(color: Color(0xFFF1F1F1), width: 1),
+                      bottom: BorderSide(color: Color(0xFFF1F1F1), width: 0.8),
                     ),
                   ),
                   child: Row(
@@ -308,22 +299,22 @@ Widget _buildItemsCard(HomeController controller) {
                       Expanded(
                         child: Text(
                           "Captura ${index + 1}",
-                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                          style: const TextStyle(color: Colors.grey, fontSize: 10),
                         ),
                       ),
                       Text(
                         "R\$ ${item.value.toStringAsFixed(2)}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 10,
                           color: Color(0xFFF5A742),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 6),
                       GestureDetector(
                         onTap: () => controller.deleteItem(index),
                         child: Container(
-                          padding: const EdgeInsets.all(4),
+                          padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
                             color: Colors.red.withOpacity(0.08),
                             shape: BoxShape.circle,
@@ -381,7 +372,7 @@ Widget _buildItemsCard(HomeController controller) {
                           "Excluir todos os itens",
                           style: TextStyle(
                             color: Colors.red,
-                            fontSize: 15,
+                            fontSize: 10,
                           ),
                         ),
                       ),
