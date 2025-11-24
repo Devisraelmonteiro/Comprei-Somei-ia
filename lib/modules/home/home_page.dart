@@ -159,25 +159,31 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // -------------------------------------------------------------------------
-// ROW DE AÇÕES  (ATUALIZADO PARA ICONSAX)
+ // -------------------------------------------------------------------------
+// ROW DE AÇÕES  — com borda lateral configurável
 // -------------------------------------------------------------------------
-Widget _buildQuickActionsRow(BuildContext context, HomeController controller) {
+Widget _buildQuickActionsRow(
+  BuildContext context,
+  HomeController controller, {
+
+  double sidePadding = 40, // 🔥 EDITÁVEL: controla a distância da borda
+}) {
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 14),
+    padding: EdgeInsets.symmetric(horizontal: sidePadding),
     child: Column(
       children: [
+        // ---------------- ROW 1 ----------------
         Row(
           children: [
             Expanded(
               child: ButtonCompreiSomei(
-                icon: Iconsax.tick_circle, // ícone do iPhone-style
+                icon: Iconsax.tick_circle,
                 color: Colors.green,
                 label: "Confirmar",
                 onTap: () => _onConfirm(context, controller),
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 14),
             Expanded(
               child: ButtonCompreiSomei(
                 icon: Iconsax.close_circle,
@@ -189,24 +195,25 @@ Widget _buildQuickActionsRow(BuildContext context, HomeController controller) {
           ],
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
 
+        // ---------------- ROW 2 ----------------
         Row(
           children: [
             Expanded(
               child: ButtonCompreiSomei(
-                icon: Iconsax.repeat, // substitui "multiplicar"
+                icon: Iconsax.repeat,
                 color: Colors.orange,
-                label: "Multiplicar",
+                label: "Multiplicador",
                 onTap: () => _showMultiplySheet(context, controller),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 14),
             Expanded(
               child: ButtonCompreiSomei(
-                icon: Iconsax.edit_2, // ícone premium para editar
+                icon: Iconsax.edit_2,
                 color: Colors.blue,
-                label: "Manual",
+                label: "Adiciona Manual",
                 onTap: () => _showManualCaptureSheet(context, controller),
               ),
             ),
@@ -327,7 +334,7 @@ Widget _buildItemsCard(HomeController controller) {
 
                       // PREÇO À DIREITA
                       Text(
-                        "R\$ ${item.value.toStringAsFixed(2)}",
+                        "+R\$ ${item.value.toStringAsFixed(2)}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
@@ -357,7 +364,7 @@ Widget _buildItemsCard(HomeController controller) {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: Color(0xFFF5A742),
+                      color: Color.fromARGB(255, 234, 98, 7),
                     ),
                   ),
                 ],

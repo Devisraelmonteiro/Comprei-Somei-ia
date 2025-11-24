@@ -54,10 +54,10 @@ class BaseScaffold extends StatelessWidget {
               child: Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.75),
+                  color: const Color.fromARGB(73, 248, 206, 100).withOpacity(0.75),
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.7),
+                    color: const Color.fromARGB(91, 249, 204, 89).withOpacity(0.7),
                     width: 1.0,
                   ),
                   boxShadow: [
@@ -72,7 +72,7 @@ class BaseScaffold extends StatelessWidget {
                 child: BottomNavigationBar(
                   currentIndex: currentIndex,
                   onTap: (i) => _onItemTapped(context, i),
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: const Color.fromARGB(52, 225, 131, 30),
                   elevation: 0,
                   type: BottomNavigationBarType.fixed,
 
@@ -81,7 +81,7 @@ class BaseScaffold extends StatelessWidget {
                   unselectedFontSize: 11,
 
                   selectedItemColor: Colors.black87,
-                  unselectedItemColor: Colors.black45,
+                  unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
 
                   items: const [
                     BottomNavigationBarItem(
