@@ -49,6 +49,7 @@ dependencies:
   # UI / Widgets
   modal_bottom_sheet: ^3.0.0
   carousel_slider: ^5.1.1
+  iconsax: ^0.0.8
 
 dev_dependencies:
   flutter_test:

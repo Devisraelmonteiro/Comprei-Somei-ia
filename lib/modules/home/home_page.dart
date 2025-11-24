@@ -217,9 +217,7 @@ Widget _buildQuickActionsRow(BuildContext context, HomeController controller) {
   );
 }
 
-// -------------------------------------------------------------------------
-// LISTA DE ITENS CAPTURADOS
-// -------------------------------------------------------------------------
+// LISTA DE ITENS CAPTURADOS (ATUALIZADO)
 Widget _buildItemsCard(HomeController controller) {
   final items = controller.items;
   final total = controller.total;
@@ -239,26 +237,29 @@ Widget _buildItemsCard(HomeController controller) {
     ),
     child: Column(
       children: [
-     // HEADER
-Container(
-  padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
-  decoration: const BoxDecoration(
-    border: Border(
-      bottom: BorderSide(color: Color(0xFFF1F1F1), width: 1),
-    ),
-  ),
-  child: const Text(
-    "Itens Capturados",
-    style: TextStyle(
-      fontSize: 13,
-      fontWeight: FontWeight.w600,
-      color: Colors.black87,
-    ),
-  ),
-),
 
+        // HEADER ALINHADO À ESQUERDA
+        Container(
+          width: double.infinity,
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Color(0xFFF1F1F1), width: 1),
+            ),
+          ),
+          child: const Text(
+            "Itens Capturados",
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+        ),
 
-        // LISTA
+        // LISTA DE ITENS
         if (items.isEmpty)
           SizedBox(
             height: 100,
@@ -300,30 +301,37 @@ Container(
                   ),
                   child: Row(
                     children: [
+
+                      // LIXEIRA AGORA À ESQUERDA
+                      GestureDetector(
+                        onTap: () => controller.deleteItem(index),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(28, 244, 67, 54).withOpacity(0.10),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.delete, color: Colors.red, size: 14),
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      // TEXTO DA DESCRIÇÃO
                       Expanded(
                         child: Text(
-                          "Preço Capturado  ${index + 1}",
+                          "Preço Capturado ${index + 1}",
                           style: const TextStyle(color: Colors.grey, fontSize: 12),
                         ),
                       ),
+
+                      // PREÇO À DIREITA
                       Text(
                         "R\$ ${item.value.toStringAsFixed(2)}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                           color: Color.fromARGB(255, 3, 157, 44),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      GestureDetector(
-                        onTap: () => controller.deleteItem(index),
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.08),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.delete, color: Colors.red, size: 12),
                         ),
                       ),
                     ],
@@ -333,39 +341,39 @@ Container(
             },
           ),
 
-          // total e button excluir todos
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(0, 248, 248, 248),
-              border: Border(
-                top: BorderSide(color: Color.fromARGB(0, 241, 241, 241), width: 1),
-              ),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Total", style: TextStyle(color: Colors.grey)),
-                    Text(
-                      "R\$ ${total.toStringAsFixed(2)}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Color(0xFFF5A742),
-                      ),
+        // TOTAL + EXCLUIR TUDO
+        Container(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+          child: Column(
+            children: [
+              
+              // TOTAL
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("Total", style: TextStyle(color: Colors.grey)),
+                  Text(
+                    "R\$ ${total.toStringAsFixed(2)}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: Color(0xFFF5A742),
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
 
-                if (items.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  GestureDetector(
+              if (items.isNotEmpty) ...[
+                const SizedBox(height: 8),
+
+                // BOTÃO “EXCLUIR TUDO” — alinhado à esquerda e metade do tamanho
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
                     onTap: controller.clearAll,
                     child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      width: 100, // metade do tamanho
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(color: Colors.red),
@@ -382,14 +390,17 @@ Container(
                       ),
                     ),
                   ),
-                ],
+                ),
               ],
-            ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
+
 
   // -------------------------------------------------------------------------
   // AÇÕES
