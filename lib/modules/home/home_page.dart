@@ -6,6 +6,7 @@ import 'package:comprei_some_ia/shared/widgets/header_widget.dart';
 import 'package:comprei_some_ia/shared/widgets/promo_banner_widget.dart';
 import 'package:comprei_some_ia/shared/widgets/button_compreisomei.dart';
 import 'package:comprei_some_ia/shared/widgets/base_scaffold.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 // 👉 IMPORTANTE
 
@@ -115,8 +116,8 @@ class _HomePageState extends State<HomePage> {
             children: [
               Center(
                 child: SizedBox(
-                  width: screenWidth * 0.35,
-                  height: screenWidth * 0.35,
+                  width:  180,
+                  height:  180,
                   child: CustomPaint(
                     painter: _ScannerFramePainter(),
                   ),
@@ -159,60 +160,63 @@ class _HomePageState extends State<HomePage> {
   }
 
   // -------------------------------------------------------------------------
-  // ROW DE AÇÕES
-  // -------------------------------------------------------------------------
-  Widget _buildQuickActionsRow(BuildContext context, HomeController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: ButtonCompreiSomei(
-                  icon: Icons.check_circle_outline,
-                  color: Colors.green,
-                  label: "Confirmar",
-                  onTap: () => _onConfirm(context, controller),
-                ),
+// ROW DE AÇÕES  (ATUALIZADO PARA ICONSAX)
+// -------------------------------------------------------------------------
+Widget _buildQuickActionsRow(BuildContext context, HomeController controller) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 14),
+    child: Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: ButtonCompreiSomei(
+                icon: Iconsax.tick_circle, // ícone do iPhone-style
+                color: Colors.green,
+                label: "Confirmar",
+                onTap: () => _onConfirm(context, controller),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ButtonCompreiSomei(
-                  icon: Icons.close_rounded,
-                  color: Colors.red,
-                  label: "Cancelar",
-                  onTap: () => _onCancel(context, controller),
-                ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ButtonCompreiSomei(
+                icon: Iconsax.close_circle,
+                color: Colors.red,
+                label: "Cancelar",
+                onTap: () => _onCancel(context, controller),
               ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: ButtonCompreiSomei(
-                  icon: Icons.close_fullscreen_rounded,
-                  color: Colors.orange,
-                  label: "Multiplicar",
-                  onTap: () => _showMultiplySheet(context, controller),
-                ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 8),
+
+        Row(
+          children: [
+            Expanded(
+              child: ButtonCompreiSomei(
+                icon: Iconsax.repeat, // substitui "multiplicar"
+                color: Colors.orange,
+                label: "Multiplicar",
+                onTap: () => _showMultiplySheet(context, controller),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ButtonCompreiSomei(
-                  icon: Icons.edit_note_rounded,
-                  color: Colors.blue,
-                  label: "Manual",
-                  onTap: () => _showManualCaptureSheet(context, controller),
-                ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ButtonCompreiSomei(
+                icon: Iconsax.edit_2, // ícone premium para editar
+                color: Colors.blue,
+                label: "Manual",
+                onTap: () => _showManualCaptureSheet(context, controller),
               ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
 // -------------------------------------------------------------------------
 // LISTA DE ITENS CAPTURADOS
 // -------------------------------------------------------------------------
@@ -298,16 +302,16 @@ Container(
                     children: [
                       Expanded(
                         child: Text(
-                          "Captura ${index + 1}",
-                          style: const TextStyle(color: Colors.grey, fontSize: 10),
+                          "Preço Capturado  ${index + 1}",
+                          style: const TextStyle(color: Colors.grey, fontSize: 12),
                         ),
                       ),
                       Text(
                         "R\$ ${item.value.toStringAsFixed(2)}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 10,
-                          color: Color(0xFFF5A742),
+                          fontSize: 12,
+                          color: Color.fromARGB(255, 3, 157, 44),
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -319,7 +323,7 @@ Container(
                             color: Colors.red.withOpacity(0.08),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.delete, color: Colors.red, size: 16),
+                          child: const Icon(Icons.delete, color: Colors.red, size: 12),
                         ),
                       ),
                     ],
@@ -329,13 +333,13 @@ Container(
             },
           ),
 
-          // footer total
+          // total e button excluir todos
           Container(
             padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
             decoration: const BoxDecoration(
-              color: Color(0xFFF8F8F8),
+              color: Color.fromARGB(0, 248, 248, 248),
               border: Border(
-                top: BorderSide(color: Color(0xFFF1F1F1), width: 1),
+                top: BorderSide(color: Color.fromARGB(0, 241, 241, 241), width: 1),
               ),
             ),
             child: Column(
@@ -348,7 +352,7 @@ Container(
                       "R\$ ${total.toStringAsFixed(2)}",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: 15,
                         color: Color(0xFFF5A742),
                       ),
                     ),
@@ -369,7 +373,7 @@ Container(
                       ),
                       child: const Center(
                         child: Text(
-                          "Excluir todos os itens",
+                          "Excluir tudo",
                           style: TextStyle(
                             color: Colors.red,
                             fontSize: 10,
@@ -569,7 +573,7 @@ Container(
 }
 
 // -----------------------------------------------------------------------------
-// DESENHO DO QUADRO DO SCANNER
+// DESENHO DO QUADRO DO SCANNER (ATUALIZADO - PROPORCIONAL)
 // -----------------------------------------------------------------------------
 class _ScannerFramePainter extends CustomPainter {
   @override
@@ -577,22 +581,28 @@ class _ScannerFramePainter extends CustomPainter {
     final paint = Paint()
       ..color = Colors.white
       ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
 
-    const double corner = 18.0;
+    // Cantos proporcionais (15% do tamanho)
+    final double corner = size.width * 0.18;  
 
     final double w = size.width;
     final double h = size.height;
 
-    canvas.drawLine(const Offset(0, 0), Offset(corner, 0), paint);
-    canvas.drawLine(const Offset(0, 0), Offset(0, corner), paint);
+    // CANTO SUPERIOR ESQUERDO
+    canvas.drawLine(Offset(0, 0), Offset(corner, 0), paint);
+    canvas.drawLine(Offset(0, 0), Offset(0, corner), paint);
 
+    // CANTO SUPERIOR DIREITO
     canvas.drawLine(Offset(w, 0), Offset(w - corner, 0), paint);
     canvas.drawLine(Offset(w, 0), Offset(w, corner), paint);
 
+    // CANTO INFERIOR ESQUERDO
     canvas.drawLine(Offset(0, h), Offset(0, h - corner), paint);
     canvas.drawLine(Offset(0, h), Offset(corner, h), paint);
 
+    // CANTO INFERIOR DIREITO
     canvas.drawLine(Offset(w, h), Offset(w - corner, h), paint);
     canvas.drawLine(Offset(w, h), Offset(w, h - corner), paint);
   }

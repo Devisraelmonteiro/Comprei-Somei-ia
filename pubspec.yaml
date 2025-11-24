@@ -11,22 +11,44 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Ícones iOS e ícones modernos
   cupertino_icons: ^1.0.8
+  iconsax_flutter: ^1.0.1
+
+  # Navegação
   go_router: ^16.2.5
+
+  # Estado
   provider: ^6.1.5+1
+
+  # APIs e armazenamento
   http: ^1.5.0
   shared_preferences: ^2.5.3
+
+  # Notificações
   flutter_local_notifications: ^17.1.2
+
+  # Scanner / OCR
   google_mlkit_text_recognition: ^0.15.0
   camera: ^0.11.3
+
+  # Permissões
   permission_handler: ^12.0.1
+
+  # Vibração
   vibration: ^3.1.4
+
+  # URLs externas
   url_launcher: ^6.3.2
+
+  # Animações
   animate_do: ^4.2.0
   flutter_animate: ^4.5.2
+  lottie: ^3.3.2
+
+  # UI / Widgets
   modal_bottom_sheet: ^3.0.0
   carousel_slider: ^5.1.1
-  lottie: ^3.3.2
 
 dev_dependencies:
   flutter_test:
@@ -35,6 +57,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
   assets:
     - assets/images/
     - assets/lottie/
