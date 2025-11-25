@@ -1,6 +1,7 @@
-import 'dart:ui'; // 👈 necessário pro blur
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 class BaseScaffold extends StatelessWidget {
   final Widget child;
@@ -14,32 +15,35 @@ class BaseScaffold extends StatelessWidget {
 
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
-      case 0:
-        context.go('/home');
-        break;
-      case 1:
-        context.go('/scanner');
-        break;
-      case 2:
-        context.go('/lista');
-        break;
-      case 3:
-        context.go('/encartes');
-        break;
-      case 4:
-        context.go('/orcamento');
-        break;
-      case 5:
-        context.go('/settings');
-        break;
+      case 0: context.go('/home'); break;
+      case 1: context.go('/scanner'); break;
+      case 2: context.go('/lista'); break;
+      case 3: context.go('/encartes'); break;
+      case 4: context.go('/orcamento'); break;
+      case 5: context.go('/settings'); break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: child,
+      extendBody: true, // 🔥 deixa o fundo visível atrás do footer
+      body: Stack(
+        children: [
+          // 🔥 FUNDO DA TELA COMPLETA
+          Positioned.fill(
+            child: Image.asset(
+              "assets/images/fundo.png",
+              fit: BoxFit.cover,
+            ),
+          ),
 
+          // CONTEÚDO NORMAL
+          child,
+        ],
+      ),
+
+      // FOOTER
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.only(bottom: -6),
         child: Padding(
@@ -47,32 +51,17 @@ class BaseScaffold extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(22),
             child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 18,
-                sigmaY: 18,
-              ),
+              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
               child: Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(73, 248, 206, 100).withOpacity(0.75),
+                  color: Colors.white.withOpacity(0.10), // 🔥 Transparente
                   borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: const Color.fromARGB(91, 249, 204, 89).withOpacity(0.7),
-                    width: 1.0,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 20,
-                      spreadRadius: 1,
-                      color: Colors.black.withOpacity(0.12),
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
                 ),
                 child: BottomNavigationBar(
                   currentIndex: currentIndex,
                   onTap: (i) => _onItemTapped(context, i),
-                  backgroundColor: const Color.fromARGB(52, 225, 131, 30),
+                  backgroundColor: Colors.transparent,
                   elevation: 0,
                   type: BottomNavigationBarType.fixed,
 
@@ -80,29 +69,28 @@ class BaseScaffold extends StatelessWidget {
                   selectedFontSize: 11,
                   unselectedFontSize: 11,
 
-                  selectedItemColor: Colors.black87,
-                  unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+                  selectedItemColor: Color(0xFFE97F0C), // 🔥 laranja bonito
+                  unselectedItemColor: Colors.black87, // 🔥 ícones pretos
 
                   items: const [
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
+                      icon: Icon(Iconsax.home_2),
                       label: 'Home',
                     ),
-                   
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.list),
+                      icon: Icon(Iconsax.note_text),
                       label: 'Lista',
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.local_offer),
+                      icon: Icon(Iconsax.ticket_discount),
                       label: 'Encartes',
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.attach_money),
+                      icon: Icon(Iconsax.wallet_3),
                       label: 'Orçamento',
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.settings),
+                      icon: Icon(Iconsax.setting_2),
                       label: 'Config.',
                     ),
                   ],
