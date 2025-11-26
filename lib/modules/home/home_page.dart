@@ -131,24 +131,18 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     const Text(
                       "Capturado",
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                      style: TextStyle(color: Colors.white70, fontSize: 10),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       "R\$ ${captured.toStringAsFixed(2)}",
                       style: const TextStyle(
-                        fontSize: 26,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.orangeAccent,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () => _showManualCaptureSheet(context, controller),
-                      child: const Text(
-                        "Definir valor manualmente",
-                        style: TextStyle(color: Colors.white70),
-                      ),
-                    ),
+                    
                   ],
                 ),
               ),
@@ -581,21 +575,23 @@ Widget _buildItemsCard(HomeController controller) {
 }
 
 // -----------------------------------------------------------------------------
-// DESENHO DO QUADRO DO SCANNER (ATUALIZADO - PROPORCIONAL)
+// DESENHO DO QUADRO DO SCANNER COM CANTOS ARREDONDADOS
 // -----------------------------------------------------------------------------
 class _ScannerFramePainter extends CustomPainter {
-  final double cornerLength;     // Tamanho dos cantos
+  final double cornerLength;     // Tamanho das linhas do canto
   final double cornerThickness;  // Espessura das linhas
   final double paddingInside;    // Distância interna do canto
   final double offsetX;          // Deslocamento horizontal
   final double offsetY;          // Deslocamento vertical
+  final double cornerRadius;     // Raio do canto arredondado
 
   _ScannerFramePainter({
-    this.cornerLength = 30,
-    this.cornerThickness = 1,
-    this.paddingInside = 20,
-    this.offsetX = -30,
+    this.cornerLength = 50,
+    this.cornerThickness = 3,
+    this.paddingInside = 30,
+    this.offsetX = -60,
     this.offsetY = 0,
+    this.cornerRadius = 10, // 🔥 Raio do canto igual ao iOS
   });
 
   @override
@@ -608,28 +604,67 @@ class _ScannerFramePainter extends CustomPainter {
 
     final double L = cornerLength;
     final double P = paddingInside;
+    final double R = cornerRadius;
 
-    // Move todo o scanner pelo canvas
+    // Move o alvo completo
     canvas.translate(offsetX, offsetY);
 
     final double w = size.width - offsetX * 2;
     final double h = size.height - offsetY * 2;
 
     // CANTO SUPERIOR ESQUERDO
-    canvas.drawLine(Offset(P, P), Offset(P + L, P), paint);
-    canvas.drawLine(Offset(P, P), Offset(P, P + L), paint);
+    final topLeft = Path()
+      ..moveTo(P + R, P)
+      ..lineTo(P + L, P)
+      ..moveTo(P, P + R)
+      ..lineTo(P, P + L)
+      ..addArc(
+        Rect.fromLTWH(P, P, R * 2, R * 2),
+        3.14, // 180°
+        1.57, // +90°
+      );
 
     // CANTO SUPERIOR DIREITO
-    canvas.drawLine(Offset(w - P, P), Offset(w - L - P, P), paint);
-    canvas.drawLine(Offset(w - P, P), Offset(w - P, P + L), paint);
+    final topRight = Path()
+      ..moveTo(w - P - L, P)
+      ..lineTo(w - P - R, P)
+      ..moveTo(w - P, P + R)
+      ..lineTo(w - P, P + L)
+      ..addArc(
+        Rect.fromLTWH(w - P - R * 2, P, R * 2, R * 2),
+        -1.57, // -90°
+        1.57,
+      );
 
     // CANTO INFERIOR ESQUERDO
-    canvas.drawLine(Offset(P, h - P), Offset(P + L, h - P), paint);
-    canvas.drawLine(Offset(P, h - P), Offset(P, h - L - P), paint);
+    final bottomLeft = Path()
+      ..moveTo(P + R, h - P)
+      ..lineTo(P + L, h - P)
+      ..moveTo(P, h - P - R)
+      ..lineTo(P, h - P - L)
+      ..addArc(
+        Rect.fromLTWH(P, h - P - R * 2, R * 2, R * 2),
+        1.57, // +90°
+        1.57,
+      );
 
     // CANTO INFERIOR DIREITO
-    canvas.drawLine(Offset(w - P, h - P), Offset(w - L - P, h - P), paint);
-    canvas.drawLine(Offset(w - P, h - P), Offset(w - P, h - L - P), paint);
+    final bottomRight = Path()
+      ..moveTo(w - P - L, h - P)
+      ..lineTo(w - P - R, h - P)
+      ..moveTo(w - P, h - P - R)
+      ..lineTo(w - P, h - P - L)
+      ..addArc(
+        Rect.fromLTWH(w - P - R * 2, h - P - R * 2, R * 2, R * 2),
+        0, // 0°
+        1.57, // +90°
+      );
+
+    // Desenha os quatro cantos
+    canvas.drawPath(topLeft, paint);
+    canvas.drawPath(topRight, paint);
+    canvas.drawPath(bottomLeft, paint);
+    canvas.drawPath(bottomRight, paint);
   }
 
   @override

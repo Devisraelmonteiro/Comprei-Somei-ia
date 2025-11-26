@@ -53,7 +53,7 @@ class BaseScaffold extends StatelessWidget {
               child: Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 140, 135, 135).withOpacity(0.10),
+                  color: const Color.fromARGB(255, 79, 74, 74).withOpacity(0.10),
                   borderRadius: BorderRadius.circular(22),
                 ),
 
