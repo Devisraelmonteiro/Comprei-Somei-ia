@@ -46,17 +46,17 @@ class _HomePageState extends State<HomePage> {
         /// ░░░ CONTEÚDO NORMAL POR CIMA ░░░
         SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 120),
+          padding: const EdgeInsets.only(bottom: 140),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
               _buildTopBar(remaining),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               _buildScannerCard(context, controller),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               _buildQuickActionsRow(context, controller),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: PromoBannerWidget(
@@ -224,7 +224,7 @@ Widget _buildQuickActionsRow(
   );
 }
 
-// LISTA DE ITENS CAPTURADOS (ATUALIZADO)
+// LISTA DE ITENS CAPTURADOS (SEM LINHAS)
 Widget _buildItemsCard(HomeController controller) {
   final items = controller.items;
   final total = controller.total;
@@ -245,16 +245,11 @@ Widget _buildItemsCard(HomeController controller) {
     child: Column(
       children: [
 
-        // HEADER ALINHADO À ESQUERDA
+        // HEADER - sem linha
         Container(
           width: double.infinity,
           alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Color(0xFFF1F1F1), width: 1),
-            ),
-          ),
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
           child: const Text(
             "Itens Capturados",
             textAlign: TextAlign.left,
@@ -299,17 +294,15 @@ Widget _buildItemsCard(HomeController controller) {
                     child: child,
                   ),
                 ),
+
+                // ITEM SEM LINHA INFERIOR
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(color: Color(0xFFF1F1F1), width: 0.8),
-                    ),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+
                   child: Row(
                     children: [
 
-                      // LIXEIRA AGORA À ESQUERDA
+                      // LIXEIRA
                       GestureDetector(
                         onTap: () => controller.deleteItem(index),
                         child: Container(
@@ -322,9 +315,9 @@ Widget _buildItemsCard(HomeController controller) {
                         ),
                       ),
 
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 10),
 
-                      // TEXTO DA DESCRIÇÃO
+                      // DESCRIÇÃO
                       Expanded(
                         child: Text(
                           "Preço Capturado ${index + 1}",
@@ -332,7 +325,7 @@ Widget _buildItemsCard(HomeController controller) {
                         ),
                       ),
 
-                      // PREÇO À DIREITA
+                      // PREÇO
                       Text(
                         "+R\$ ${item.value.toStringAsFixed(2)}",
                         style: const TextStyle(
@@ -348,12 +341,12 @@ Widget _buildItemsCard(HomeController controller) {
             },
           ),
 
-        // TOTAL + EXCLUIR TUDO
+        // TOTAL + EXCLUIR TUDO (SEM LINHA)
         Container(
           padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
           child: Column(
             children: [
-              
+
               // TOTAL
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -370,16 +363,14 @@ Widget _buildItemsCard(HomeController controller) {
                 ],
               ),
 
-              if (items.isNotEmpty) ...[
-                const SizedBox(height: 8),
-
-                // BOTÃO “EXCLUIR TUDO” — alinhado à esquerda e metade do tamanho
+              if (items.isNotEmpty)
                 Align(
                   alignment: Alignment.centerLeft,
                   child: GestureDetector(
                     onTap: controller.clearAll,
                     child: Container(
-                      width: 100, // metade do tamanho
+                      width: 100,
+                      margin: const EdgeInsets.only(top: 10),
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
@@ -398,7 +389,6 @@ Widget _buildItemsCard(HomeController controller) {
                     ),
                   ),
                 ),
-              ],
             ],
           ),
         ),
@@ -594,37 +584,54 @@ Widget _buildItemsCard(HomeController controller) {
 // DESENHO DO QUADRO DO SCANNER (ATUALIZADO - PROPORCIONAL)
 // -----------------------------------------------------------------------------
 class _ScannerFramePainter extends CustomPainter {
+  final double cornerLength;     // Tamanho dos cantos
+  final double cornerThickness;  // Espessura das linhas
+  final double paddingInside;    // Distância interna do canto
+  final double offsetX;          // Deslocamento horizontal
+  final double offsetY;          // Deslocamento vertical
+
+  _ScannerFramePainter({
+    this.cornerLength = 30,
+    this.cornerThickness = 1,
+    this.paddingInside = 20,
+    this.offsetX = -30,
+    this.offsetY = 0,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.white
-      ..strokeWidth = 3
+      ..strokeWidth = cornerThickness
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    // Cantos proporcionais (15% do tamanho)
-    final double corner = size.width * 0.18;  
+    final double L = cornerLength;
+    final double P = paddingInside;
 
-    final double w = size.width;
-    final double h = size.height;
+    // Move todo o scanner pelo canvas
+    canvas.translate(offsetX, offsetY);
+
+    final double w = size.width - offsetX * 2;
+    final double h = size.height - offsetY * 2;
 
     // CANTO SUPERIOR ESQUERDO
-    canvas.drawLine(Offset(0, 0), Offset(corner, 0), paint);
-    canvas.drawLine(Offset(0, 0), Offset(0, corner), paint);
+    canvas.drawLine(Offset(P, P), Offset(P + L, P), paint);
+    canvas.drawLine(Offset(P, P), Offset(P, P + L), paint);
 
     // CANTO SUPERIOR DIREITO
-    canvas.drawLine(Offset(w, 0), Offset(w - corner, 0), paint);
-    canvas.drawLine(Offset(w, 0), Offset(w, corner), paint);
+    canvas.drawLine(Offset(w - P, P), Offset(w - L - P, P), paint);
+    canvas.drawLine(Offset(w - P, P), Offset(w - P, P + L), paint);
 
     // CANTO INFERIOR ESQUERDO
-    canvas.drawLine(Offset(0, h), Offset(0, h - corner), paint);
-    canvas.drawLine(Offset(0, h), Offset(corner, h), paint);
+    canvas.drawLine(Offset(P, h - P), Offset(P + L, h - P), paint);
+    canvas.drawLine(Offset(P, h - P), Offset(P, h - L - P), paint);
 
     // CANTO INFERIOR DIREITO
-    canvas.drawLine(Offset(w, h), Offset(w - corner, h), paint);
-    canvas.drawLine(Offset(w, h), Offset(w, h - corner), paint);
+    canvas.drawLine(Offset(w - P, h - P), Offset(w - L - P, h - P), paint);
+    canvas.drawLine(Offset(w - P, h - P), Offset(w - P, h - L - P), paint);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

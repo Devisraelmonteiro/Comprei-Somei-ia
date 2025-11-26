@@ -16,7 +16,6 @@ class BaseScaffold extends StatelessWidget {
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
       case 0: context.go('/home'); break;
-      case 1: context.go('/scanner'); break;
       case 2: context.go('/lista'); break;
       case 3: context.go('/encartes'); break;
       case 4: context.go('/orcamento'); break;
@@ -27,10 +26,11 @@ class BaseScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true, // 🔥 deixa o fundo visível atrás do footer
+      extendBody: true,
+
       body: Stack(
         children: [
-          // 🔥 FUNDO DA TELA COMPLETA
+          // FUNDO COMPLETO
           Positioned.fill(
             child: Image.asset(
               "assets/images/fundo.png",
@@ -38,12 +38,10 @@ class BaseScaffold extends StatelessWidget {
             ),
           ),
 
-          // CONTEÚDO NORMAL
           child,
         ],
       ),
 
-      // FOOTER
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.only(bottom: -6),
         child: Padding(
@@ -55,42 +53,45 @@ class BaseScaffold extends StatelessWidget {
               child: Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.10), // 🔥 Transparente
+                  color: const Color.fromARGB(255, 140, 135, 135).withOpacity(0.10),
                   borderRadius: BorderRadius.circular(22),
                 ),
+
                 child: BottomNavigationBar(
                   currentIndex: currentIndex,
                   onTap: (i) => _onItemTapped(context, i),
+
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   type: BottomNavigationBarType.fixed,
 
-                  iconSize: 22,
                   selectedFontSize: 11,
                   unselectedFontSize: 11,
 
-                  selectedItemColor: Color(0xFFE97F0C), // 🔥 laranja bonito
-                  unselectedItemColor: Colors.black87, // 🔥 ícones pretos
+                  /// 🔥 TEXTO SEMPRE LARANJA
+                  selectedItemColor: Color(0xFFE97F0C),
+                  unselectedItemColor: Color(0xFFE97F0C),
 
+                  /// 🔥 ÍCONES SEMPRE PRETOS (definidos individualmente)
                   items: const [
                     BottomNavigationBarItem(
-                      icon: Icon(Iconsax.home_2),
+                      icon: Icon(Iconsax.home_2, color: Colors.black),
                       label: 'Home',
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Iconsax.note_text),
-                      label: 'Lista',
+                      icon: Icon(Iconsax.note_text, color: Colors.black),
+                      label: 'Lista de compras',
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Iconsax.ticket_discount),
+                      icon: Icon(Iconsax.ticket_discount, color: Colors.black),
                       label: 'Encartes',
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Iconsax.wallet_3),
-                      label: 'Orçamento',
+                      icon: Icon(Iconsax.wallet_3, color: Colors.black),
+                      label: 'Controle de Gastos',
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Iconsax.setting_2),
+                      icon: Icon(Iconsax.setting_2, color: Colors.black),
                       label: 'Config.',
                     ),
                   ],
