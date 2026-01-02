@@ -1,124 +1,40 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-class BaseScaffold extends StatelessWidget {
-  final Widget child;
-  final int currentIndex;
-  final String? userName;
+class AppDrawer extends StatelessWidget {
+  final String userName;
 
-  const BaseScaffold({
-    super.key,
-    required this.child,
-    required this.currentIndex,
-    this.userName,
-  });
-
-  void _onItemTapped(BuildContext context, int index) {
-    switch (index) {
-      case 0: context.go('/home'); break;
-      case 1: context.go('/lista'); break;
-      case 2: context.go('/encartes'); break;
-      case 3: context.go('/orcamento'); break;
-      case 4: context.go('/settings'); break;
-    }
-  }
+  const AppDrawer({
+    Key? key,
+    required this.userName,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      backgroundColor: Colors.white, // ← Fundo branco
-      
-      drawer: userName != null ? _buildDrawer(context) : null,
-
-      body: child, // ← SEM Stack, SEM imagem de fundo
-
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.only(bottom: -6),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 2),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(22),
-            child: Container(
-              height: 56,
-              decoration: BoxDecoration(
-                // ← GRADIENTE LARANJA (igual header)
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFE97F0C), Color(0xFFD86F0A)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(22),
-              ),
-
-              child: BottomNavigationBar(
-                currentIndex: currentIndex,
-                onTap: (i) => _onItemTapped(context, i),
-
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                type: BottomNavigationBarType.fixed,
-
-                selectedFontSize: 11,
-                unselectedFontSize: 11,
-
-                // ← TEXTO BRANCO
-                selectedItemColor: Colors.white,
-                unselectedItemColor: Colors.white70,
-
-                // ← ÍCONES BRANCOS
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Iconsax.home_2, color: Colors.white),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Iconsax.note_text, color: Colors.white),
-                    label: 'Lista',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Iconsax.ticket_discount, color: Colors.white),
-                    label: 'Encartes',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Iconsax.wallet_3, color: Colors.white),
-                    label: 'Controle',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Iconsax.setting_2, color: Colors.white),
-                    label: 'Config.',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: Container(
         color: Colors.white,
         child: Column(
           children: [
+            // HEADER DO DRAWER
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
+              padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
               decoration: const BoxDecoration(
-                color: Colors.white,
+                gradient: LinearGradient(
+                  colors: [Color(0xFFFF8C42), Color(0xFFFF6B35)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Avatar
                   Container(
                     width: 70,
                     height: 70,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE97F0C),
+                      color: Colors.white,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
@@ -130,17 +46,18 @@ class BaseScaffold extends StatelessWidget {
                     ),
                     child: const Icon(
                       Icons.person,
-                      color: Colors.white,
+                      color: Color(0xFFFF6B35),
                       size: 40,
                     ),
                   ),
                   const SizedBox(height: 12),
+                  // Nome do usuário
                   Text(
-                    userName ?? "Usuário",
+                    userName,
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF1a1a1a),
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -148,77 +65,71 @@ class BaseScaffold extends StatelessWidget {
                     "Bem-vindo!",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      color: Colors.white.withOpacity(0.9),
                     ),
                   ),
                 ],
               ),
             ),
             
-            const Divider(height: 1),
-            
+            // MENU ITEMS
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
                   _buildMenuItem(
-                    context: context,
                     icon: Icons.home,
                     title: "Home",
                     onTap: () {
                       Navigator.pop(context);
-                      context.go('/home');
                     },
                   ),
                   _buildMenuItem(
-                    context: context,
                     icon: Icons.receipt_long,
                     title: "Minhas Listas",
                     onTap: () {
                       Navigator.pop(context);
-                      context.go('/lista');
+                      // Navegar para listas
                     },
                   ),
                   _buildMenuItem(
-                    context: context,
                     icon: Icons.local_offer,
                     title: "Encartes",
                     onTap: () {
                       Navigator.pop(context);
-                      context.go('/encartes');
+                      // Navegar para encartes
                     },
                   ),
                   _buildMenuItem(
-                    context: context,
                     icon: Icons.account_balance_wallet,
                     title: "Controle de Gastos",
                     onTap: () {
                       Navigator.pop(context);
-                      context.go('/orcamento');
+                      // Navegar para controle
                     },
                   ),
                   const Divider(height: 24),
                   _buildMenuItem(
-                    context: context,
                     icon: Icons.settings,
                     title: "Configurações",
                     onTap: () {
                       Navigator.pop(context);
-                      context.go('/settings');
+                      // Navegar para config
                     },
                   ),
                   _buildMenuItem(
-                    context: context,
                     icon: Icons.help_outline,
                     title: "Ajuda",
                     onTap: () {
                       Navigator.pop(context);
+                      // Navegar para ajuda
                     },
                   ),
                 ],
               ),
             ),
             
+            // FOOTER (Versão)
             Container(
               padding: const EdgeInsets.all(20),
               child: Text(
@@ -236,7 +147,6 @@ class BaseScaffold extends StatelessWidget {
   }
 
   Widget _buildMenuItem({
-    required BuildContext context,
     required IconData icon,
     required String title,
     required VoidCallback onTap,
@@ -244,7 +154,7 @@ class BaseScaffold extends StatelessWidget {
     return ListTile(
       leading: Icon(
         icon,
-        color: const Color(0xFFE97F0C),
+        color: const Color(0xFFFF6B35),
         size: 24,
       ),
       title: Text(

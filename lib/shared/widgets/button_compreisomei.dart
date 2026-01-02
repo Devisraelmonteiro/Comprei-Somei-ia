@@ -24,11 +24,11 @@ class ButtonCompreiSomei extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color.fromARGB(255, 227, 227, 227),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: Colors.black.withOpacity(0.06),
-            width: 1,
+            color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.06),
+            width: 5,
           ),
           boxShadow: [
             BoxShadow(
