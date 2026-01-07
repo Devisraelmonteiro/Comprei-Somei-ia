@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:camera/camera.dart';
 
 import 'app/app.dart';
 
@@ -13,15 +14,21 @@ import 'modules/home/home_controller.dart';
 // import 'modules/login/login_controller.dart';
 // import 'modules/settings/settings_controller.dart';
 
-void main() async {
+/// 🔥 LISTA GLOBAL DE CÂMERAS (OBRIGATÓRIO NO iOS)
+late List<CameraDescription> cameras;
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  /// 🔥 DEIXA A STATUS BAR (HORA, SINAL, BATERIA) VERDE + ÍCONES BRANCOS
+  /// 📸 INICIALIZA AS CÂMERAS ANTES DO APP
+  cameras = await availableCameras();
+
+  /// 🔥 STATUS BAR VERDE + ÍCONES BRANCOS
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Color(0xFF0B6B53), // fundo verde
-      statusBarIconBrightness: Brightness.light, // ícones brancos no Android
-      statusBarBrightness: Brightness.dark, // ícones brancos no iOS
+      statusBarIconBrightness: Brightness.light, // Android
+      statusBarBrightness: Brightness.dark, // iOS
     ),
   );
 

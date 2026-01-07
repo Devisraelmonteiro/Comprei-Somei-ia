@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:camera/camera.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:vibration/vibration.dart';
 
 import 'home_controller.dart';
+import 'widgets/scanner_card_widget.dart';
+import 'widgets/items_captured_widget.dart';
 import 'package:comprei_some_ia/shared/widgets/top_bar_widget.dart';
 import 'package:comprei_some_ia/shared/widgets/promo_banner_widget.dart';
 import 'package:comprei_some_ia/shared/widgets/base_scaffold.dart';
+import 'package:comprei_some_ia/shared/widgets/favoritos_grid.dart';
+import 'package:comprei_some_ia/core/services/ocr_service.dart';
+import 'package:comprei_some_ia/main.dart';
 
+/// 🏠 Página principal do app
+/// 
+/// Responsabilidades:
+/// - Coordenar widgets da UI
+/// - Gerenciar estado da câmera
+/// - Processar OCR em tempo real
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -13,9 +27,163 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
+  // === CONSTANTES ===
   static const double mockBudget = 500.0;
+  
+  // === CÂMERA E OCR ===
+  CameraController? _cameraController;
+  final PriceOcrService _ocrService = PriceOcrService();
+  bool _isCameraInitialized = false;
+  bool _isProcessing = false;
+  double? _detectedPrice;
+  String? _cameraError;
 
+  // === LIFECYCLE ===
+  
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _initCamera();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _cameraController?.dispose();
+    _ocrService.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final controller = _cameraController;
+    if (controller == null || !controller.value.isInitialized) return;
+
+    if (state == AppLifecycleState.inactive) {
+      controller.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      _initCamera();
+    }
+  }
+
+  // === INICIALIZAÇÃO DA CÂMERA ===
+  
+  /// 📸 Inicializa câmera e inicia stream de OCR
+  Future<void> _initCamera() async {
+    try {
+      print('🔍 Iniciando câmera...');
+      
+      // Verificar se existem câmeras disponíveis
+      if (cameras.isEmpty) {
+        setState(() {
+          _cameraError = 'Nenhuma câmera encontrada no dispositivo';
+          _isCameraInitialized = false;
+        });
+        print('❌ Nenhuma câmera disponível');
+        return;
+      }
+
+      print('📸 ${cameras.length} câmera(s) encontrada(s)');
+
+      // Solicitar permissão
+      print('🔐 Solicitando permissão de câmera...');
+      final status = await Permission.camera.request();
+      
+      if (status.isDenied) {
+        setState(() {
+          _cameraError = 'Permissão de câmera negada';
+          _isCameraInitialized = false;
+        });
+        print('❌ Permissão negada');
+        return;
+      }
+
+      if (status.isPermanentlyDenied) {
+        setState(() {
+          _cameraError = 'Permissão negada permanentemente. Ative nas configurações.';
+          _isCameraInitialized = false;
+        });
+        print('❌ Permissão negada permanentemente');
+        await openAppSettings();
+        return;
+      }
+
+      print('✅ Permissão concedida');
+
+      // Inicializar controller
+      print('🎥 Inicializando controller...');
+      
+      final camera = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.back,
+        orElse: () => cameras.first,
+      );
+
+      _cameraController = CameraController(
+        camera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.yuv420,
+      );
+
+      await _cameraController!.initialize();
+      print('✅ Controller inicializado');
+
+      if (!mounted) return;
+
+      // Iniciar stream de OCR
+      print('🔥 Iniciando stream de OCR...');
+      _cameraController!.startImageStream((CameraImage image) async {
+        if (_isProcessing) return;
+        _isProcessing = true;
+
+        try {
+          final price = await _ocrService.detectPriceFromImage(
+            image: image,
+            camera: _cameraController!.description,
+          );
+
+          if (price != null && mounted) {
+            final previousPrice = _detectedPrice;
+            setState(() => _detectedPrice = price);
+            
+            final controller = context.read<HomeController>();
+            controller.setCapturedValue(price);
+            
+            // Vibrar quando detectar novo preço
+            if (previousPrice != price) {
+              if (await Vibration.hasVibrator() ?? false) {
+                Vibration.vibrate(duration: 500);
+              }
+            }
+            
+            print('💰 Preço detectado: R\$ ${price.toStringAsFixed(2)}');
+          }
+        } catch (e) {
+          print('⚠️ Erro no OCR: $e');
+        }
+
+        _isProcessing = false;
+      });
+
+      setState(() {
+        _isCameraInitialized = true;
+        _cameraError = null;
+      });
+      
+      print('✅ Câmera totalmente inicializada!');
+    } catch (e) {
+      print('❌ Erro ao inicializar câmera: $e');
+      setState(() {
+        _cameraError = 'Erro: $e';
+        _isCameraInitialized = false;
+      });
+    }
+  }
+
+  // === BUILD ===
+  
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<HomeController>();
@@ -24,383 +192,143 @@ class _HomePageState extends State<HomePage> {
     return BaseScaffold(
       currentIndex: 0,
       userName: "Israel",
-      child: Column(
+      child: Stack(
         children: [
-          // 🟠 TOP BAR COM TODAS AS INFORMAÇÕES
-          TopBarWidget(
-            userName: "Israel",
-            remaining: remaining,
+          // Header
+          _buildTopBar(remaining),
+          
+          // Conteúdo scrollável
+          _buildScrollableContent(controller),
+          
+          // Loading indicator
+          if (controller.loading) _buildLoadingIndicator(),
+        ],
+      ),
+    );
+  }
+
+  /// 🔝 Barra superior
+  Widget _buildTopBar(double remaining) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: TopBarWidget(
+        userName: "Israel",
+        remaining: remaining,
+        userImagePath: "assets/images/user.jpg",
+        height: 200,
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        avatarSize: 42,
+        greetingFontSize: 14,
+        balanceLabelFontSize: 12,
+        balanceValueFontSize: 18,
+        eyeIconSize: 20,
+        eyeInsets: const EdgeInsets.only(right: 210, top: 30),
+        spaceBetweenAvatarAndText: 10,
+        spaceBetweenGreetingAndBalance: 2,
+        spaceBetweenBalanceLabelAndValue: 0,
+      ),
+    );
+  }
+
+  /// 📜 Conteúdo SEM scroll (layout fixo)
+Widget _buildScrollableContent(HomeController controller) {
+  return Positioned.fill(
+    child: Padding(
+      padding: EdgeInsets.only(
+        top: 100,
+        bottom: MediaQuery.of(context).padding.bottom + 52 + 12,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Scanner
+          ScannerCardWidget(
+            cameraController: _cameraController,
+            isCameraInitialized: _isCameraInitialized,
+            cameraError: _cameraError,
+            detectedPrice: _detectedPrice,
+            capturedValue: controller.capturedValue,
+            onRetry: _initCamera,
+            onOpenSettings: openAppSettings,
           ),
           
-          // RESTO DO CONTEÚDO (SEM IMAGEM DE FUNDO)
-          Expanded(
-            child: Stack(
-              children: [
-                // ← SEM Positioned.fill com imagem de fundo
-                
-                SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 140),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 10),
-                      _buildScannerCard(context, controller),
-                      const SizedBox(height: 10),
-                      _buildQuickActionsRow(context, controller),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: PromoBannerWidget(
-                          onTap: () => print("Banner clicado!"),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      _buildItemsCard(controller),
-                      const SizedBox(height: 40),
-                    ],
-                  ),
-                ),
-
-                if (controller.loading)
-                  const Align(
-                    alignment: Alignment.topCenter,
-                    child: LinearProgressIndicator(minHeight: 2),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildScannerCard(BuildContext context, HomeController controller) {
-    final captured = controller.capturedValue;
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return Center(
-      child: Container(
-        width: screenWidth * 0.70,
-        margin: const EdgeInsets.only(top: 4),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          gradient: const LinearGradient(
-            colors: [Colors.black87, Colors.black54],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: SizedBox(
-          height: 180,
-          child: Stack(
-            children: [
-              Center(
-                child: SizedBox(
-                  width: 180,
-                  height: 180,
-                  child: CustomPaint(
-                    painter: _ScannerFramePainter(),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 12,
-                left: 0,
-                right: 0,
-                child: Column(
-                  children: [
-                    const Text(
-                      "Capturado",
-                      style: TextStyle(color: Colors.white70, fontSize: 10),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "R\$ ${captured.toStringAsFixed(2)}",
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orangeAccent,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickActionsRow(
-    BuildContext context,
-    HomeController controller, {
-    double sidePadding = 16,
-  }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: sidePadding),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildCircularButton(
-            icon: Icons.check,
-            label: "Confirmar",
-            gradient: const LinearGradient(
-              colors: [Color(0xFF66BB6A), Color(0xFF4CAF50)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            onTap: () => _onConfirm(context, controller),
-          ),
-          _buildCircularButton(
-            icon: Icons.close,
-            label: "Cancelar",
-            gradient: const LinearGradient(
-              colors: [Color(0xFF81C784), Color(0xFF66BB6A)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            onTap: () => _onCancel(context, controller),
-          ),
-          _buildCircularButton(
-            icon: Icons.repeat,
-            label: "Multiplicar",
-            gradient: const LinearGradient(
-              colors: [Color(0xFF43A047), Color(0xFF388E3C)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            onTap: () => _showMultiplySheet(context, controller),
-          ),
-          _buildCircularButton(
-            icon: Icons.edit,
-            label: "Manual",
-            gradient: const LinearGradient(
-              colors: [Color(0xFF2E7D32), Color(0xFF1B5E20)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            onTap: () => _showManualCaptureSheet(context, controller),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCircularButton({
-    required IconData icon,
-    required String label,
-    required Gradient gradient,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 68,
-            height: 68,
-            decoration: BoxDecoration(
-              gradient: gradient,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF4CAF50).withOpacity(0.4),
-                  blurRadius: 18,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
           const SizedBox(height: 10),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1a1a1a),
-              letterSpacing: -0.2,
-            ),
+            
+           // Botões de ação
+          FavoritosGrid(
+            onConfirm: () => _onConfirm(context, controller),
+            onCancel: () => _onCancel(context, controller),
+            onMultiply: () => _showMultiplySheet(context, controller),
+            onManual: () => _showManualCaptureSheet(context, controller),
           ),
-        ],
+          
+          const SizedBox(height: 10),
+            
+            // Banner promocional
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: PromoBannerWidget(
+                onTap: () => print("Banner clicado!"),
+              ),
+            ),
+            
+            const SizedBox(height: 4),
+            
+            // Lista de itens capturados
+            ItemsCapturedWidget(controller: controller),
+            
+          ],
+        ),
       ),
+    
+  );
+  }
+
+  /// ⏳ Indicador de loading
+  Widget _buildLoadingIndicator() {
+    return const Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: LinearProgressIndicator(minHeight: 2),
     );
   }
 
-  Widget _buildItemsCard(HomeController controller) {
-    final items = controller.items;
-    final total = controller.total;
-
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-            child: const Text(
-              "Itens Capturados",
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-          if (items.isEmpty)
-            SizedBox(
-              height: 100,
-              child: Center(
-                child: Text(
-                  "Nenhum item capturado ainda",
-                  style: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-            )
-          else
-            ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
-                return TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0, end: 1),
-                  duration: Duration(milliseconds: 400 + (index * 80)),
-                  builder: (context, value, child) => Opacity(
-                    opacity: value,
-                    child: Transform.translate(
-                      offset: Offset(0, (1 - value) * 10),
-                      child: child,
-                    ),
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => controller.deleteItem(index),
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(28, 244, 67, 54).withOpacity(0.10),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(Icons.delete, color: Colors.red, size: 14),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            "Preço Capturado ${index + 1}",
-                            style: const TextStyle(color: Colors.grey, fontSize: 12),
-                          ),
-                        ),
-                        Text(
-                          "+R\$ ${item.value.toStringAsFixed(2)}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                            color: Color.fromARGB(255, 3, 157, 44),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Total", style: TextStyle(color: Colors.grey)),
-                    Text(
-                      "R\$ ${total.toStringAsFixed(2)}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Color.fromARGB(255, 234, 98, 7),
-                      ),
-                    ),
-                  ],
-                ),
-                if (items.isNotEmpty)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: controller.clearAll,
-                      child: Container(
-                        width: 100,
-                        margin: const EdgeInsets.only(top: 10),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(color: Colors.red),
-                          color: Colors.white,
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "Excluir tudo",
-                            style: TextStyle(color: Colors.red, fontSize: 10),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
+  // === AÇÕES ===
+  
+  /// ✅ Confirmar valor capturado
   void _onConfirm(BuildContext context, HomeController controller) async {
     if (controller.capturedValue <= 0) {
       _showSnack(context, "Defina um valor antes de confirmar.");
       return;
     }
+    
     await controller.addCapturedValue();
     controller.setCapturedValue(0.0);
-    _showSnack(context, "Valor adicionado na lista!");
+    setState(() => _detectedPrice = null);
+    _showSnack(context, "Valor adicionado!");
   }
 
+  /// ❌ Cancelar valor capturado
   void _onCancel(BuildContext context, HomeController controller) {
     controller.setCapturedValue(0.0);
-    _showSnack(context, "Valor capturado foi limpo.");
+    setState(() => _detectedPrice = null);
+    _showSnack(context, "Valor limpo.");
   }
 
-  void _showManualCaptureSheet(BuildContext context, HomeController controller) {
+  // === MODAL SHEETS ===
+  
+  /// ✏️ Modal para inserir valor manualmente
+  void _showManualCaptureSheet(
+    BuildContext context,
+    HomeController controller,
+  ) {
     final textController = TextEditingController(
-      text: controller.capturedValue == 0 ? '' : controller.capturedValue.toStringAsFixed(2),
+      text: controller.capturedValue == 0
+          ? ''
+          : controller.capturedValue.toStringAsFixed(2),
     );
 
     showModalBottomSheet(
@@ -412,7 +340,7 @@ class _HomePageState extends State<HomePage> {
       builder: (ctx) {
         return Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
             top: 16,
             left: 16,
             right: 16,
@@ -420,8 +348,13 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text("Inserir valor manualmente",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text(
+                "Inserir valor manualmente",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
               const SizedBox(height: 12),
               TextField(
                 controller: textController,
@@ -430,7 +363,10 @@ class _HomePageState extends State<HomePage> {
                   prefixText: "R\$ ",
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                autofocus: true,
               ),
               const SizedBox(height: 12),
               Row(
@@ -450,10 +386,9 @@ class _HomePageState extends State<HomePage> {
                             .replaceAll(" ", "")
                             .replaceAll(",", ".");
                         final value = double.tryParse(raw);
-                        if (value == null || value <= 0) {
-                          _showSnack(context, "Digite um valor válido.");
-                          return;
-                        }
+                        
+                        if (value == null || value <= 0) return;
+                        
                         controller.setCapturedValue(value);
                         Navigator.of(ctx).pop();
                       },
@@ -462,7 +397,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
             ],
           ),
         );
@@ -470,11 +404,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /// ✖️ Modal para multiplicar valor
   void _showMultiplySheet(BuildContext context, HomeController controller) {
     if (controller.capturedValue <= 0) {
       _showSnack(context, "Defina um valor para multiplicar.");
       return;
     }
+    
     final multiplierController = TextEditingController(text: "2");
 
     showModalBottomSheet(
@@ -484,12 +420,17 @@ class _HomePageState extends State<HomePage> {
       ),
       builder: (ctx) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text("Multiplicar valor capturado",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text(
+                "Multiplicar valor",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
               const SizedBox(height: 12),
               TextField(
                 controller: multiplierController,
@@ -497,7 +438,10 @@ class _HomePageState extends State<HomePage> {
                   labelText: "Multiplicador",
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: false,
+                ),
+                autofocus: true,
               ),
               const SizedBox(height: 12),
               Row(
@@ -513,11 +457,11 @@ class _HomePageState extends State<HomePage> {
                     child: ElevatedButton(
                       onPressed: () {
                         final m = int.tryParse(multiplierController.text) ?? 0;
-                        if (m <= 0) {
-                          _showSnack(context, "Multiplicador inválido.");
-                          return;
-                        }
-                        controller.setCapturedValue(controller.capturedValue * m);
+                        if (m <= 0) return;
+                        
+                        controller.setCapturedValue(
+                          controller.capturedValue * m,
+                        );
                         Navigator.of(ctx).pop();
                       },
                       child: const Text("Aplicar"),
@@ -532,81 +476,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // === UTILITÁRIOS ===
+  
+  /// 📢 Mostrar snackbar
   void _showSnack(BuildContext context, String message) {
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
-}
-
-class _ScannerFramePainter extends CustomPainter {
-  final double cornerLength;
-  final double cornerThickness;
-  final double paddingInside;
-  final double offsetX;
-  final double offsetY;
-  final double cornerRadius;
-
-  _ScannerFramePainter({
-    this.cornerLength = 50,
-    this.cornerThickness = 3,
-    this.paddingInside = 30,
-    this.offsetX = -60,
-    this.offsetY = 0,
-    this.cornerRadius = 10,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = cornerThickness
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final double L = cornerLength;
-    final double P = paddingInside;
-    final double R = cornerRadius;
-
-    canvas.translate(offsetX, offsetY);
-
-    final double w = size.width - offsetX * 2;
-    final double h = size.height - offsetY * 2;
-
-    final topLeft = Path()
-      ..moveTo(P + R, P)
-      ..lineTo(P + L, P)
-      ..moveTo(P, P + R)
-      ..lineTo(P, P + L)
-      ..addArc(Rect.fromLTWH(P, P, R * 2, R * 2), 3.14, 1.57);
-
-    final topRight = Path()
-      ..moveTo(w - P - L, P)
-      ..lineTo(w - P - R, P)
-      ..moveTo(w - P, P + R)
-      ..lineTo(w - P, P + L)
-      ..addArc(Rect.fromLTWH(w - P - R * 2, P, R * 2, R * 2), -1.57, 1.57);
-
-    final bottomLeft = Path()
-      ..moveTo(P + R, h - P)
-      ..lineTo(P + L, h - P)
-      ..moveTo(P, h - P - R)
-      ..lineTo(P, h - P - L)
-      ..addArc(Rect.fromLTWH(P, h - P - R * 2, R * 2, R * 2), 1.57, 1.57);
-
-    final bottomRight = Path()
-      ..moveTo(w - P - L, h - P)
-      ..lineTo(w - P - R, h - P)
-      ..moveTo(w - P, h - P - R)
-      ..lineTo(w - P, h - P - L)
-      ..addArc(Rect.fromLTWH(w - P - R * 2, h - P - R * 2, R * 2, R * 2), 0, 1.57);
-
-    canvas.drawPath(topLeft, paint);
-    canvas.drawPath(topRight, paint);
-    canvas.drawPath(bottomLeft, paint);
-    canvas.drawPath(bottomRight, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

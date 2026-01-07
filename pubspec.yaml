@@ -5,15 +5,16 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.2
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  # Ícones iOS e ícones modernos
+  # Ícones iOS e modernos
   cupertino_icons: ^1.0.8
   iconsax_flutter: ^1.0.1
+  iconsax: ^0.0.8
 
   # Navegação
   go_router: ^16.2.5
@@ -28,7 +29,7 @@ dependencies:
   # Notificações
   flutter_local_notifications: ^17.1.2
 
-  # Scanner / OCR
+  # Scanner / OCR (CORE DO PROJETO)
   google_mlkit_text_recognition: ^0.15.0
   camera: ^0.11.3
 
@@ -49,7 +50,6 @@ dependencies:
   # UI / Widgets
   modal_bottom_sheet: ^3.0.0
   carousel_slider: ^5.1.1
-  iconsax: ^0.0.8
 
 dev_dependencies:
   flutter_test:

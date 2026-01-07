@@ -29,68 +29,78 @@ class BaseScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      backgroundColor: Colors.white, // ← Fundo branco
-      
+      backgroundColor: Colors.white,
+
       drawer: userName != null ? _buildDrawer(context) : null,
 
-      body: child, // ← SEM Stack, SEM imagem de fundo
+      body: child,
 
       bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.only(bottom: -6),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 2),
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(22),
-            child: Container(
-              height: 56,
-              decoration: BoxDecoration(
-                // ← GRADIENTE LARANJA (igual header)
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFE97F0C), Color(0xFFD86F0A)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            borderRadius: BorderRadius.circular(26),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                height: 60,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(26),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFF68A07),
+                      Color(0xFFE45C00),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
-                borderRadius: BorderRadius.circular(22),
-              ),
+                child: BottomNavigationBar(
+                  currentIndex: currentIndex,
+                  onTap: (i) => _onItemTapped(context, i),
 
-              child: BottomNavigationBar(
-                currentIndex: currentIndex,
-                onTap: (i) => _onItemTapped(context, i),
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  type: BottomNavigationBarType.fixed,
 
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                type: BottomNavigationBarType.fixed,
+                  selectedFontSize: 12,
+                  unselectedFontSize: 12,
 
-                selectedFontSize: 11,
-                unselectedFontSize: 11,
+                  selectedItemColor: Colors.white,
+                  unselectedItemColor: Colors.white70,
 
-                // ← TEXTO BRANCO
-                selectedItemColor: Colors.white,
-                unselectedItemColor: Colors.white70,
+                  iconSize: 24,
 
-                // ← ÍCONES BRANCOS
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Iconsax.home_2, color: Colors.white),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Iconsax.note_text, color: Colors.white),
-                    label: 'Lista',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Iconsax.ticket_discount, color: Colors.white),
-                    label: 'Encartes',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Iconsax.wallet_3, color: Colors.white),
-                    label: 'Controle',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Iconsax.setting_2, color: Colors.white),
-                    label: 'Config.',
-                  ),
-                ],
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(Iconsax.home_2),
+                      label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Iconsax.note_text),
+                      label: 'Lista',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Iconsax.ticket_discount),
+                      label: 'Encartes',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Iconsax.wallet_3),
+                      label: 'Controle',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Iconsax.setting_2),
+                      label: 'Config.',
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -98,6 +108,8 @@ class BaseScaffold extends StatelessWidget {
       ),
     );
   }
+
+  // ================= DRAWER =================
 
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
@@ -108,33 +120,23 @@ class BaseScaffold extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE97F0C),
+                    width: 72,
+                    height: 72,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF68A07),
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
                     ),
                     child: const Icon(
                       Icons.person,
                       color: Colors.white,
-                      size: 40,
+                      size: 42,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   Text(
                     userName ?? "Usuário",
                     style: const TextStyle(
@@ -154,72 +156,25 @@ class BaseScaffold extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const Divider(height: 1),
-            
+
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  _buildMenuItem(
-                    context: context,
-                    icon: Icons.home,
-                    title: "Home",
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.go('/home');
-                    },
-                  ),
-                  _buildMenuItem(
-                    context: context,
-                    icon: Icons.receipt_long,
-                    title: "Minhas Listas",
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.go('/lista');
-                    },
-                  ),
-                  _buildMenuItem(
-                    context: context,
-                    icon: Icons.local_offer,
-                    title: "Encartes",
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.go('/encartes');
-                    },
-                  ),
-                  _buildMenuItem(
-                    context: context,
-                    icon: Icons.account_balance_wallet,
-                    title: "Controle de Gastos",
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.go('/orcamento');
-                    },
-                  ),
+                  _buildMenuItem(context, Icons.home, "Home", '/home'),
+                  _buildMenuItem(context, Icons.receipt_long, "Minhas Listas", '/lista'),
+                  _buildMenuItem(context, Icons.local_offer, "Encartes", '/encartes'),
+                  _buildMenuItem(context, Icons.account_balance_wallet, "Controle de Gastos", '/orcamento'),
                   const Divider(height: 24),
-                  _buildMenuItem(
-                    context: context,
-                    icon: Icons.settings,
-                    title: "Configurações",
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.go('/settings');
-                    },
-                  ),
-                  _buildMenuItem(
-                    context: context,
-                    icon: Icons.help_outline,
-                    title: "Ajuda",
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+                  _buildMenuItem(context, Icons.settings, "Configurações", '/settings'),
+                  _buildMenuItem(context, Icons.help_outline, "Ajuda", null),
                 ],
               ),
             ),
-            
-            Container(
+
+            Padding(
               padding: const EdgeInsets.all(20),
               child: Text(
                 "CompreiSomei v1.0.0",
@@ -235,28 +190,26 @@ class BaseScaffold extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildMenuItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String? route,
+  ) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: const Color(0xFFE97F0C),
-        size: 24,
-      ),
+      leading: Icon(icon, color: const Color(0xFFE97F0C), size: 26),
       title: Text(
         title,
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF1a1a1a),
         ),
       ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      onTap: () {
+        Navigator.pop(context);
+        if (route != null) context.go(route);
+      },
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
     );
   }
 }
