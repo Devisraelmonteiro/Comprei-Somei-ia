@@ -1,10 +1,10 @@
 import 'package:go_router/go_router.dart';
 
-import '../modules/home/home_page.dart';
+import 'package:comprei_some_ia/modules/home/home_page.dart';
 // import '../modules/login/login_page.dart';
 // import '../modules/scanner/scanner_page.dart';
 // import '../modules/orcamento/orcamento_page.dart';
-// import '../modules/lista/lista_page.dart';
+import 'package:comprei_some_ia/modules/lista/lista_page.dart';
 // import '../modules/encartes/encartes_page.dart';
 
 final router = GoRouter(
@@ -40,11 +40,12 @@ final router = GoRouter(
     //   builder: (context, state) => const OrcamentoPage(),
     // ),
     
-    // LISTA (comentado)
-    // GoRoute(
-    //   path: '/lista',
-    //   builder: (context, state) => const ListaPage(),
-    // ),
+    // LISTA
+    GoRoute(
+      name: 'lista',
+      path: '/lista',
+      builder: (context, state) => const ListaPage(),
+    ),
     
     // ENCARTES (comentado)
     // GoRoute(

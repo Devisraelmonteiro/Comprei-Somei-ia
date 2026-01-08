@@ -46,6 +46,9 @@ dependencies:
   animate_do: ^4.2.0
   flutter_animate: ^4.5.2
   lottie: ^3.3.2
+  
+  # IDs únicos
+  uuid: ^3.0.7
 
   # UI / Widgets
   modal_bottom_sheet: ^3.0.0

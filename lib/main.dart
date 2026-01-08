@@ -7,6 +7,7 @@ import 'app/app.dart';
 
 // Controllers
 import 'modules/home/home_controller.dart';
+import 'modules/lista/controllers/shopping_list_controller.dart';
 // import 'modules/scanner/scanner_controller.dart';
 // import 'modules/orcamento/orcamento_controller.dart';
 // import 'modules/lista/lista_controller.dart';
@@ -43,6 +44,7 @@ class AppRoot extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeController()),
+        ChangeNotifierProvider(create: (_) => ShoppingListController()),
         // ChangeNotifierProvider(create: (_) => ScannerController()),
         // ChangeNotifierProvider(create: (_) => OrcamentoController()),
         // ChangeNotifierProvider(create: (_) => ListaController()),
