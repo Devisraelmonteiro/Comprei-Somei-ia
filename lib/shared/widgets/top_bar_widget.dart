@@ -140,17 +140,17 @@ class _TopBarWidgetState extends State<TopBarWidget> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // 👋 SAUDAÇÃO "Olá, Israel"
-                    Padding(
-                      padding: widget.greetingInsets ?? EdgeInsets.zero,
-                      child: Text(
-                        "Olá, ${widget.userName}",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: widget.greetingFontSize ?? 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+                    //Padding(
+                      //padding: widget.greetingInsets ?? EdgeInsets.zero,
+                      //child: Text(
+                        //"Olá, ${widget.userName}",
+                        //style: TextStyle(
+                         // color: Colors.white,
+                          //fontSize: widget.greetingFontSize ?? 14,
+                          //fontWeight: FontWeight.w600,
+                        //),
+                      //),
+                    //),
                     
                     SizedBox(height: widget.spaceBetweenGreetingAndBalance ?? 4),
                     

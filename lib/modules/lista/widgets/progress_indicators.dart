@@ -9,10 +9,10 @@ class ProgressIndicators extends StatelessWidget {
 
   // 🎨 CONFIGURAÇÕES EDITÁVEIS
   static const double _paddingHorizontal = 16.0;
-  static const double _paddingTop = 12.0;
-  static const double _paddingBottom = 4.0;
+  static const double _paddingTop = 0;
+  static const double _paddingBottom = 0;
 
-  static const double _barHeight = 22.0;
+  static const double _barHeight = 18.0;
   static const double _barRadius = 14.0;
   static const double _barBottomSpacing = 8.0;
 
