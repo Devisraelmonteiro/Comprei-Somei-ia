@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
-import 'package:comprei_some_ia/modules/lista/models/shopping_item.dart';
 
 /// ➕ Botão Adicionar Produto - FORA DO HEADER
 /// 

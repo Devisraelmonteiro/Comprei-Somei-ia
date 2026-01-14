@@ -1,17 +1,28 @@
-import 'package:comprei_some_ia/modules/lista/models/shopping_item.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-/// 📋 Controller da Lista de Compras
+/// 🛒 ShoppingListController - ÚNICO CONTROLLER NECESSÁRIO
 /// 
-/// Responsabilidades:
-/// - Gerenciar estado dos itens
-/// - Persistir dados localmente
-/// - Calcular estatísticas por categoria
-/// - Notificar mudanças na UI
+/// Gerencia:
+/// - Items da lista com SharedPreferences
+/// - Estados (finalizada, compartilhada, pode gerar receitas)
+/// - 6 Categorias
 class ShoppingListController extends ChangeNotifier {
-  // === CATEGORIAS DISPONÍVEIS ===
+  // ═══════════════════════════════════════════════════════════
+  // ESTADO
+  // ═══════════════════════════════════════════════════════════
+  
+  List<ShoppingItem> _items = [];
+  String _selectedCategory = 'Alimentos';
+  bool _isFinalized = false;
+  bool _isSharedCopy = false;
+  bool _canGenerateRecipes = true;
+  bool _loading = false;
+
+  // ═══════════════════════════════════════════════════════════
+  // CATEGORIAS (6 COMPLETAS)
+  // ═══════════════════════════════════════════════════════════
   
   static const List<String> categories = [
     'Alimentos',
@@ -21,177 +32,230 @@ class ShoppingListController extends ChangeNotifier {
     'Frios',
     'Hortifruti',
   ];
-  
-  // === ESTADO ===
-  
-  List<ShoppingItem> _items = [];
-  String _selectedCategory = 'Alimentos';
-  bool _loading = false;
-  
-  // === GETTERS ===
-  
-  /// Lista imutável de todos os itens
+
+  // ═══════════════════════════════════════════════════════════
+  // GETTERS
+  // ═══════════════════════════════════════════════════════════
+
   List<ShoppingItem> get items => List.unmodifiable(_items);
   
-  /// Categoria atualmente selecionada
+  List<ShoppingItem> get filteredItems => _items
+      .where((item) => item.category == _selectedCategory)
+      .toList();
+  
   String get selectedCategory => _selectedCategory;
-  
-  /// Se está carregando dados
   bool get loading => _loading;
-  
-  /// Itens da categoria selecionada
-  List<ShoppingItem> get filteredItems {
-    return _items
-        .where((item) => item.category == _selectedCategory)
-        .toList()
-      ..sort((a, b) {
-        // Não concluídos primeiro
-        if (a.isChecked != b.isChecked) {
-          return a.isChecked ? 1 : -1;
-        }
-        // Depois por data de criação (mais recentes primeiro)
-        return b.createdAt.compareTo(a.createdAt);
-      });
-  }
-  
-  /// Total de itens
-  int get totalItems => _items.length;
-  
-  /// Itens não concluídos
-  int get pendingItems => _items.where((item) => !item.isChecked).length;
-  
-  /// Itens concluídos
-  int get completedItems => _items.where((item) => item.isChecked).length;
-  
-  // === ESTATÍSTICAS POR CATEGORIA ===
-  
-  /// Total de itens na categoria
+  bool get hasItems => _items.isNotEmpty;
+  bool get isFinalized => _isFinalized;
+  bool get isSharedCopy => _isSharedCopy;
+  bool get canGenerateRecipes => _canGenerateRecipes && _isFinalized;
+
+  // ═══════════════════════════════════════════════════════════
+  // ESTATÍSTICAS
+  // ═══════════════════════════════════════════════════════════
+
   int itemsInCategory(String category) {
     return _items.where((item) => item.category == category).length;
   }
-  
-  /// Itens concluídos na categoria
-  int completedInCategory(String category) {
-    return _items
-        .where((item) => item.category == category && item.isChecked)
-        .length;
-  }
-  
-  /// Porcentagem de conclusão da categoria
+
   double completionPercentage(String category) {
-    final total = itemsInCategory(category);
-    if (total == 0) return 0.0;
-    
-    final completed = completedInCategory(category);
-    return (completed / total) * 100;
+    final categoryItems = _items.where((item) => item.category == category);
+    if (categoryItems.isEmpty) return 0;
+    final checkedItems = categoryItems.where((item) => item.isChecked).length;
+    return (checkedItems / categoryItems.length) * 100;
   }
-  
-  // === AÇÕES ===
-  
-  /// Seleciona uma categoria
+
+  // ═══════════════════════════════════════════════════════════
+  // AÇÕES
+  // ═══════════════════════════════════════════════════════════
+
   void selectCategory(String category) {
-    if (!categories.contains(category)) return;
-    
-    _selectedCategory = category;
-    notifyListeners();
-    debugPrint('📂 [ShoppingList] Categoria selecionada: $category');
+    if (categories.contains(category)) {
+      _selectedCategory = category;
+      notifyListeners();
+    }
   }
-  
-  /// Adiciona novo item
+
+  void toggleItemCheck(String id) {
+    final index = _items.indexWhere((item) => item.id == id);
+    if (index != -1) {
+      _items[index] = _items[index].copyWith(
+        isChecked: !_items[index].isChecked,
+      );
+      notifyListeners();
+      _persist();
+    }
+  }
+
   Future<void> addItem(ShoppingItem item) async {
     _items.add(item);
     notifyListeners();
     await _persist();
-    debugPrint('➕ [ShoppingList] Item adicionado: ${item.name}');
+    debugPrint('➕ Item: ${item.name}');
   }
-  
-  /// Atualiza item existente
-  Future<void> updateItem(ShoppingItem updatedItem) async {
-    final index = _items.indexWhere((item) => item.id == updatedItem.id);
-    if (index == -1) return;
-    
-    _items[index] = updatedItem;
-    notifyListeners();
-    await _persist();
-    debugPrint('✏️ [ShoppingList] Item atualizado: ${updatedItem.name}');
+
+  Future<void> updateItem(ShoppingItem item) async {
+    final index = _items.indexWhere((i) => i.id == item.id);
+    if (index != -1) {
+      _items[index] = item;
+      notifyListeners();
+      await _persist();
+    }
   }
-  
-  /// Remove item
+
   Future<void> deleteItem(String id) async {
-    final removedItem = _items.firstWhere((item) => item.id == id);
     _items.removeWhere((item) => item.id == id);
     notifyListeners();
     await _persist();
-    debugPrint('🗑️ [ShoppingList] Item removido: ${removedItem.name}');
   }
-  
-  /// Marca/desmarca item como concluído
-  Future<void> toggleItemCheck(String id) async {
-    final index = _items.indexWhere((item) => item.id == id);
-    if (index == -1) return;
-    
-    _items[index] = _items[index].copyWith(
-      isChecked: !_items[index].isChecked,
-    );
-    notifyListeners();
-    await _persist();
-    debugPrint('✅ [ShoppingList] Item ${_items[index].isChecked ? 'concluído' : 'desmarcado'}: ${_items[index].name}');
-  }
-  
-  /// Limpa todos os itens
-  Future<void> clearAll() async {
-    _items.clear();
-    notifyListeners();
-    await _persist();
-    debugPrint('🗑️ [ShoppingList] Todos os itens removidos');
-  }
-  
-  /// Limpa itens concluídos
-  Future<void> clearCompleted() async {
-    _items.removeWhere((item) => item.isChecked);
-    notifyListeners();
-    await _persist();
-    debugPrint('🗑️ [ShoppingList] Itens concluídos removidos');
-  }
-  
-  // === PERSISTÊNCIA ===
-  
-  /// Carrega itens do SharedPreferences
+
+  // ═══════════════════════════════════════════════════════════
+  // PERSISTÊNCIA (SharedPreferences)
+  // ═══════════════════════════════════════════════════════════
+
   Future<void> loadItems() async {
     _loading = true;
     notifyListeners();
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = prefs.getString('shopping_list_items');
-      
+
       if (jsonString != null) {
         final List<dynamic> jsonList = json.decode(jsonString);
-        _items = jsonList
-            .map((json) => ShoppingItem.fromJson(json))
-            .toList();
-        
-        debugPrint('📥 [ShoppingList] ${_items.length} itens carregados');
+        _items = jsonList.map((json) => ShoppingItem.fromJson(json)).toList();
+        debugPrint('📥 Carregado: ${_items.length} itens');
       }
     } catch (e) {
-      debugPrint('❌ [ShoppingList] Erro ao carregar: $e');
+      debugPrint('❌ Erro ao carregar: $e');
     } finally {
       _loading = false;
       notifyListeners();
     }
   }
-  
-  /// Persiste itens no SharedPreferences
+
   Future<void> _persist() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final jsonList = _items.map((item) => item.toJson()).toList();
       final jsonString = json.encode(jsonList);
-      
       await prefs.setString('shopping_list_items', jsonString);
-      debugPrint('💾 [ShoppingList] ${_items.length} itens salvos');
+      debugPrint('💾 Salvo: ${_items.length} itens');
     } catch (e) {
-      debugPrint('❌ [ShoppingList] Erro ao salvar: $e');
+      debugPrint('❌ Erro ao salvar: $e');
     }
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // MÉTODOS DO RODAPÉ
+  // ═══════════════════════════════════════════════════════════
+
+  Future<void> finalizeList() async {
+    if (_items.isEmpty) throw Exception('Lista vazia');
+    _isFinalized = true;
+    notifyListeners();
+  }
+
+  Future<void> shareList(String emailOrCode) async {
+    if (!_isFinalized) throw Exception('Lista precisa estar finalizada');
+    if (emailOrCode.trim().isEmpty) throw Exception('Email inválido');
+    await Future.delayed(const Duration(milliseconds: 300));
+  }
+
+  Future<List<Recipe>> generateRecipes() async {
+    if (!_isFinalized) throw Exception('Finalize a lista');
+    if (_items.isEmpty) throw Exception('Lista vazia');
+    
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    return [
+      Recipe(
+        title: 'Receita com ${_items.first.name}',
+        content: 'Use ${_items.first.name} para preparar uma refeição deliciosa e nutritiva.',
+      ),
+      Recipe(
+        title: 'Prato Rápido e Fácil',
+        content: 'Combine os ingredientes da sua lista para uma receita prática do dia a dia.',
+      ),
+      Recipe(
+        title: 'Sugestão Especial',
+        content: 'Experimente novas combinações com os produtos disponíveis na sua despensa.',
+      ),
+    ];
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// MODELOS
+// ═══════════════════════════════════════════════════════════
+
+class ShoppingItem {
+  final String id;
+  final String name;
+  final int quantity;
+  final String category;
+  final bool isChecked;
+  final DateTime createdAt;
+
+  ShoppingItem({
+    String? id,
+    required this.name,
+    required this.quantity,
+    required this.category,
+    this.isChecked = false,
+    DateTime? createdAt,
+  })  : id = id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        createdAt = createdAt ?? DateTime.now();
+
+  ShoppingItem copyWith({
+    String? name,
+    int? quantity,
+    String? category,
+    bool? isChecked,
+  }) {
+    return ShoppingItem(
+      id: id,
+      name: name ?? this.name,
+      quantity: quantity ?? this.quantity,
+      category: category ?? this.category,
+      isChecked: isChecked ?? this.isChecked,
+      createdAt: createdAt,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'quantity': quantity,
+    'category': category,
+    'isChecked': isChecked,
+    'createdAt': createdAt.toIso8601String(),
+  };
+
+  factory ShoppingItem.fromJson(Map<String, dynamic> json) {
+    return ShoppingItem(
+      id: json['id']?.toString(),
+      name: json['name'] ?? '',
+      quantity: json['quantity'] ?? 1,
+      category: json['category'] ?? 'Alimentos',
+      isChecked: json['isChecked'] ?? false,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
+    );
+  }
+}
+
+class Recipe {
+  final String title;
+  final String content;
+
+  Recipe({required this.title, required this.content});
+
+  factory Recipe.fromJson(Map<String, dynamic> json) {
+    return Recipe(
+      title: json['title'] ?? '',
+      content: json['content'] ?? '',
+    );
   }
 }

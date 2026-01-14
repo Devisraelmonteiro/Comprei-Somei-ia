@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'app/app.dart';
 
@@ -52,7 +53,34 @@ class AppRoot extends StatelessWidget {
         // ChangeNotifierProvider(create: (_) => LoginController()),
         // ChangeNotifierProvider(create: (_) => SettingsController()),
       ],
-      child: const App(),
+      // ✅ SCREENUTIL INIT - CONFIGURAÇÃO 2025
+      child: ScreenUtilInit(
+        // 📱 DESIGN BASE: iPhone 11 (375x812)
+        designSize: const Size(375, 812),
+        
+        // ✅ Adapta texto automaticamente (sem quebrar)
+        minTextAdapt: true,
+        
+        // ✅ Suporta split screen (tablets/iPad)
+        splitScreenMode: true,
+        
+        // ✅ Builder com MediaQuery customizado
+        builder: (context, child) {
+          return MediaQuery(
+            // 🔥 ACESSIBILIDADE 2025: Limita escala de fonte
+            data: MediaQuery.of(context).copyWith(
+              // Limite: 90% a 120% (mais restrito para scanner)
+              textScaleFactor: MediaQuery.of(context)
+                  .textScaleFactor
+                  .clamp(0.9, 1.2),
+            ),
+            child: child!,
+          );
+        },
+        
+        // ✅ App principal
+        child: const App(),
+      ),
     );
   }
 }

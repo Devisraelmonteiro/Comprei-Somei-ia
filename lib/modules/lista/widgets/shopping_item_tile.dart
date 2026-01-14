@@ -1,17 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
-import 'package:comprei_some_ia/modules/lista/models/shopping_item.dart';
 import 'package:comprei_some_ia/modules/lista/widgets/add_item_dialog.dart';
 
 /// 🛒 Card de Item COMPLETO
-/// 
-/// Componentes:
-/// - Checkbox circular
-/// - Nome do produto (riscado se concluído)
-/// - Quantidade/observação
-/// - 3 Ícones de ação: Editar, Reordenar, Excluir
-/// - Card elevado com cantos arredondados
 class ShoppingItemTile extends StatelessWidget {
   final ShoppingItem item;
 
@@ -99,7 +91,7 @@ class ShoppingItemTile extends StatelessWidget {
                     
                     const SizedBox(width: 4),
                     
-                    // Reordenar/Duplicar
+                    // Duplicar
                     _buildActionIcon(
                       icon: Icons.content_copy_outlined,
                       color: Colors.orange.shade600,

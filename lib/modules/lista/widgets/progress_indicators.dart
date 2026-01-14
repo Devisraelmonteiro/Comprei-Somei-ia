@@ -1,25 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
+import 'package:comprei_some_ia/shared/constants/app_colors.dart';
 
-/// 📊 Indicadores de Progresso COMPACTOS
-/// Categoria + Progresso na MESMA barra
+/// 📊 Indicadores de Progresso - VERSÃO PROFISSIONAL 2025
+/// 
+/// Mostra barras de progresso para cada categoria com itens.
+/// Design compacto: categoria + progresso na mesma barra.
 class ProgressIndicators extends StatelessWidget {
   const ProgressIndicators({super.key});
-
-  // 🎨 CONFIGURAÇÕES EDITÁVEIS
-  static const double _paddingHorizontal = 16.0;
-  static const double _paddingTop = 0;
-  static const double _paddingBottom = 0;
-
-  static const double _barHeight = 18.0;
-  static const double _barRadius = 14.0;
-  static const double _barBottomSpacing = 8.0;
-
-  static const double _labelFontSize = 12.5;
-  static const double _percentageFontSize = 12.5;
-
-  static const int _maxCategoriesToShow = 6;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +18,7 @@ class ProgressIndicators extends StatelessWidget {
       builder: (context, controller, _) {
         final categoriesWithItems = ShoppingListController.categories
             .where((cat) => controller.itemsInCategory(cat) > 0)
-            .take(_maxCategoriesToShow)
+            .take(6) // Máximo 6 categorias
             .toList();
 
         if (categoriesWithItems.isEmpty) {
@@ -35,12 +26,7 @@ class ProgressIndicators extends StatelessWidget {
         }
 
         return Padding(
-          padding: const EdgeInsets.fromLTRB(
-            _paddingHorizontal,
-            _paddingTop,
-            _paddingHorizontal,
-            _paddingBottom,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: AppSizes.screenPadding.w),
           child: Column(
             children: categoriesWithItems
                 .map((category) => _ProgressBar(category: category))
@@ -52,30 +38,11 @@ class ProgressIndicators extends StatelessWidget {
   }
 }
 
-/// 🔹 Barra única: Categoria + Progresso
+/// 🔹 Barra de progresso individual
 class _ProgressBar extends StatelessWidget {
   final String category;
 
   const _ProgressBar({required this.category});
-
-  Color _getCategoryColor() {
-    switch (category) {
-      case 'Alimentos':
-        return const Color(0xFFF68A07);
-      case 'Limpeza':
-        return const Color(0xFF5DBFB3);
-      case 'Higiene':
-        return const Color(0xFFE8C547);
-      case 'Bebidas':
-        return const Color(0xFF6BA5D6);
-      case 'Frios':
-        return const Color(0xFFB38DD6);
-      case 'Hortifruti':
-        return const Color(0xFF7BC96F);
-      default:
-        return Colors.grey;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,60 +52,54 @@ class _ProgressBar extends StatelessWidget {
         final color = _getCategoryColor();
 
         return Padding(
-          padding: const EdgeInsets.only(
-            bottom: ProgressIndicators._barBottomSpacing,
-          ),
+          padding: EdgeInsets.only(bottom: AppSizes.spacingSmall.h),
           child: Stack(
             children: [
-              // Fundo
+              // 🎨 Fundo cinza
               Container(
-                height: ProgressIndicators._barHeight,
+                height: AppSizes.progressBarHeight.h + 14.h,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(
-                    ProgressIndicators._barRadius,
-                  ),
+                  color: AppColors.grey300,
+                  borderRadius: BorderRadius.circular(14.r),
                 ),
               ),
 
-              // Progresso
+              // 🎨 Barra de progresso colorida
               FractionallySizedBox(
                 widthFactor: percentage / 100,
                 child: Container(
-                  height: ProgressIndicators._barHeight,
+                  height: AppSizes.progressBarHeight.h + 14.h,
                   decoration: BoxDecoration(
                     color: color,
-                    borderRadius: BorderRadius.circular(
-                      ProgressIndicators._barRadius,
-                    ),
+                    borderRadius: BorderRadius.circular(14.r),
                   ),
                 ),
               ),
 
-              // Texto SOBRE a barra
+              // 📝 Texto sobre a barra
               Positioned.fill(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: EdgeInsets.symmetric(horizontal: AppSizes.spacingMedium.w),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Nome da categoria
                       Text(
                         category,
-                        style: const TextStyle(
-                          fontSize: ProgressIndicators._labelFontSize,
+                        style: TextStyle(
+                          fontSize: 12.5.sp,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: AppColors.white,
                         ),
                       ),
 
                       // Percentual
                       Text(
                         '${percentage.toInt()}%',
-                        style: const TextStyle(
-                          fontSize: ProgressIndicators._percentageFontSize,
+                        style: TextStyle(
+                          fontSize: 12.5.sp,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: AppColors.white,
                         ),
                       ),
                     ],
@@ -150,5 +111,25 @@ class _ProgressBar extends StatelessWidget {
         );
       },
     );
+  }
+
+  /// 🎨 Cor da categoria
+  Color _getCategoryColor() {
+    switch (category) {
+      case 'Alimentos':
+        return AppColors.categoryAlimentos;
+      case 'Limpeza':
+        return AppColors.categoryLimpeza;
+      case 'Higiene':
+        return AppColors.categoryHigiene;
+      case 'Bebidas':
+        return AppColors.categoryBebidas;
+      case 'Frios':
+        return AppColors.categoryFrios;
+      case 'Hortifruti':
+        return AppColors.categoryHortifruti;
+      default:
+        return AppColors.grey500;
+    }
   }
 }

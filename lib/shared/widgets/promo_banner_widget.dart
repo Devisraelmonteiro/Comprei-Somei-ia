@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
+import 'package:comprei_some_ia/shared/constants/app_colors.dart';
+import 'package:comprei_some_ia/shared/constants/app_strings.dart';
 
 class PromoBannerWidget extends StatelessWidget {
   final VoidCallback onTap;
@@ -12,10 +16,10 @@ class PromoBannerWidget extends StatelessWidget {
       onTap: onTap,
       child: Center(
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.95, // 🔥 95% da largura
-          height: 60, // 🔥 metade da altura anterior
+          width: MediaQuery.of(context).size.width * 0.95,
+          height: 60.h,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20.r),
             gradient: const LinearGradient(
               colors: [
                 Color(0xFF0B6B53),
@@ -26,7 +30,7 @@ class PromoBannerWidget extends StatelessWidget {
             ),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20.r),
             child: Stack(
               children: [
                 // 💸 Fundo animado
@@ -43,7 +47,7 @@ class PromoBannerWidget extends StatelessWidget {
 
                 // 🔥 Conteúdo
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: AppSizes.screenPadding.w),
                   child: Row(
                     children: [
                       // Textos à esquerda
@@ -51,21 +55,21 @@ class PromoBannerWidget extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Text(
                               "CompreiSomei no dia a dia",
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14, // menor porque a altura diminuiu
+                                color: AppColors.white,
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 2),
+                            SizedBox(height: 2.h),
                             Text(
-                              "Economize usando o CompreiSomei",
+                              AppStrings.appTagline,
                               style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 11,
+                                color: AppColors.whiteWithOpacity(0.7),
+                                fontSize: 11.sp,
                               ),
                             ),
                           ],
@@ -74,15 +78,15 @@ class PromoBannerWidget extends StatelessWidget {
 
                       // ➡ Seta
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8.w),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
+                          color: AppColors.whiteWithOpacity(0.15),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.arrow_forward_ios_rounded,
-                          color: Colors.white,
-                          size: 14,
+                          color: AppColors.white,
+                          size: 14.sp,
                         ),
                       )
                     ],

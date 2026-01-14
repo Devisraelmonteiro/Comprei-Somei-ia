@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vibration/vibration.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'home_controller.dart';
 import 'widgets/scanner_card_widget.dart';
@@ -13,13 +14,10 @@ import 'package:comprei_some_ia/shared/widgets/base_scaffold.dart';
 import 'package:comprei_some_ia/shared/widgets/favoritos_grid.dart';
 import 'package:comprei_some_ia/core/services/ocr_service.dart';
 import 'package:comprei_some_ia/main.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
+import 'package:comprei_some_ia/shared/constants/app_strings.dart';
 
-/// 🏠 Página principal do app
-/// 
-/// Responsabilidades:
-/// - Coordenar widgets da UI
-/// - Gerenciar estado da câmera
-/// - Processar OCR em tempo real
+/// 🏠 Página principal do app - VERSÃO 2025 PROFISSIONAL
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -28,10 +26,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  // === CONSTANTES ===
   static const double mockBudget = 500.0;
   
-  // === CÂMERA E OCR ===
   CameraController? _cameraController;
   final PriceOcrService _ocrService = PriceOcrService();
   bool _isCameraInitialized = false;
@@ -39,8 +35,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   double? _detectedPrice;
   String? _cameraError;
 
-  // === LIFECYCLE ===
-  
   @override
   void initState() {
     super.initState();
@@ -68,53 +62,37 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  // === INICIALIZAÇÃO DA CÂMERA ===
-  
-  /// 📸 Inicializa câmera e inicia stream de OCR
   Future<void> _initCamera() async {
     try {
       print('🔍 Iniciando câmera...');
       
-      // Verificar se existem câmeras disponíveis
       if (cameras.isEmpty) {
         setState(() {
-          _cameraError = 'Nenhuma câmera encontrada no dispositivo';
+          _cameraError = AppStrings.errorNoCamera;
           _isCameraInitialized = false;
         });
-        print('❌ Nenhuma câmera disponível');
         return;
       }
 
-      print('📸 ${cameras.length} câmera(s) encontrada(s)');
-
-      // Solicitar permissão
-      print('🔐 Solicitando permissão de câmera...');
       final status = await Permission.camera.request();
       
       if (status.isDenied) {
         setState(() {
-          _cameraError = 'Permissão de câmera negada';
+          _cameraError = AppStrings.errorCameraPermission;
           _isCameraInitialized = false;
         });
-        print('❌ Permissão negada');
         return;
       }
 
       if (status.isPermanentlyDenied) {
         setState(() {
-          _cameraError = 'Permissão negada permanentemente. Ative nas configurações.';
+          _cameraError = AppStrings.permissionCameraDenied;
           _isCameraInitialized = false;
         });
-        print('❌ Permissão negada permanentemente');
         await openAppSettings();
         return;
       }
 
-      print('✅ Permissão concedida');
-
-      // Inicializar controller
-      print('🎥 Inicializando controller...');
-      
       final camera = cameras.firstWhere(
         (camera) => camera.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
@@ -128,12 +106,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       );
 
       await _cameraController!.initialize();
-      print('✅ Controller inicializado');
 
       if (!mounted) return;
 
-      // Iniciar stream de OCR
-      print('🔥 Iniciando stream de OCR...');
       _cameraController!.startImageStream((CameraImage image) async {
         if (_isProcessing) return;
         _isProcessing = true;
@@ -151,14 +126,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             final controller = context.read<HomeController>();
             controller.setCapturedValue(price);
             
-            // Vibrar quando detectar novo preço
             if (previousPrice != price) {
               if (await Vibration.hasVibrator() ?? false) {
                 Vibration.vibrate(duration: 500);
               }
             }
-            
-            print('💰 Preço detectado: R\$ ${price.toStringAsFixed(2)}');
           }
         } catch (e) {
           print('⚠️ Erro no OCR: $e');
@@ -171,10 +143,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         _isCameraInitialized = true;
         _cameraError = null;
       });
-      
-      print('✅ Câmera totalmente inicializada!');
     } catch (e) {
-      print('❌ Erro ao inicializar câmera: $e');
       setState(() {
         _cameraError = 'Erro: $e';
         _isCameraInitialized = false;
@@ -182,8 +151,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  // === BUILD ===
-  
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<HomeController>();
@@ -194,20 +161,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       userName: "Israel",
       child: Stack(
         children: [
-          // Header
           _buildTopBar(remaining),
-          
-          // Conteúdo scrollável
           _buildScrollableContent(controller),
-          
-          // Loading indicator
           if (controller.loading) _buildLoadingIndicator(),
         ],
       ),
     );
   }
 
-  /// 🔝 Barra superior
   Widget _buildTopBar(double remaining) {
     return Positioned(
       top: 0,
@@ -217,110 +178,88 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         userName: "Israel",
         remaining: remaining,
         userImagePath: "assets/images/user.jpg",
-        height: 200,
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-        avatarSize: 42,
-        greetingFontSize: 14,
-        balanceLabelFontSize: 12,
-        balanceValueFontSize: 18,
-        eyeIconSize: 20,
-        eyeInsets: const EdgeInsets.only(right: 210, top: 30),
-        spaceBetweenAvatarAndText: 10,
-        spaceBetweenGreetingAndBalance: 2,
-        spaceBetweenBalanceLabelAndValue: 0,
+        height: AppSizes.headerHeight.h,
+        greetingFontSize: AppSizes.titleMedium.sp,
+        balanceLabelFontSize: AppSizes.labelLarge.sp,
+        balanceValueFontSize: AppSizes.displayMedium.sp,
       ),
     );
   }
 
-  /// 📜 Conteúdo SEM scroll (layout fixo)
-Widget _buildScrollableContent(HomeController controller) {
-  return Positioned.fill(
-    child: Padding(
-      padding: EdgeInsets.only(
-        top: 100,
-        bottom: MediaQuery.of(context).padding.bottom + 52 + 12,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Scanner
-          ScannerCardWidget(
-            cameraController: _cameraController,
-            isCameraInitialized: _isCameraInitialized,
-            cameraError: _cameraError,
-            detectedPrice: _detectedPrice,
-            capturedValue: controller.capturedValue,
-            onRetry: _initCamera,
-            onOpenSettings: openAppSettings,
-          ),
-          
-          const SizedBox(height: 10),
+  Widget _buildScrollableContent(HomeController controller) {
+    return Positioned.fill(
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: AppSizes.headerHeight.h,
+          bottom: MediaQuery.of(context).padding.bottom + 52.h + 12.h,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ScannerCardWidget(
+              cameraController: _cameraController,
+              isCameraInitialized: _isCameraInitialized,
+              cameraError: _cameraError,
+              detectedPrice: _detectedPrice,
+              capturedValue: controller.capturedValue,
+              onRetry: _initCamera,
+              onOpenSettings: openAppSettings,
+            ),
             
-           // Botões de ação
-          FavoritosGrid(
-            onConfirm: () => _onConfirm(context, controller),
-            onCancel: () => _onCancel(context, controller),
-            onMultiply: () => _showMultiplySheet(context, controller),
-            onManual: () => _showManualCaptureSheet(context, controller),
-          ),
-          
-          const SizedBox(height: 10),
+            SizedBox(height: AppSizes.spacingMedium.h),
+              
+            FavoritosGrid(
+              onConfirm: () => _onConfirm(context, controller),
+              onCancel: () => _onCancel(context, controller),
+              onMultiply: () => _showMultiplySheet(context, controller),
+              onManual: () => _showManualCaptureSheet(context, controller),
+            ),
             
-            // Banner promocional
+            SizedBox(height: AppSizes.spacingMedium.h),
+              
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.screenPadding.w),
               child: PromoBannerWidget(
                 onTap: () => print("Banner clicado!"),
               ),
             ),
             
-            const SizedBox(height: 4),
+            SizedBox(height: AppSizes.spacingTiny.h),
             
-            // Lista de itens capturados
             ItemsCapturedWidget(controller: controller),
-            
           ],
         ),
       ),
-    
-  );
-  }
-
-  /// ⏳ Indicador de loading
-  Widget _buildLoadingIndicator() {
-    return const Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: LinearProgressIndicator(minHeight: 2),
     );
   }
 
-  // === AÇÕES ===
-  
-  /// ✅ Confirmar valor capturado
+  Widget _buildLoadingIndicator() {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: LinearProgressIndicator(minHeight: 2.h),
+    );
+  }
+
   void _onConfirm(BuildContext context, HomeController controller) async {
     if (controller.capturedValue <= 0) {
-      _showSnack(context, "Defina um valor antes de confirmar.");
+      _showSnack(context, AppStrings.errorNoValue);
       return;
     }
     
     await controller.addCapturedValue();
     controller.setCapturedValue(0.0);
     setState(() => _detectedPrice = null);
-    _showSnack(context, "Valor adicionado!");
+    _showSnack(context, AppStrings.successValueAdded);
   }
 
-  /// ❌ Cancelar valor capturado
   void _onCancel(BuildContext context, HomeController controller) {
     controller.setCapturedValue(0.0);
     setState(() => _detectedPrice = null);
-    _showSnack(context, "Valor limpo.");
+    _showSnack(context, AppStrings.successValueCleared);
   }
 
-  // === MODAL SHEETS ===
-  
-  /// ✏️ Modal para inserir valor manualmente
   void _showManualCaptureSheet(
     BuildContext context,
     HomeController controller,
@@ -334,50 +273,50 @@ Widget _buildScrollableContent(HomeController controller) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.modalRadius.r)),
       ),
       builder: (ctx) {
         return Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
-            top: 16,
-            left: 16,
-            right: 16,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + AppSizes.screenPadding.h,
+            top: AppSizes.screenPadding.h,
+            left: AppSizes.screenPadding.w,
+            right: AppSizes.screenPadding.w,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                "Inserir valor manualmente",
+              Text(
+                AppStrings.modalManualTitle,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: AppSizes.bodyMedium.sp,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSizes.spacingMedium.h),
               TextField(
                 controller: textController,
-                decoration: const InputDecoration(
-                  labelText: "Valor (em reais)",
+                decoration: InputDecoration(
+                  labelText: AppStrings.modalManualHint,
                   prefixText: "R\$ ",
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(fontSize: AppSizes.bodySmall.sp),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
+                style: TextStyle(fontSize: AppSizes.bodyMedium.sp),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 autofocus: true,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSizes.spacingMedium.h),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(ctx).pop(),
-                      child: const Text("Cancelar"),
+                      child: Text(AppStrings.btnCancel, style: TextStyle(fontSize: AppSizes.bodySmall.sp)),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: AppSizes.spacingSmall.w),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -392,7 +331,7 @@ Widget _buildScrollableContent(HomeController controller) {
                         controller.setCapturedValue(value);
                         Navigator.of(ctx).pop();
                       },
-                      child: const Text("Aplicar"),
+                      child: Text(AppStrings.btnApply, style: TextStyle(fontSize: AppSizes.bodySmall.sp)),
                     ),
                   ),
                 ],
@@ -404,10 +343,9 @@ Widget _buildScrollableContent(HomeController controller) {
     );
   }
 
-  /// ✖️ Modal para multiplicar valor
   void _showMultiplySheet(BuildContext context, HomeController controller) {
     if (controller.capturedValue <= 0) {
-      _showSnack(context, "Defina um valor para multiplicar.");
+      _showSnack(context, AppStrings.errorNoMultiplier);
       return;
     }
     
@@ -415,56 +353,54 @@ Widget _buildScrollableContent(HomeController controller) {
 
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.modalRadius.r)),
       ),
       builder: (ctx) {
         return Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(AppSizes.screenPadding.w),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                "Multiplicar valor",
+              Text(
+                AppStrings.modalMultiplyTitle,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: AppSizes.bodyMedium.sp,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSizes.spacingMedium.h),
               TextField(
                 controller: multiplierController,
-                decoration: const InputDecoration(
-                  labelText: "Multiplicador",
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: AppStrings.modalMultiplyHint,
+                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(fontSize: AppSizes.bodySmall.sp),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: false,
-                ),
+                style: TextStyle(fontSize: AppSizes.bodyMedium.sp),
+                keyboardType: const TextInputType.numberWithOptions(decimal: false),
                 autofocus: true,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSizes.spacingMedium.h),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(ctx).pop(),
-                      child: const Text("Cancelar"),
+                      child: Text(AppStrings.btnCancel, style: TextStyle(fontSize: AppSizes.bodySmall.sp)),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: AppSizes.spacingSmall.w),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
                         final m = int.tryParse(multiplierController.text) ?? 0;
                         if (m <= 0) return;
                         
-                        controller.setCapturedValue(
-                          controller.capturedValue * m,
-                        );
+                        controller.setCapturedValue(controller.capturedValue * m);
                         Navigator.of(ctx).pop();
                       },
-                      child: const Text("Aplicar"),
+                      child: Text(AppStrings.btnApply, style: TextStyle(fontSize: AppSizes.bodySmall.sp)),
                     ),
                   ),
                 ],
@@ -476,9 +412,6 @@ Widget _buildScrollableContent(HomeController controller) {
     );
   }
 
-  // === UTILITÁRIOS ===
-  
-  /// 📢 Mostrar snackbar
   void _showSnack(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

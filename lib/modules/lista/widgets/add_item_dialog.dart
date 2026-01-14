@@ -1,15 +1,9 @@
-import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
-import 'package:comprei_some_ia/modules/lista/models/shopping_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
 
 /// ➕ Dialog para Adicionar/Editar Item
-/// 
-/// Campos:
-/// - Nome do produto
-/// - Quantidade
-/// - Botões: Cancelar e Adicionar/Salvar
 class AddItemDialog extends StatefulWidget {
   final ShoppingItem? itemToEdit;
 
@@ -196,7 +190,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Item atualizado!'),
+          content: Text('✅ Item atualizado!'),
+          backgroundColor: Color(0xFF4CAF50),
           duration: Duration(seconds: 2),
         ),
       );
@@ -212,7 +207,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Item adicionado!'),
+          content: Text('✅ Item adicionado!'),
+          backgroundColor: Color(0xFF4CAF50),
           duration: Duration(seconds: 2),
         ),
       );

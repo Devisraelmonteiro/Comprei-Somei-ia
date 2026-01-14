@@ -1,12 +1,16 @@
-import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
+import 'package:comprei_some_ia/shared/constants/app_colors.dart';
+import 'package:comprei_some_ia/shared/constants/app_strings.dart';
 import 'shopping_item_tile.dart';
 
-/// 📝 Lista de Itens de Compras
+/// 📝 Lista de Itens de Compras - VERSÃO PROFISSIONAL 2025
 /// 
-/// ListView com itens filtrados por categoria
-/// Mostra estado vazio quando não há itens
+/// ListView com itens filtrados por categoria.
+/// Mostra estado vazio quando não há itens.
 class ShoppingListView extends StatelessWidget {
   const ShoppingListView({super.key});
 
@@ -16,20 +20,26 @@ class ShoppingListView extends StatelessWidget {
       builder: (context, controller, _) {
         final items = controller.filteredItems;
 
+        // Estado de loading
         if (controller.loading) {
-          return const Center(
+          return Center(
             child: CircularProgressIndicator(
-              color: Color(0xFFF36607),
+              color: AppColors.primary,
             ),
           );
         }
 
+        // Estado vazio
         if (items.isEmpty) {
           return _buildEmptyState(controller.selectedCategory);
         }
 
+        // Lista de itens
         return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSizes.screenPadding.w,
+            vertical: AppSizes.spacingSmall.h,
+          ),
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
@@ -43,35 +53,42 @@ class ShoppingListView extends StatelessWidget {
     );
   }
 
-  /// Estado vazio
+  /// 🔍 Estado vazio
   Widget _buildEmptyState(String category) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(AppSizes.spacingHuge.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Ícone
             Icon(
               Icons.shopping_basket_outlined,
-              size: 64,
-              color: Colors.grey.shade300,
+              size: 64.sp,
+              color: AppColors.grey300,
             ),
-            const SizedBox(height: 16),
+            
+            SizedBox(height: AppSizes.spacingLarge.h),
+            
+            // Título
             Text(
               'Nenhum item em $category',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppSizes.bodyMedium.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey.shade600,
+                color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 8),
+            
+            SizedBox(height: AppSizes.spacingSmall.h),
+            
+            // Subtítulo
             Text(
-              'Adicione produtos usando o botão acima',
+              AppStrings.listEmptySubtitle,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade500,
+                fontSize: AppSizes.bodySmall.sp,
+                color: AppColors.textDisabled,
               ),
             ),
           ],

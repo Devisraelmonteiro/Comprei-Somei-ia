@@ -2,6 +2,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
+import 'package:comprei_some_ia/shared/constants/app_colors.dart';
+import 'package:comprei_some_ia/shared/constants/app_strings.dart';
 
 class BaseScaffold extends StatelessWidget {
   final Widget child;
@@ -29,7 +33,7 @@ class BaseScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
 
       drawer: userName != null ? _buildDrawer(context) : null,
 
@@ -37,26 +41,24 @@ class BaseScaffold extends StatelessWidget {
 
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+          padding: EdgeInsets.fromLTRB(
+            AppSizes.spacingMedium.w,
+            AppSizes.spacingSmall.h,
+            AppSizes.spacingMedium.w,
+            AppSizes.spacingSmall.h,
+          ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(26),
+            borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius.r),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
-                height: 60,
+                height: AppSizes.bottomNavHeight.h,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(26),
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFFF68A07),
-                      Color(0xFFE45C00),
-                    ],
-                  ),
+                  borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius.r),
+                  gradient: AppColors.bottomNavGradient,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.25),
+                      color: AppColors.blackWithOpacity(0.25),
                       blurRadius: 12,
                       offset: const Offset(0, 6),
                     ),
@@ -70,34 +72,34 @@ class BaseScaffold extends StatelessWidget {
                   elevation: 0,
                   type: BottomNavigationBarType.fixed,
 
-                  selectedFontSize: 12,
-                  unselectedFontSize: 12,
+                  selectedFontSize: AppSizes.bodySmall.sp,
+                  unselectedFontSize: AppSizes.bodySmall.sp,
 
-                  selectedItemColor: Colors.white,
-                  unselectedItemColor: Colors.white70,
+                  selectedItemColor: AppColors.white,
+                  unselectedItemColor: AppColors.whiteWithOpacity(0.7),
 
-                  iconSize: 24,
+                  iconSize: AppSizes.iconLarge.sp,
 
-                  items: const [
+                  items: [
                     BottomNavigationBarItem(
-                      icon: Icon(Iconsax.home_2),
-                      label: 'Home',
+                      icon: const Icon(Iconsax.home_2),
+                      label: AppStrings.homeTitle,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Iconsax.note_text),
-                      label: 'Lista',
+                      icon: const Icon(Iconsax.note_text),
+                      label: AppStrings.listTitle,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Iconsax.ticket_discount),
-                      label: 'Encartes',
+                      icon: const Icon(Iconsax.ticket_discount),
+                      label: AppStrings.encartesTitle,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Iconsax.wallet_3),
-                      label: 'Controle',
+                      icon: const Icon(Iconsax.wallet_3),
+                      label: AppStrings.budgetTitle,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Iconsax.setting_2),
-                      label: 'Config.',
+                      icon: const Icon(Iconsax.setting_2),
+                      label: AppStrings.settingsTitle,
                     ),
                   ],
                 ),
@@ -114,73 +116,78 @@ class BaseScaffold extends StatelessWidget {
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: Container(
-        color: Colors.white,
+        color: AppColors.white,
         child: Column(
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
+              padding: EdgeInsets.fromLTRB(
+                AppSizes.screenPadding.w + 4.w,
+                60.h,
+                AppSizes.screenPadding.w + 4.w,
+                30.h,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 72,
-                    height: 72,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF68A07),
+                    width: 72.w,
+                    height: 72.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.person,
-                      color: Colors.white,
-                      size: 42,
+                      color: AppColors.white,
+                      size: 42.sp,
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14.h),
                   Text(
                     userName ?? "Usuário",
-                    style: const TextStyle(
-                      fontSize: 22,
+                    style: TextStyle(
+                      fontSize: 22.sp,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF1a1a1a),
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.h),
                   Text(
                     "Bem-vindo!",
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
+                      fontSize: 14.sp,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ],
               ),
             ),
 
-            const Divider(height: 1),
+            Divider(height: 1, color: AppColors.divider),
 
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: EdgeInsets.symmetric(vertical: AppSizes.spacingSmall.h),
                 children: [
-                  _buildMenuItem(context, Icons.home, "Home", '/home'),
+                  _buildMenuItem(context, Icons.home, AppStrings.homeTitle, '/home'),
                   _buildMenuItem(context, Icons.receipt_long, "Minhas Listas", '/lista'),
-                  _buildMenuItem(context, Icons.local_offer, "Encartes", '/encartes'),
+                  _buildMenuItem(context, Icons.local_offer, AppStrings.encartesTitle, '/encartes'),
                   _buildMenuItem(context, Icons.account_balance_wallet, "Controle de Gastos", '/orcamento'),
-                  const Divider(height: 24),
-                  _buildMenuItem(context, Icons.settings, "Configurações", '/settings'),
+                  Divider(height: 24.h, color: AppColors.divider),
+                  _buildMenuItem(context, Icons.settings, AppStrings.settingsTitle, '/settings'),
                   _buildMenuItem(context, Icons.help_outline, "Ajuda", null),
                 ],
               ),
             ),
 
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(AppSizes.screenPadding.w + 4.w),
               child: Text(
-                "CompreiSomei v1.0.0",
+                AppStrings.appVersion,
                 style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade400,
+                  fontSize: AppSizes.bodySmall.sp,
+                  color: AppColors.textDisabled,
                 ),
               ),
             ),
@@ -197,11 +204,15 @@ class BaseScaffold extends StatelessWidget {
     String? route,
   ) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFFE97F0C), size: 26),
+      leading: Icon(
+        icon,
+        color: AppColors.primary,
+        size: 26.sp,
+      ),
       title: Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
+        style: TextStyle(
+          fontSize: AppSizes.bodyMedium.sp,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -209,7 +220,10 @@ class BaseScaffold extends StatelessWidget {
         Navigator.pop(context);
         if (route != null) context.go(route);
       },
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: AppSizes.screenPadding.w + 4.w,
+        vertical: 6.h,
+      ),
     );
   }
 }
