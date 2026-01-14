@@ -178,10 +178,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         userName: "Israel",
         remaining: remaining,
         userImagePath: "assets/images/user.jpg",
-        height: AppSizes.headerHeight.h,
-        greetingFontSize: AppSizes.titleMedium.sp,
-        balanceLabelFontSize: AppSizes.labelLarge.sp,
-        balanceValueFontSize: AppSizes.displayMedium.sp,
       ),
     );
   }
@@ -190,7 +186,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Positioned.fill(
       child: Padding(
         padding: EdgeInsets.only(
-          top: AppSizes.headerHeight.h,
+          top: 100.h,
           bottom: MediaQuery.of(context).padding.bottom + 52.h + 12.h,
         ),
         child: Column(

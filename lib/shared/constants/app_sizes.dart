@@ -17,13 +17,13 @@ class AppSizes {
   // ===========================
   static const double headerHeight = 200;
   static const double headerPaddingHorizontal = 20;
-  static const double headerPaddingTop = 0.0;  // Avatar mais no topo
+  static const double headerPaddingTop = 2;  // Avatar mais no topo
   static const double headerPaddingBottom = 20;
   static const double headerBorderRadius = 20;
   
   // 🎯 ESPAÇAMENTOS INTERNOS DO HEADER (controle fino)
   static const double headerAvatarToGreetingSpacing = 12;   // Entre avatar e "Olá, Israel"
-  static const double headerGreetingToSaldoSpacing = 1.0;     // Entre "Olá, Israel" e "Saldo"
+  static const double headerGreetingToSaldoSpacing = 4;     // Entre "Olá, Israel" e "Saldo"
   static const double headerSaldoToValueSpacing = 0;        // Entre "Saldo" e "R$ 454,00"
 
   // ===========================
