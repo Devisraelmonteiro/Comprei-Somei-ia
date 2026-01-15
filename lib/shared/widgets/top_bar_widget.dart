@@ -6,7 +6,12 @@ import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 import 'package:comprei_some_ia/shared/constants/app_colors.dart';
 import 'package:comprei_some_ia/shared/constants/app_strings.dart';
 
-/// 🔝 TopBar - Header do App
+/// 🔝 TopBar - Header do App VERDADEIRAMENTE RESPONSIVO
+/// 
+/// Sistema dinâmico que:
+/// - Adapta ao SafeArea automaticamente
+/// - Calcula altura baseada no conteúdo
+/// - Funciona em qualquer dispositivo
 /// 
 /// Widget reutilizável que exibe:
 /// - Avatar do usuário
@@ -17,48 +22,12 @@ class TopBarWidget extends StatefulWidget {
   final String userName;
   final double remaining;
   final String? userImagePath;
-  
-  // ✅ Parâmetros opcionais para customização
-  final double? height;
-  final EdgeInsets? padding;
-  final double? avatarSize;
-  final double? greetingFontSize;
-  final double? balanceLabelFontSize;
-  final double? balanceValueFontSize;
-  final double? eyeIconSize;
-  
-  // ✅ Mantidos por compatibilidade (não usados na nova versão)
-  final EdgeInsets? avatarInsets;
-  final EdgeInsets? greetingInsets;
-  final EdgeInsets? balanceLabelInsets;
-  final EdgeInsets? balanceValueInsets;
-  final EdgeInsets? eyeInsets;
-  final double? spaceBetweenAvatarAndText;
-  final double? spaceBetweenGreetingAndBalance;
-  final double? spaceBetweenBalanceLabelAndValue;
 
   const TopBarWidget({
     super.key,
     required this.userName,
     required this.remaining,
     this.userImagePath,
-    this.height,
-    this.padding,
-    this.avatarSize,
-    this.greetingFontSize,
-    this.balanceLabelFontSize,
-    this.balanceValueFontSize,
-    this.eyeIconSize,
-    
-    // Deprecated mas mantidos
-    this.avatarInsets,
-    this.greetingInsets,
-    this.balanceLabelInsets,
-    this.balanceValueInsets,
-    this.eyeInsets,
-    this.spaceBetweenAvatarAndText,
-    this.spaceBetweenGreetingAndBalance,
-    this.spaceBetweenBalanceLabelAndValue,
   });
 
   @override
@@ -70,6 +39,9 @@ class _TopBarWidgetState extends State<TopBarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // 🎯 CÁLCULO DINÂMICO do SafeArea top
+    final topSafeArea = MediaQuery.of(context).padding.top;
+    
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -80,17 +52,15 @@ class _TopBarWidgetState extends State<TopBarWidget> {
       ),
       child: SafeArea(
         bottom: false,
-        minimum: EdgeInsets.zero,
-        child: Container(
-          height: widget.height ?? AppSizes.headerHeight.h,
-          padding: widget.padding ?? 
-                   EdgeInsets.fromLTRB(
-                     AppSizes.headerPaddingHorizontal.w,
-                     AppSizes.headerPaddingTop.h,
-                     AppSizes.headerPaddingHorizontal.w,
-                     AppSizes.headerPaddingBottom.h,
-                   ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppSizes.headerPaddingHorizontal.w,
+            AppSizes.headerPaddingTop.h,
+            AppSizes.headerPaddingHorizontal.w,
+            AppSizes.headerPaddingBottom.h,
+          ),
           child: Column(
+            mainAxisSize: MainAxisSize.min, // ← Altura baseada no conteúdo
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 🔝 LINHA 1: Avatar + "Olá, Israel"
@@ -99,33 +69,33 @@ class _TopBarWidgetState extends State<TopBarWidget> {
                   // 👤 AVATAR
                   _buildAvatar(),
                   
-                  SizedBox(width: AppSizes.headerAvatarToGreetingSpacing.w),  // ← Controlável!
+                  SizedBox(width: AppSizes.headerAvatarToGreetingSpacing.w),
                   
                   // 👋 SAUDAÇÃO
                   Text(
                     AppStrings.greeting(widget.userName),
                     style: TextStyle(
                       color: AppColors.textOnPrimary,
-                      fontSize: widget.greetingFontSize ?? AppSizes.greetingText.sp,
+                      fontSize: AppSizes.greetingText.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
               
-              SizedBox(height: AppSizes.headerGreetingToSaldoSpacing.h),  // ← Controlável!
+              SizedBox(height: AppSizes.headerGreetingToSaldoSpacing.h),
               
               // 🔝 LINHA 2: "Saldo"
               Text(
                 AppStrings.balanceLabel,
                 style: TextStyle(
                   color: AppColors.whiteWithOpacity(0.9),
-                  fontSize: widget.balanceLabelFontSize ?? AppSizes.balanceLabel.sp,
+                  fontSize: AppSizes.balanceLabel.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               
-              SizedBox(height: AppSizes.headerSaldoToValueSpacing.h),  // ← Controlável!
+              SizedBox(height: AppSizes.headerSaldoToValueSpacing.h),
               
               // 🔝 LINHA 3: "R$ 454,00" + Olhinho
               Row(
@@ -157,8 +127,8 @@ class _TopBarWidgetState extends State<TopBarWidget> {
         Scaffold.of(context).openDrawer();
       },
       child: Container(
-        width: widget.avatarSize ?? AppSizes.avatarSize.w,
-        height: widget.avatarSize ?? AppSizes.avatarSize.w,
+        width: AppSizes.avatarSize.w,
+        height: AppSizes.avatarSize.w,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: AppColors.whiteWithOpacity(0.2),
@@ -184,7 +154,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
             ? Icon(
                 Icons.person,
                 color: AppColors.white,
-                size: (widget.avatarSize ?? AppSizes.avatarSize.w) * 0.6,
+                size: AppSizes.avatarSize.w * 0.6,
               )
             : null,
       ),
@@ -201,7 +171,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
             : "R\$ ••••••",
         key: ValueKey(showBalance),
         style: TextStyle(
-          fontSize: widget.balanceValueFontSize ?? AppSizes.balanceValue.sp,
+          fontSize: AppSizes.balanceValue.sp,
           fontWeight: FontWeight.w800,
           color: AppColors.white,
         ),
@@ -225,7 +195,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
               ? Icons.visibility_outlined 
               : Icons.visibility_off_outlined,
           color: AppColors.white,
-          size: widget.eyeIconSize ?? AppSizes.eyeIconSize.sp,
+          size: AppSizes.eyeIconSize.sp,
         ),
       ),
     );

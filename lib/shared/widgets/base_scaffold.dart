@@ -1,12 +1,15 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:ui';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
-import 'package:comprei_some_ia/shared/constants/app_colors.dart';
-import 'package:comprei_some_ia/shared/constants/app_strings.dart';
 
+import '../constants/app_colors.dart';
+import '../constants/app_sizes.dart';
+import '../constants/app_strings.dart';
+
+/// 🏗️ Scaffold base com bottom navigation responsivo
 class BaseScaffold extends StatelessWidget {
   final Widget child;
   final int currentIndex;
@@ -20,13 +23,10 @@ class BaseScaffold extends StatelessWidget {
   });
 
   void _onItemTapped(BuildContext context, int index) {
-    switch (index) {
-      case 0: context.go('/home'); break;
-      case 1: context.go('/lista'); break;
-      case 2: context.go('/encartes'); break;
-      case 3: context.go('/orcamento'); break;
-      case 4: context.go('/settings'); break;
-    }
+    if (index == currentIndex) return;
+
+    final routes = ['/home', '/lista', '/encartes', '/orcamento', '/settings'];
+    context.go(routes[index]);
   }
 
   @override
@@ -39,74 +39,81 @@ class BaseScaffold extends StatelessWidget {
 
       body: child,
 
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            AppSizes.spacingMedium.w,
-            AppSizes.spacingSmall.h,
-            AppSizes.spacingMedium.w,
-            AppSizes.spacingSmall.h,
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius.r),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                height: AppSizes.bottomNavHeight.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius.r),
-                  gradient: AppColors.bottomNavGradient,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.blackWithOpacity(0.25),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: BottomNavigationBar(
-                  currentIndex: currentIndex,
-                  onTap: (i) => _onItemTapped(context, i),
+      // 🎯 Bottom Nav com sistema responsivo profissional
+      bottomNavigationBar: Builder(
+        builder: (context) {
+          // 📊 Pega o SafeArea do dispositivo (adapta automaticamente)
+          final bottomSafeArea = MediaQuery.of(context).padding.bottom;
+          
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+              AppSizes.bottomNavPaddingHorizontal.w,
+              AppSizes.bottomNavPaddingTop.h,
+              AppSizes.bottomNavPaddingHorizontal.w,
+              // 🔥 FÓRMULA: SafeArea (auto) + valor configurável
+              bottomSafeArea + AppSizes.bottomNavPaddingBottom.h,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius.r),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  height: AppSizes.bottomNavHeight.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius.r),
+                    gradient: AppColors.bottomNavGradient,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.blackWithOpacity(0.25),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: BottomNavigationBar(
+                    currentIndex: currentIndex,
+                    onTap: (i) => _onItemTapped(context, i),
 
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  type: BottomNavigationBarType.fixed,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    type: BottomNavigationBarType.fixed,
 
-                  selectedFontSize: AppSizes.bodySmall.sp,
-                  unselectedFontSize: AppSizes.bodySmall.sp,
+                    selectedFontSize: AppSizes.bodySmall.sp,
+                    unselectedFontSize: AppSizes.bodySmall.sp,
 
-                  selectedItemColor: AppColors.white,
-                  unselectedItemColor: AppColors.whiteWithOpacity(0.7),
+                    selectedItemColor: AppColors.white,
+                    unselectedItemColor: AppColors.whiteWithOpacity(0.7),
 
-                  iconSize: AppSizes.iconLarge.sp,
+                    iconSize: AppSizes.iconLarge.sp,
 
-                  items: [
-                    BottomNavigationBarItem(
-                      icon: const Icon(Iconsax.home_2),
-                      label: AppStrings.homeTitle,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: const Icon(Iconsax.note_text),
-                      label: AppStrings.listTitle,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: const Icon(Iconsax.ticket_discount),
-                      label: AppStrings.encartesTitle,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: const Icon(Iconsax.wallet_3),
-                      label: AppStrings.budgetTitle,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: const Icon(Iconsax.setting_2),
-                      label: AppStrings.settingsTitle,
-                    ),
-                  ],
+                    items: [
+                      BottomNavigationBarItem(
+                        icon: const Icon(Iconsax.home_2),
+                        label: AppStrings.homeTitle,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: const Icon(Iconsax.note_text),
+                        label: AppStrings.listTitle,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: const Icon(Iconsax.ticket_discount),
+                        label: AppStrings.encartesTitle,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: const Icon(Iconsax.wallet_3),
+                        label: AppStrings.budgetTitle,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: const Icon(Iconsax.setting_2),
+                        label: AppStrings.settingsTitle,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -121,73 +128,68 @@ class BaseScaffold extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              padding: EdgeInsets.fromLTRB(
-                AppSizes.screenPadding.w + 4.w,
-                60.h,
-                AppSizes.screenPadding.w + 4.w,
-                30.h,
-              ),
+              padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 72.w,
-                    height: 72.h,
-                    decoration: BoxDecoration(
+                    width: 72,
+                    height: 72,
+                    decoration: const BoxDecoration(
                       color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.person,
                       color: AppColors.white,
-                      size: 42.sp,
+                      size: 42,
                     ),
                   ),
-                  SizedBox(height: 14.h),
+                  const SizedBox(height: 14),
                   Text(
                     userName ?? "Usuário",
-                    style: TextStyle(
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.w800,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    "Bem-vindo!",
+                  const SizedBox(height: 4),
+                  const Text(
+                    "Versão 1.0.0",
                     style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 14,
                       color: AppColors.textSecondary,
                     ),
                   ),
                 ],
               ),
             ),
-
-            Divider(height: 1, color: AppColors.divider),
-
+            
+            const Divider(height: 1),
+            
             Expanded(
               child: ListView(
-                padding: EdgeInsets.symmetric(vertical: AppSizes.spacingSmall.h),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  _buildMenuItem(context, Icons.home, AppStrings.homeTitle, '/home'),
+                  _buildMenuItem(context, Icons.home, "Home", '/home'),
                   _buildMenuItem(context, Icons.receipt_long, "Minhas Listas", '/lista'),
-                  _buildMenuItem(context, Icons.local_offer, AppStrings.encartesTitle, '/encartes'),
+                  _buildMenuItem(context, Icons.local_offer, "Encartes", '/encartes'),
                   _buildMenuItem(context, Icons.account_balance_wallet, "Controle de Gastos", '/orcamento'),
-                  Divider(height: 24.h, color: AppColors.divider),
-                  _buildMenuItem(context, Icons.settings, AppStrings.settingsTitle, '/settings'),
+                  const Divider(height: 24),
+                  _buildMenuItem(context, Icons.settings, "Configurações", '/settings'),
                   _buildMenuItem(context, Icons.help_outline, "Ajuda", null),
                 ],
               ),
             ),
-
+            
             Padding(
-              padding: EdgeInsets.all(AppSizes.screenPadding.w + 4.w),
+              padding: const EdgeInsets.all(20),
               child: Text(
-                AppStrings.appVersion,
+                "CompreiSomei v1.0.0",
                 style: TextStyle(
-                  fontSize: AppSizes.bodySmall.sp,
-                  color: AppColors.textDisabled,
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
                 ),
               ),
             ),
@@ -204,26 +206,20 @@ class BaseScaffold extends StatelessWidget {
     String? route,
   ) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: AppColors.primary,
-        size: 26.sp,
-      ),
+      leading: Icon(icon, color: AppColors.primary, size: 26),
       title: Text(
         title,
-        style: TextStyle(
-          fontSize: AppSizes.bodyMedium.sp,
+        style: const TextStyle(
+          fontSize: 16,
           fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
         ),
       ),
       onTap: () {
         Navigator.pop(context);
         if (route != null) context.go(route);
       },
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: AppSizes.screenPadding.w + 4.w,
-        vertical: 6.h,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
     );
   }
 }
