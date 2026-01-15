@@ -6,20 +6,19 @@ import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 import 'package:comprei_some_ia/shared/constants/app_colors.dart';
 import 'package:comprei_some_ia/shared/constants/app_strings.dart';
 
-/// 🔝 TopBar - Header COMPACTO igual segunda imagem
+/// 🔝 TopBar - Header COMPACTO com olhinho na altura do "Saldo"
 /// 
-/// Características:
-/// - Fonte do saldo MENOR (metade)
-/// - Layout compacto em ROW (horizontal)
-/// - 70% do scanner dentro do laranja
+/// Layout:
+/// ┌─────────────────────────┐
+/// │ 👤  Olá, Israel         │
+/// │     Saldo          👁️   │  ← Olhinho aqui!
+/// │     R$ 500,00           │
+/// └─────────────────────────┘
 /// 
-/// 📝 COMO AJUSTAR:
-/// - Altura total: padding top + bottom
-/// - Tamanho avatar: _buildAvatar() → width/height
-/// - Fonte "Olá, Israel": linha 72 → fontSize
-/// - Fonte "Saldo": linha 82 → fontSize
-/// - Fonte "R$ 500,00": linha 144 → fontSize
-/// - Tamanho olhinho: _buildEyeToggle() → width/height
+/// 📝 COMO AJUSTAR CORES:
+/// - "Olá, Israel": linha 85
+/// - "Saldo": linha 103
+/// - "R$ 500,00": linha 186
 class TopBarWidget extends StatefulWidget {
   final String userName;
   final double remaining;
@@ -46,24 +45,17 @@ class _TopBarWidgetState extends State<TopBarWidget> {
       decoration: BoxDecoration(
         gradient: AppColors.headerGradient,
         borderRadius: BorderRadius.vertical(
-          // 📐 BORDA INFERIOR DO HEADER
-          // Aumentar = mais arredondado
-          // Diminuir = menos arredondado
           bottom: Radius.circular(20.r),
         ),
       ),
       child: SafeArea(
         bottom: false,
         child: Padding(
-          // 📏 PADDING DO HEADER (controla altura total)
-          // LTRB = Left, Top, Right, Bottom
-          // Top: espaço no topo
-          // Bottom: espaço embaixo (afeta onde scanner começa)
           padding: EdgeInsets.fromLTRB(
-            16.w,  // 🔹 Margem esquerda
-            4.h,   // 🔹 Margem topo (DIMINUIR = header mais compacto)
-            16.w,  // 🔹 Margem direita
-            100.h,  // 🔹 Margem fundo (AUMENTAR = mais espaço para scanner)
+            16.w,   // Margem esquerda
+            4.h,    // Margem topo
+            16.w,   // Margem direita
+            100.h,  // Margem fundo (espaço para scanner)
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,12 +63,9 @@ class _TopBarWidgetState extends State<TopBarWidget> {
               // 👤 AVATAR
               _buildAvatar(),
               
-              // 📏 ESPAÇO ENTRE AVATAR E TEXTOS
-              // Aumentar = mais espaço
-              // Diminuir = mais compacto
               SizedBox(width: 12.w),
               
-              // 📝 TEXTOS (Olá, Israel + Saldo + Valor)
+              // 📝 TEXTOS
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,31 +74,33 @@ class _TopBarWidgetState extends State<TopBarWidget> {
                     Text(
                       AppStrings.greeting(widget.userName),
                       style: TextStyle(
-                        color: AppColors.textOnPrimary,
-                        // 📝 FONTE "OLÁ, ISRAEL"
-                        // Aumentar = texto maior
-                        // Diminuir = texto menor
-                        fontSize: 12.sp,
+                        // 🎨 COR "OLÁ, ISRAEL" ← EDITE AQUI (linha 85)!
+                        color: Colors.yellow,
+                        fontSize: 15.sp,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     
-                    // 📏 ESPAÇO ENTRE "OLÁ" E "SALDO"
-                    // Aumentar = mais espaço vertical
-                    // Diminuir = mais compacto
                     SizedBox(height: 1.h),
                     
-                    // 💼 "Saldo"
-                    Text(
-                      AppStrings.balanceLabel,
-                      style: TextStyle(
-                        color: AppColors.whiteWithOpacity(0.9),
-                        // 📝 FONTE "SALDO"
-                        // Aumentar = texto maior
-                        // Diminuir = texto menor
-                        fontSize: 8.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    // 💼 "SALDO" + 👁️ OLHINHO (mesma linha, alinhado à direita)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // "Saldo"
+                        Text(
+                          AppStrings.balanceLabel,
+                          style: TextStyle(
+                            // 🎨 COR "SALDO" ← EDITE AQUI (linha 103)!
+                            color: const Color.fromARGB(183, 255, 255, 255),
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        
+                        // 👁️ Olhinho (alinhado à direita)
+                        _buildEyeToggle(),
+                      ],
                     ),
                     
                     // 💵 "R$ 500,00"
@@ -117,9 +108,6 @@ class _TopBarWidgetState extends State<TopBarWidget> {
                   ],
                 ),
               ),
-              
-              // 👁️ OLHINHO (toggle visibilidade)
-              _buildEyeToggle(),
             ],
           ),
         ),
@@ -127,21 +115,14 @@ class _TopBarWidgetState extends State<TopBarWidget> {
     );
   }
 
-  /// 👤 Avatar do usuário
-  /// 
-  /// 📝 COMO AJUSTAR:
-  /// - Tamanho: width/height (linha 120)
-  /// - Borda: width na linha 127
-  /// - Ícone: size na linha 140
+  /// 👤 Avatar
   Widget _buildAvatar() {
     return GestureDetector(
       onTap: () {
         Scaffold.of(context).openDrawer();
       },
       child: Container(
-        // 📐 TAMANHO DO AVATAR
-        // Aumentar = avatar maior
-        // Diminuir = avatar menor
+        // 📐 TAMANHO AVATAR ← EDITE AQUI (linha 134)!
         width: 40.w,
         height: 40.w,
         decoration: BoxDecoration(
@@ -149,9 +130,6 @@ class _TopBarWidgetState extends State<TopBarWidget> {
           color: AppColors.whiteWithOpacity(0.2),
           border: Border.all(
             color: AppColors.whiteWithOpacity(0.3),
-            // 📏 ESPESSURA DA BORDA DO AVATAR
-            // Aumentar = borda mais grossa
-            // Diminuir = borda mais fina
             width: 1.5,
           ),
           image: widget.userImagePath != null
@@ -165,9 +143,6 @@ class _TopBarWidgetState extends State<TopBarWidget> {
             ? Icon(
                 Icons.person,
                 color: AppColors.white,
-                // 📐 TAMANHO DO ÍCONE (quando não tem foto)
-                // Aumentar = ícone maior
-                // Diminuir = ícone menor
                 size: 30.sp,
               )
             : null,
@@ -175,11 +150,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
     );
   }
 
-  /// 💵 Valor do saldo com animação
-  /// 
-  /// 📝 COMO AJUSTAR:
-  /// - Fonte: fontSize na linha 144
-  /// - Peso: fontWeight na linha 145
+  /// 💵 Valor do saldo
   Widget _buildBalanceValue() {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
@@ -189,36 +160,25 @@ class _TopBarWidgetState extends State<TopBarWidget> {
             : "R\$ ••••••",
         key: ValueKey(showBalance),
         style: TextStyle(
-          // 📝 FONTE "R$ 500,00" (PRINCIPAL!)
-          // Aumentar = número maior
-          // Diminuir = número menor
-          // VALOR ATUAL: 18sp (metade do original)
-          fontSize: 15.sp,
-          // 📝 PESO DA FONTE
-          // w800 = extra bold (negrito forte)
-          // w600 = semi bold
-          // w400 = normal
+          // 🎨 COR "R$ 500,00" ← EDITE AQUI (linha 186)!
+          color: const Color.fromARGB(255, 255, 255, 255),
+          
+          // 📝 FONTE "R$ 500,00" ← EDITE AQUI (linha 189)!
+          fontSize: 18.sp,
           fontWeight: FontWeight.w800,
-          color: AppColors.white,
         ),
       ),
     );
   }
 
-  /// 👁️ Botão para mostrar/ocultar saldo
-  /// 
-  /// 📝 COMO AJUSTAR:
-  /// - Tamanho botão: width/height na linha 207
-  /// - Tamanho ícone: size na linha 218
+  /// 👁️ Botão toggle
   Widget _buildEyeToggle() {
     return GestureDetector(
       onTap: () => setState(() => showBalance = !showBalance),
       child: Container(
-        // 📐 TAMANHO DO CÍRCULO DO OLHINHO
-        // Aumentar = botão maior
-        // Diminuir = botão menor
-        width: 20.w,
-        height: 20.w,
+        // 📐 TAMANHO OLHINHO ← EDITE AQUI (linha 205)!
+        width: 25.w,
+        height: 25.w,
         decoration: BoxDecoration(
           color: AppColors.whiteWithOpacity(0.2),
           shape: BoxShape.circle,
@@ -228,10 +188,8 @@ class _TopBarWidgetState extends State<TopBarWidget> {
               ? Icons.visibility_outlined 
               : Icons.visibility_off_outlined,
           color: AppColors.white,
-          // 📐 TAMANHO DO ÍCONE DO OLHINHO
-          // Aumentar = ícone maior
-          // Diminuir = ícone menor
-          size: 16.sp,
+          // 📐 ÍCONE OLHINHO ← EDITE AQUI (linha 218)!
+          size: 18.sp,
         ),
       ),
     );
@@ -239,24 +197,56 @@ class _TopBarWidgetState extends State<TopBarWidget> {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📋 RESUMO DE AJUSTES RÁPIDOS
+// 📋 GUIA RÁPIDO - ONDE EDITAR
 // ═══════════════════════════════════════════════════════════════
 //
-// 🎯 ALTURA DO HEADER:
-// - Linha 62: padding top (8.h) - DIMINUIR = mais compacto
-// - Linha 64: padding bottom (20.h) - AUMENTAR = mais espaço
+// 🎨 CORES:
+// 
+// Linha 85:  "Olá, Israel" = Colors.yellow
+// Linha 103: "Saldo"       = Color.fromARGB(183, 255, 255, 255)
+// Linha 186: "R$ 500,00"   = Color.fromARGB(255, 255, 255, 255)
 //
-// 🎯 TAMANHOS DE FONTE:
-// - Linha 72: "Olá, Israel" = 16.sp
-// - Linha 82: "Saldo" = 12.sp
-// - Linha 144: "R$ 500,00" = 18.sp ← PRINCIPAL!
+// ─────────────────────────────────────────────────────────────
 //
-// 🎯 TAMANHOS DE COMPONENTES:
-// - Linha 120: Avatar = 50x50
-// - Linha 207: Olhinho = 36x36
+// 📐 TAMANHOS:
+// 
+// Linha 134: Avatar    = 40x40
+// Linha 189: Fonte R$  = 15.sp
+// Linha 205: Olhinho   = 25x25
+// Linha 218: Ícone     = 18.sp
 //
-// 🎯 ESPAÇAMENTOS:
-// - Linha 68: Avatar ↔️ Textos = 12.w
-// - Linha 78: "Olá" ↕️ "Saldo" = 2.h
+// ─────────────────────────────────────────────────────────────
+//
+// 📍 POSIÇÃO DO OLHINHO:
+// 
+// O olhinho está na MESMA LINHA do "Saldo"
+// Alinhado à DIREITA (mainAxisAlignment: spaceBetween)
+//
+// Para ajustar o alinhamento, veja linha 96:
+//   mainAxisAlignment: MainAxisAlignment.spaceBetween
+//
+// Outras opções:
+//   - .start  (esquerda)
+//   - .end    (direita)
+//   - .center (centro)
+//
+// ═══════════════════════════════════════════════════════════════
+//
+// 💡 EXEMPLOS DE CORES:
+//
+// Amarelo brilhante:
+//   color: Colors.yellow,
+//
+// Amarelo suave:
+//   color: Color(0xFFFFE082),
+//
+// Branco 80%:
+//   color: Colors.white.withOpacity(0.8),
+//
+// Preto:
+//   color: Colors.black,
+//
+// Cinza:
+//   color: Colors.grey.shade600,
 //
 // ═══════════════════════════════════════════════════════════════

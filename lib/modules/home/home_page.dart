@@ -262,7 +262,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       // Aumentar = scanner mais para baixo (menos dentro do laranja)
       // Diminuir = scanner mais para cima (mais dentro do laranja)
       // VALOR ATUAL: 120.h (70% dentro do header)
-      top: 85.h,
+      top: 110.h,
       
       // 📐 MARGENS LATERAIS
       // Aumentar = scanner mais estreito
