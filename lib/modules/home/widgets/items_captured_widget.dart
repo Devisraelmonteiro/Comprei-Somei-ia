@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:comprei_some_ia/modules/home/home_controller.dart';
 import 'package:comprei_some_ia/modules/home/models/captured_item.dart';
 import 'package:comprei_some_ia/modules/home/widgets/captured_item_tile.dart';
 
-/// 📋 Widget da lista de itens capturados
+/// 📋 Widget da lista de itens capturados - VERSÃO RESPONSIVA
 /// 
-/// Características:
-/// - Altura fixa e configurável via constante
-/// - Scroll interno otimizado com ListView.separated
-/// - Header e Footer fixos fora da área de scroll
-/// - Estado vazio com UX polido
-/// - Animações suaves de entrada/saída
-/// - Divisores visuais sutis
+/// ✅ SEM altura fixa - usa Expanded para ocupar todo espaço
+/// ✅ Responsivo com ScreenUtil (.w, .h, .sp)
+/// ✅ Scroll interno quando tem 3+ itens
+/// ✅ Ocupa espaço até o footer automaticamente
 /// 
-/// Padrões aplicados:
-/// - Single Responsibility: apenas exibição de lista
-/// - Composition: delega lógica ao Controller
-/// - Constantes configuráveis no topo
-/// - Métodos privados bem nomeados e focados
+/// 🎯 MUDANÇAS PRINCIPAIS:
+/// - Removido: altura fixa (_cardHeight)
+/// - Adicionado: Container sem height (ocupa espaço do Expanded no pai)
+/// - Resultado: Lista cresce automaticamente até o footer
 class ItemsCapturedWidget extends StatelessWidget {
-  // === CONFIGURAÇÕES ===
+  // ═══════════════════════════════════════════════════════════════
+  // 📐 CONFIGURAÇÕES RESPONSIVAS
+  // ═══════════════════════════════════════════════════════════════
   
-  /// Altura total do card
-  /// Ajuste conforme necessário para sua UI
-  static const double _cardHeight = 326.0;
+  /// ❌ REMOVIDO: _cardHeight (altura fixa)
+  /// ✅ AGORA: Usa Expanded do pai (home_page.dart)
   
   /// Padding horizontal do card
   static const double _cardHorizontalMargin = 16.0;
@@ -40,9 +38,8 @@ class ItemsCapturedWidget extends StatelessWidget {
   /// Espaçamento entre itens na lista
   static const double _itemSpacing = 0;
   
-  // === PROPRIEDADES ===
+  // ═══════════════════════════════════════════════════════════════
   
-  /// Controller com os itens e total
   final HomeController controller;
 
   const ItemsCapturedWidget({
@@ -50,7 +47,9 @@ class ItemsCapturedWidget extends StatelessWidget {
     required this.controller,
   });
 
-  // === BUILD ===
+  // ═══════════════════════════════════════════════════════════════
+  // 🎨 BUILD PRINCIPAL
+  // ═══════════════════════════════════════════════════════════════
   
   @override
   Widget build(BuildContext context) {
@@ -59,10 +58,12 @@ class ItemsCapturedWidget extends StatelessWidget {
     final hasItems = items.isNotEmpty;
 
     return Container(
-      height: _cardHeight,
-      margin: const EdgeInsets.symmetric(
-        horizontal: _cardHorizontalMargin,
-        vertical: _cardVerticalMargin,
+      // ❌ REMOVIDO: height: _cardHeight,
+      // ✅ SEM height = ocupa TODO espaço do Expanded (no pai)
+      
+      margin: EdgeInsets.symmetric(
+        horizontal: _cardHorizontalMargin.w,
+        vertical: _cardVerticalMargin.h,
       ),
       decoration: _buildCardDecoration(),
       child: Column(
@@ -70,11 +71,14 @@ class ItemsCapturedWidget extends StatelessWidget {
         children: [
           _buildHeader(items.length),
           _buildDivider(),
+          
+          // ✅ ESTE Expanded faz a lista ocupar todo espaço disponível
           Expanded(
             child: hasItems
                 ? _buildItemsList(items)
                 : _buildEmptyState(),
           ),
+          
           _buildDivider(),
           _buildFooter(total, hasItems),
         ],
@@ -82,13 +86,14 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  // === DECORAÇÃO ===
+  // ═══════════════════════════════════════════════════════════════
+  // 🎨 DECORAÇÃO
+  // ═══════════════════════════════════════════════════════════════
   
-  /// Decoração do card principal
   BoxDecoration _buildCardDecoration() {
     return BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(_cardBorderRadius),
+      borderRadius: BorderRadius.circular(_cardBorderRadius.r),
       boxShadow: [
         BoxShadow(
           color: Colors.black.withOpacity(0.06),
@@ -99,7 +104,6 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  /// Divisor sutil entre seções
   Widget _buildDivider() {
     return Divider(
       height: 1,
@@ -108,13 +112,14 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  // === HEADER ===
+  // ═══════════════════════════════════════════════════════════════
+  // 🔝 HEADER
+  // ═══════════════════════════════════════════════════════════════
   
-  /// Header com título e badge de contagem
   Widget _buildHeader(int itemCount) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -125,12 +130,11 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  /// Título do card
   Widget _buildTitle() {
-    return const Text(
+    return Text(
       "Itens Capturados",
       style: TextStyle(
-        fontSize: 14,
+        fontSize: 14.sp,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
         letterSpacing: -0.5,
@@ -138,13 +142,12 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  /// Badge com contador de itens
   Widget _buildCountBadge(int count) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: const Color(0xFFF36607).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: const Color(0xFFF36607).withOpacity(0.2),
           width: 1,
@@ -152,34 +155,34 @@ class ItemsCapturedWidget extends StatelessWidget {
       ),
       child: Text(
         _getCountLabel(count),
-        style: const TextStyle(
-          fontSize: 11,
+        style: TextStyle(
+          fontSize: 11.sp,
           fontWeight: FontWeight.w700,
-          color: Color(0xFFF36607),
+          color: const Color(0xFFF36607),
         ),
       ),
     );
   }
 
-  /// Retorna label pluralizada
   String _getCountLabel(int count) {
     return '$count ${count == 1 ? 'item' : 'itens'}';
   }
 
-  // === ESTADO VAZIO ===
+  // ═══════════════════════════════════════════════════════════════
+  // 📭 ESTADO VAZIO
+  // ═══════════════════════════════════════════════════════════════
   
-  /// Estado vazio com ícone e mensagem
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+        padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 24.h),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildEmptyIcon(),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             _buildEmptyTitle(),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             _buildEmptySubtitle(),
           ],
         ),
@@ -187,62 +190,59 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  /// Ícone do estado vazio
   Widget _buildEmptyIcon() {
     return Container(
-      width: 64,
-      height: 64,
+      width: 64.w,
+      height: 64.w,
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
         shape: BoxShape.circle,
       ),
       child: Icon(
         Icons.shopping_basket_outlined,
-        size: 30,
+        size: 30.sp,
         color: Colors.grey.shade400,
       ),
     );
   }
 
-  /// Título do estado vazio
   Widget _buildEmptyTitle() {
     return Text(
       "Nenhum item ainda",
       style: TextStyle(
         color: Colors.grey.shade700,
-        fontSize: 12,
+        fontSize: 12.sp,
         fontWeight: FontWeight.w600,
       ),
     );
   }
 
-  /// Subtítulo do estado vazio
   Widget _buildEmptySubtitle() {
     return Text(
       "Capture preços com a câmera\nou adicione manualmente",
       textAlign: TextAlign.center,
       style: TextStyle(
         color: Colors.grey.shade500,
-        fontSize: 10,
+        fontSize: 10.sp,
         height: 1.4,
       ),
     );
   }
 
-  // === LISTA DE ITENS ===
+  // ═══════════════════════════════════════════════════════════════
+  // 📋 LISTA DE ITENS
+  // ═══════════════════════════════════════════════════════════════
   
-  /// Lista de itens com scroll interno e animações
   Widget _buildItemsList(List<CapturedItem> items) {
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8.h),
       physics: const BouncingScrollPhysics(),
       itemCount: items.length,
-      separatorBuilder: (context, index) => const SizedBox(height: _itemSpacing),
+      separatorBuilder: (context, index) => SizedBox(height: _itemSpacing.h),
       itemBuilder: (context, index) => _buildAnimatedItem(items[index], index),
     );
   }
 
-  /// Item com animação de entrada
   Widget _buildAnimatedItem(CapturedItem item, int index) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
@@ -257,7 +257,6 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  /// Transição animada do item (fade + slide)
   Widget _buildItemTransition(Widget child, Animation<double> animation) {
     return FadeTransition(
       opacity: animation,
@@ -271,12 +270,13 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  // === FOOTER ===
+  // ═══════════════════════════════════════════════════════════════
+  // 📊 FOOTER
+  // ═══════════════════════════════════════════════════════════════
   
-  /// Footer com total e botão de limpar
   Widget _buildFooter(double total, bool hasItems) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       decoration: _buildFooterDecoration(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -289,18 +289,16 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  /// Decoração do footer
   BoxDecoration _buildFooterDecoration() {
     return BoxDecoration(
       color: Colors.grey.shade50,
-      borderRadius: const BorderRadius.only(
-        bottomLeft: Radius.circular(_cardBorderRadius),
-        bottomRight: Radius.circular(_cardBorderRadius),
+      borderRadius: BorderRadius.only(
+        bottomLeft: Radius.circular(_cardBorderRadius.r),
+        bottomRight: Radius.circular(_cardBorderRadius.r),
       ),
     );
   }
 
-  /// Seção do total acumulado
   Widget _buildTotalSection(double total) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,18 +307,18 @@ class ItemsCapturedWidget extends StatelessWidget {
         Text(
           "Total",
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 12.sp,
             fontWeight: FontWeight.w500,
             color: Colors.grey.shade600,
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2.h),
         Text(
           _formatCurrency(total),
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: Color(0xFFEA6207),
+            fontSize: 18.sp,
+            color: const Color(0xFFEA6207),
             letterSpacing: -0.5,
           ),
         ),
@@ -328,29 +326,28 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  /// Botão de limpar todos os itens (compacto)
   Widget _buildClearButton() {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: _handleClearAll,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
           decoration: _buildClearButtonDecoration(),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 Icons.delete_sweep_outlined,
-                size: 20,
+                size: 20.sp,
                 color: Colors.red.shade600,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8.w),
               Text(
                 "Limpar",
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
                   color: Colors.red.shade600,
                 ),
@@ -362,42 +359,100 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  /// Decoração do botão limpar
   BoxDecoration _buildClearButtonDecoration() {
     return BoxDecoration(
       border: Border.all(
         color: Colors.red.withOpacity(0.3),
         width: 1.5,
       ),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12.r),
     );
   }
 
-  // === HANDLERS ===
+  // ═══════════════════════════════════════════════════════════════
+  // 🎬 HANDLERS
+  // ═══════════════════════════════════════════════════════════════
   
-  /// Handler para deletar item individual
   void _handleDeleteItem(int index) {
     controller.deleteItem(index);
     debugPrint('🗑️ [ItemsCaptured] Item $index deletado');
   }
 
-  /// Handler para editar item (placeholder)
   void _handleEditItem(CapturedItem item) {
     // TODO: Implementar edição de item
-    // Pode abrir um dialog para editar o nome ou valor
     debugPrint('✏️ [ItemsCaptured] Editar item: ${item.id}');
   }
 
-  /// Handler para limpar todos os itens
   void _handleClearAll() {
     controller.clearAll();
     debugPrint('🗑️ [ItemsCaptured] Todos os itens limpos');
   }
 
-  // === UTILITÁRIOS ===
+  // ═══════════════════════════════════════════════════════════════
+  // 🔧 UTILITÁRIOS
+  // ═══════════════════════════════════════════════════════════════
   
-  /// Formata valor como moeda brasileira
   String _formatCurrency(double value) {
     return 'R\$ ${value.toStringAsFixed(2)}';
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// 📋 EXPLICAÇÃO - POR QUE AGORA FUNCIONA?
+// ═══════════════════════════════════════════════════════════════
+//
+// ANTES (com altura fixa):
+// ┌─────────────────────┐
+// │                     │
+// │  CONTEÚDO           │
+// │                     │
+// ├─────────────────────┤
+// │                     │
+// │  LISTA (326px)      │ ← ALTURA FIXA!
+// │  ❌ Não cresce      │
+// │                     │
+// ├─────────────────────┤
+// │  FOOTER             │
+// └─────────────────────┘
+//     ↓ Sobra espaço
+//
+// AGORA (sem altura fixa):
+// ┌─────────────────────┐
+// │                     │
+// │  CONTEÚDO           │
+// │                     │
+// ├─────────────────────┤
+// │                     │
+// │  LISTA              │
+// │  ✅ Ocupa TODO      │
+// │     espaço até      │
+// │     o footer        │
+// │                     │
+// ├─────────────────────┤
+// │  FOOTER             │
+// └─────────────────────┘
+//     ✅ Sem sobra!
+//
+// ESTRUTURA NO home_page.dart:
+//
+// Expanded(  ← Este Expanded dá espaço infinito
+//   child: ItemsCapturedWidget(  ← Container SEM height
+//     child: Column(
+//       children: [
+//         Header,
+//         Divider,
+//         Expanded(  ← Este Expanded faz a lista ocupar
+//           child: ListView(...),  ← todo espaço disponível
+//         ),
+//         Divider,
+//         Footer,
+//       ],
+//     ),
+//   ),
+// )
+//
+// 🔥 REGRA DE OURO:
+// - Widget DENTRO de Expanded = NÃO use height fixa
+// - Deixe o Expanded controlar o tamanho
+//
+// ═══════════════════════════════════════════════════════════════

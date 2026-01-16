@@ -9,12 +9,6 @@ import 'app/app.dart';
 // Controllers
 import 'modules/home/home_controller.dart';
 import 'modules/lista/controllers/shopping_list_controller.dart';
-// import 'modules/scanner/scanner_controller.dart';
-// import 'modules/orcamento/orcamento_controller.dart';
-// import 'modules/lista/lista_controller.dart';
-// import 'modules/encartes/encartes_controller.dart';
-// import 'modules/login/login_controller.dart';
-// import 'modules/settings/settings_controller.dart';
 
 /// 🔥 LISTA GLOBAL DE CÂMERAS (OBRIGATÓRIO NO iOS)
 late List<CameraDescription> cameras;
@@ -22,15 +16,20 @@ late List<CameraDescription> cameras;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  /// 📸 INICIALIZA AS CÂMERAS ANTES DO APP
+  /// 📸 INICIALIZA AS CÂMERAS
   cameras = await availableCameras();
 
-  /// 🔥 STATUS BAR VERDE + ÍCONES BRANCOS
+  /// ✅ EDGE-TO-EDGE (ANDROID + iOS IGUAIS)
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.edgeToEdge,
+  );
+
+  /// 🎨 STATUS BAR TRANSPARENTE (INVASÃO CONTROLADA PELO LAYOUT)
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Color(0xFF0B6B53), // fundo verde
+      statusBarColor: Colors.transparent, // 🔥 FUNDAMENTAL
       statusBarIconBrightness: Brightness.light, // Android
-      statusBarBrightness: Brightness.dark, // iOS
+      statusBarBrightness: Brightness.light, // iOS
     ),
   );
 
@@ -46,30 +45,19 @@ class AppRoot extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => HomeController()),
         ChangeNotifierProvider(create: (_) => ShoppingListController()),
-        // ChangeNotifierProvider(create: (_) => ScannerController()),
-        // ChangeNotifierProvider(create: (_) => OrcamentoController()),
-        // ChangeNotifierProvider(create: (_) => ListaController()),
-        // ChangeNotifierProvider(create: (_) => EncartesController()),
-        // ChangeNotifierProvider(create: (_) => LoginController()),
-        // ChangeNotifierProvider(create: (_) => SettingsController()),
       ],
-      // ✅ SCREENUTIL INIT - CONFIGURAÇÃO 2025
+
+      /// ✅ SCREENUTIL INIT - PADRÃO 2025
       child: ScreenUtilInit(
-        // 📱 DESIGN BASE: iPhone 11 (375x812)
+        // 📱 BASE DE DESIGN (iPhone 11)
         designSize: const Size(375, 812),
-        
-        // ✅ Adapta texto automaticamente (sem quebrar)
         minTextAdapt: true,
-        
-        // ✅ Suporta split screen (tablets/iPad)
         splitScreenMode: true,
-        
-        // ✅ Builder com MediaQuery customizado
+
         builder: (context, child) {
           return MediaQuery(
-            // 🔥 ACESSIBILIDADE 2025: Limita escala de fonte
             data: MediaQuery.of(context).copyWith(
-              // Limite: 90% a 120% (mais restrito para scanner)
+              /// 🔒 CONTROLE DE ESCALA DE TEXTO (UX + OCR)
               textScaleFactor: MediaQuery.of(context)
                   .textScaleFactor
                   .clamp(0.9, 1.2),
@@ -77,8 +65,7 @@ class AppRoot extends StatelessWidget {
             child: child!,
           );
         },
-        
-        // ✅ App principal
+
         child: const App(),
       ),
     );
