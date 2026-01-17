@@ -9,38 +9,11 @@ import '../constants/app_colors.dart';
 import '../constants/app_sizes.dart';
 import '../constants/app_strings.dart';
 
-/// 🏗️ Scaffold RESPONSIVO PROFISSIONAL
+/// 🏗️ Scaffold RESPONSIVO PROFISSIONAL - CÓDIGO SÊNIOR
 /// 
-/// ✅ Bottom Nav adaptável a TODOS os dispositivos
-/// ✅ Usa SafeArea automático (iPhone com notch, Android)
-/// ✅ ScreenUtil para responsividade (.w, .h, .sp)
-/// ✅ Drawer completo
-/// 
-/// 📝 COMO AJUSTAR O BOTTOM NAV:
-/// 
-/// 🎯 ALTURA DO BOTTOM NAV:
-/// - Linha 109: height (altura da barra)
-///   • Aumentar = barra mais alta
-///   • Diminuir = barra mais baixa
-///   • RECOMENDADO: 60-70.h
-/// 
-/// 🎯 ESPAÇAMENTO DO CHÃO:
-/// - Linha 93: bottomSafeArea + valor
-///   • bottomSafeArea = auto (notch do iPhone, botões Android)
-///   • Valor adicional = espaço extra
-///   • RECOMENDADO: 8-12.h
-/// 
-/// 🎯 TAMANHO DOS ÍCONES:
-/// - Linha 127: iconSize
-///   • Aumentar = ícones maiores
-///   • Diminuir = ícones menores
-///   • RECOMENDADO: 24-28.sp
-/// 
-/// 🎯 TAMANHO DO TEXTO:
-/// - Linhas 123-124: fontSize
-///   • Aumentar = texto maior
-///   • Diminuir = texto menor
-///   • RECOMENDADO: 10-12.sp
+/// ✅ Bottom Nav SUPER COMPACTO (libera espaço para conteúdo)
+/// ✅ Usa AppSizes (centralizado, escalável)
+/// ✅ Responsivo para TODAS as telas
 class BaseScaffold extends StatelessWidget {
   final Widget child;
   final int currentIndex;
@@ -72,88 +45,29 @@ class BaseScaffold extends StatelessWidget {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // 🎯 BOTTOM NAVIGATION - 100% RESPONSIVO
+  // 🎯 BOTTOM NAVIGATION - SUPER COMPACTO
   // ═══════════════════════════════════════════════════════════════
 
   Widget _buildBottomNav(BuildContext context) {
     return Builder(
       builder: (context) {
-        // 📊 PEGA O SAFEAREA DO DISPOSITIVO (automático)
-        // 
-        // bottomSafeArea adapta para:
-        // - iPhone com notch (parte inferior)
-        // - iPhone sem notch
-        // - Android com botões virtuais
-        // - Android com gestos
-        // 
-        // ⚠️ NUNCA remova isso! É essencial para responsividade.
         final bottomSafeArea = MediaQuery.of(context).padding.bottom;
         
         return Padding(
           padding: EdgeInsets.fromLTRB(
-            // 📏 MARGENS LATERAIS ← AJUSTE AQUI (linha 87)!
-            // 
-            // Aumentar = bottom nav mais estreito
-            // Diminuir = bottom nav mais largo
-            // 
-            // VALORES SUGERIDOS:
-            // - 12.w = quase full width
-            // - 16.w = médio (recomendado)
-            // - 20.w = mais estreito
-            AppSizes.bottomNavPaddingHorizontal.w,
-            
-            // 📏 ESPAÇO ACIMA DO BOTTOM NAV ← AJUSTE AQUI (linha 89)!
-            // 
-            // Aumentar = mais espaço entre conteúdo e bottom nav
-            // Diminuir = menos espaço
-            // 
-            // VALORES SUGERIDOS:
-            // - 6.h  = bem próximo do conteúdo
-            // - 8.h  = próximo (recomendado)
-            // - 10.h = médio
-            AppSizes.bottomNavPaddingTop.h,
-            
-            AppSizes.bottomNavPaddingHorizontal.w,
-            
-            // 📏 ESPAÇO EMBAIXO DO BOTTOM NAV ← AJUSTE AQUI (linha 93)!
-            // 
-            // 🔥 FÓRMULA: SafeArea (auto) + valor adicional
-            // 
-            // SafeArea = adapta automaticamente para cada dispositivo
-            // Valor adicional = espaço extra que você quer
-            // 
-            // VALORES SUGERIDOS para o adicional:
-            // - 8.h  = bem próximo do chão
-            // - 10.h = próximo (recomendado)
-            // - 12.h = médio
-            // - 14.h = mais afastado
-            // 
-            // EXEMPLOS DE RESULTADO FINAL:
-            // - iPhone 15 Pro: SafeArea(34) + 10.h = ~44 pixels
-            // - iPhone SE: SafeArea(0) + 10.h = ~10 pixels
-            // - Android: SafeArea(16) + 10.h = ~26 pixels
-            bottomSafeArea + AppSizes.bottomNavPaddingBottom.h,
+            AppSizes.bottomNavPaddingHorizontal,
+            AppSizes.bottomNavPaddingTop,
+            AppSizes.bottomNavPaddingHorizontal,
+            bottomSafeArea + AppSizes.bottomNavPaddingBottom,
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius.r),
+            borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
-                // 📐 ALTURA DO BOTTOM NAV ← AJUSTE AQUI (linha 109)!
-                // 
-                // Aumentar = barra mais alta (mais espaço)
-                // Diminuir = barra mais baixa (compacta)
-                // 
-                // VALORES SUGERIDOS:
-                // - 58.h = bem compacta
-                // - 62.h = compacta
-                // - 65.h = média (recomendado)
-                // - 68.h = alta
-                // - 72.h = bem alta
-                height: AppSizes.bottomNavHeight.h,
-                
+                height: AppSizes.bottomNavHeight,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius.r),
+                  borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius),
                   gradient: AppColors.bottomNavGradient,
                   boxShadow: [
                     BoxShadow(
@@ -169,35 +83,11 @@ class BaseScaffold extends StatelessWidget {
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   type: BottomNavigationBarType.fixed,
-                  
-                  // 📝 TAMANHO DO TEXTO ← AJUSTE AQUI (linhas 123-124)!
-                  // 
-                  // selectedFontSize = quando o item está selecionado
-                  // unselectedFontSize = quando o item NÃO está selecionado
-                  // 
-                  // VALORES SUGERIDOS:
-                  // - 9.sp  = muito pequeno
-                  // - 10.sp = pequeno
-                  // - 11.sp = médio (recomendado)
-                  // - 12.sp = grande
-                  selectedFontSize: AppSizes.bodySmall.sp,
-                  unselectedFontSize: AppSizes.bodySmall.sp,
-                  
+                  selectedFontSize: AppSizes.bottomNavTextSize,
+                  unselectedFontSize: AppSizes.bottomNavTextSize,
                   selectedItemColor: AppColors.white,
                   unselectedItemColor: AppColors.whiteWithOpacity(0.7),
-                  
-                  // 📐 TAMANHO DOS ÍCONES ← AJUSTE AQUI (linha 127)!
-                  // 
-                  // Aumentar = ícones maiores
-                  // Diminuir = ícones menores
-                  // 
-                  // VALORES SUGERIDOS:
-                  // - 22.sp = pequenos
-                  // - 24.sp = médios (recomendado)
-                  // - 26.sp = grandes
-                  // - 28.sp = bem grandes
-                  iconSize: AppSizes.iconLarge.sp,
-                  
+                  iconSize: AppSizes.bottomNavIconSize,
                   items: [
                     BottomNavigationBarItem(
                       icon: const Icon(Iconsax.home_2),
@@ -346,73 +236,18 @@ class BaseScaffold extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📋 GUIA RÁPIDO - AJUSTAR BOTTOM NAV
+// 📋 VALORES DO BOTTOM NAV (AppSizes)
 // ═══════════════════════════════════════════════════════════════
 //
-// 🎯 BOTTOM NAV MUITO ALTO (sobrando espaço em cima)?
-// 
-//   SOLUÇÃO: DIMINUA a linha 109 (height)
-//     height: 65.h,  →  height: 60.h,
+// Para ajustar o bottom nav, edite: lib/shared/constants/app_sizes.dart
 //
-// ─────────────────────────────────────────────────────────────
+// bottomNavHeight: 50.h           (altura da barra)
+// bottomNavRadius: 25.r           (arredondamento)
+// bottomNavPaddingTop: 2.h        (espaço acima)
+// bottomNavPaddingBottom: 4.h     (espaço abaixo)
+// bottomNavIconSize: 22.sp        (tamanho ícones)
+// bottomNavTextSize: 9.sp         (tamanho texto)
 //
-// 🎯 BOTTOM NAV MUITO PERTO DO CHÃO?
-// 
-//   SOLUÇÃO: AUMENTE o valor adicional na linha 93
-//     bottomSafeArea + 10.h,  →  bottomSafeArea + 12.h,
-//
-// ─────────────────────────────────────────────────────────────
-//
-// 🎯 BOTTOM NAV MUITO LONGE DO CHÃO?
-// 
-//   SOLUÇÃO: DIMINUA o valor adicional na linha 93
-//     bottomSafeArea + 10.h,  →  bottomSafeArea + 8.h,
-//
-// ─────────────────────────────────────────────────────────────
-//
-// 🎯 ÍCONES MUITO PEQUENOS?
-// 
-//   SOLUÇÃO: AUMENTE a linha 127 (iconSize)
-//     iconSize: 24.sp,  →  iconSize: 26.sp,
-//
-// ─────────────────────────────────────────────────────────────
-//
-// 🎯 TEXTO MUITO PEQUENO?
-// 
-//   SOLUÇÃO: AUMENTE as linhas 123-124 (fontSize)
-//     fontSize: 11.sp,  →  fontSize: 12.sp,
-//
-// ─────────────────────────────────────────────────────────────
-//
-// 💡 VALORES RECOMENDADOS:
-// 
-//   Altura bottom nav: 65.h
-//   Espaço do chão: bottomSafeArea + 10.h
-//   Tamanho ícones: 24.sp
-//   Tamanho texto: 11.sp
-//
-// ═══════════════════════════════════════════════════════════════
-//
-// 🔥 COMO FUNCIONA O SAFEAREA:
-//
-// O bottomSafeArea é CALCULADO AUTOMATICAMENTE para cada device:
-//
-// iPhone 15 Pro (com notch):
-//   bottomSafeArea = 34 pixels
-//   + 10.h adicional
-//   = ~44 pixels total
-//
-// iPhone SE (sem notch):
-//   bottomSafeArea = 0 pixels
-//   + 10.h adicional
-//   = ~10 pixels total
-//
-// Android (com botões virtuais):
-//   bottomSafeArea = 16 pixels
-//   + 10.h adicional
-//   = ~26 pixels total
-//
-// ⚠️ NUNCA use valores fixos! Sempre use:
-//   bottomSafeArea + valor.h
+// ✅ CÓDIGO SÊNIOR: Todos os valores centralizados!
 //
 // ═══════════════════════════════════════════════════════════════

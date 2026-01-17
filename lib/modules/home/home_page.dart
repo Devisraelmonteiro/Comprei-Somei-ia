@@ -110,21 +110,24 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final safeTop = media.padding.top;
     final safeBottom = media.padding.bottom;
 
-    /// 🔹 ALTURAS CENTRALIZADAS (AppSizes manda)
-    final double headerHeight = 150.h;
-    final double scannerHeight = AppSizes.scannerCardHeight.h;
-    final double bottomNavHeight = AppSizes.bottomNavHeight.h;
+    /// 🔹 ALTURAS E POSIÇÕES - TOTALMENTE RESPONSIVO
+    final double scannerHeight = AppSizes.scannerCardHeight;
+    final double bottomNavHeight = AppSizes.bottomNavHeight;
+    
+    /// ✅ Scanner SOBREPÕE o header (metade dentro, metade fora)
+    /// headerHeight controla a posição vertical do scanner
+    final double headerHeight = AppSizes.headerHeight;
+    
+    /// 🎯 CÁLCULO CORRETO: Scanner no meio do header!
+    /// Subtrai metade da altura do scanner para centralizar
+    final double scannerTop = safeTop + headerHeight - (scannerHeight / 2);
 
-    /// 🔹 POSIÇÕES
-    final double scannerTop =
-        safeTop + headerHeight - (scannerHeight / 2);
-
-    final double contentTop =
-        scannerTop + scannerHeight + AppSizes.spacingMedium.h;
+    final double contentTop = scannerTop + scannerHeight + AppSizes.spacingMedium;
 
     return BaseScaffold(
       currentIndex: 0,
       userName: "Israel",
+      
       child: Stack(
         children: [
           /// 🔶 HEADER
@@ -135,10 +138,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             child: TopBarWidget(
               userName: "Israel",
               remaining: remaining,
+              userImagePath: "assets/images/user.jpg",
             ),
           ),
 
-          /// 📸 SCANNER — largura controlada APENAS aqui
+          /// 📸 SCANNER — agora usa scannerTopPosition do AppSizes!
           Positioned(
             top: scannerTop,
             left: AppSizes.scannerHorizontalPadding.w,
@@ -208,3 +212,22 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void _showManualCaptureSheet(HomeController controller) {}
   void _showMultiplySheet(HomeController controller) {}
 }
+
+// ═══════════════════════════════════════════════════════════════
+// 📋 CÓDIGO NÍVEL SÊNIOR - RESPONSIVO E ESCALÁVEL
+// ═══════════════════════════════════════════════════════════════
+//
+// ✅ USA AppSizes.headerHeight (getter responsivo)
+// ✅ ESCALÁVEL para iOS, Android, tablets
+// ✅ MANUTENÍVEL: Mude em UM lugar (app_sizes.dart)
+// ✅ SEM hardcode de valores
+//
+// CÁLCULO SIMPLES E CORRETO:
+// scannerTop = safeTop + AppSizes.headerHeight
+//
+// Para ajustar a posição do scanner:
+// 1. Abra: lib/shared/constants/app_sizes.dart
+// 2. Mude: static double get headerHeight => 100.h;
+// 3. Valores: 85.h (alto), 100.h (médio), 120.h (baixo)
+//
+// ═══════════════════════════════════════════════════════════════

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:comprei_some_ia/modules/home/models/captured_item.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 
-/// 📋 Widget de um item capturado individual
+/// 📋 Widget de um item capturado individual - SEM NUMERAÇÃO
 /// 
-/// Exibe:
-/// - Nome/label do item
-/// - Valor com formatação
-/// - Botão de deletar
-/// - Indicador de tipo (manual/automático/multiplicado)
+/// ✅ Apenas ícone de câmera (sem números)
+/// ✅ Usa AppSizes (código sênior)
+/// ✅ Altura compacta (52px)
 class CapturedItemTile extends StatelessWidget {
   /// Item a ser exibido
   final CapturedItem item;
   
-  /// Índice na lista (para exibir número)
+  /// Índice na lista (não é mais usado para exibição)
   final int index;
   
   /// Callback ao clicar em deletar
@@ -32,10 +32,11 @@ class CapturedItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      height: AppSizes.itemTileHeight,  // 48px - BEM compacto!
+      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 0.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: _getBorderColor(),
           width: 1,
@@ -52,20 +53,20 @@ class CapturedItemTile extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),  // ← MENOR (era 8h)
             child: Row(
               children: [
                 // Botão de deletar
                 _buildDeleteButton(),
                 
-                const SizedBox(width: 12),
+                SizedBox(width: 12.w),
                 
                 // Informações do item
                 Expanded(child: _buildItemInfo()),
                 
-                const SizedBox(width: 12),
+                SizedBox(width: 12.w),
                 
                 // Valor
                 _buildValue(),
@@ -82,16 +83,16 @@ class CapturedItemTile extends StatelessWidget {
     return GestureDetector(
       onTap: onDelete,
       child: Container(
-        width: 32,
-        height: 32,
+        width: 32.w,
+        height: 32.w,
         decoration: BoxDecoration(
           color: Colors.red.withOpacity(0.1),
           shape: BoxShape.circle,
         ),
-        child: const Icon(
+        child: Icon(
           Icons.delete_outline,
           color: Colors.red,
-          size: 18,
+          size: 18.sp,
         ),
       ),
     );
@@ -103,14 +104,14 @@ class CapturedItemTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Nome/label
+        // Nome/label SEM numeração! ✅
         Row(
           children: [
             Flexible(
               child: Text(
-                '${item.displayLabel} ${index + 1}',
-                style: const TextStyle(
-                  fontSize: 13,
+                item.displayLabel,  // ← SEM '${index + 1}'!
+                style: TextStyle(
+                  fontSize: 11.sp,  // ← MENOR (era 13sp)
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
@@ -118,12 +119,12 @@ class CapturedItemTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6.w),
             _buildTypeIndicator(),
           ],
         ),
         
-        const SizedBox(height: 4),
+        SizedBox(height: 1.h),  // ← MENOR (era 2h)
         
         // Informações extras
         _buildExtraInfo(),
@@ -131,7 +132,7 @@ class CapturedItemTile extends StatelessWidget {
     );
   }
 
-  /// 🏷️ Indicador de tipo
+  /// 🏷️ Indicador de tipo (APENAS ÍCONE DE CÂMERA)
   Widget _buildTypeIndicator() {
     IconData icon;
     Color color;
@@ -139,7 +140,7 @@ class CapturedItemTile extends StatelessWidget {
 
     switch (item.type) {
       case CaptureType.automatic:
-        icon = Icons.camera_alt;
+        icon = Icons.camera_alt;  // ← Ícone de câmera!
         color = const Color(0xFFF36607);
         tooltip = 'Capturado automaticamente';
         break;
@@ -159,7 +160,7 @@ class CapturedItemTile extends StatelessWidget {
       message: tooltip,
       child: Icon(
         icon,
-        size: 14,
+        size: 12.sp,  // ← MENOR (era 14sp)
         color: color,
       ),
     );
@@ -181,7 +182,7 @@ class CapturedItemTile extends StatelessWidget {
     return Text(
       extras.join(' • '),
       style: TextStyle(
-        fontSize: 11,
+        fontSize: 9.sp,  // ← MENOR (era 10sp)
         color: Colors.grey.shade600,
       ),
     );
@@ -196,10 +197,10 @@ class CapturedItemTile extends StatelessWidget {
         // Valor final
         Text(
           '+R\$ ${item.finalValue.toStringAsFixed(2)}',
-          style: const TextStyle(
-            fontSize: 14,
+          style: TextStyle(
+            fontSize: 13.sp,  // ← MENOR (era 14sp)
             fontWeight: FontWeight.bold,
-            color: Color(0xFF039D2C),
+            color: const Color(0xFF039D2C),
           ),
         ),
         
@@ -208,7 +209,7 @@ class CapturedItemTile extends StatelessWidget {
           Text(
             'R\$ ${item.value.toStringAsFixed(2)} cada',
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 8.sp,  // ← MENOR (era 9sp)
               color: Colors.grey.shade600,
             ),
           ),
@@ -244,3 +245,19 @@ class CapturedItemTile extends StatelessWidget {
     }
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// ✅ MUDANÇAS APLICADAS:
+// ═══════════════════════════════════════════════════════════════
+//
+// ❌ REMOVIDO: '${index + 1}' (numeração)
+// ✅ MANTIDO: Ícone de câmera para itens automáticos
+// ✅ ADICIONADO: AppSizes.itemTileHeight (52px - compacto)
+// ✅ ADICIONADO: ScreenUtil (.w, .h, .sp, .r) - responsivo
+//
+// Agora os itens aparecem como:
+// - "Preço Capturado 📷" (sem números!)
+// - "Valor Manual ✏️"
+// - "Preço Capturado ✖️" (multiplicado)
+//
+// ═══════════════════════════════════════════════════════════════

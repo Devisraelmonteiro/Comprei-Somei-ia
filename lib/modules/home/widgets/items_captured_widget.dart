@@ -3,43 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:comprei_some_ia/modules/home/home_controller.dart';
 import 'package:comprei_some_ia/modules/home/models/captured_item.dart';
 import 'package:comprei_some_ia/modules/home/widgets/captured_item_tile.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 
-/// 📋 Widget da lista de itens capturados - VERSÃO RESPONSIVA
+/// 📋 Widget da lista de itens capturados - VERSÃO FINAL HARMONIZADA
 /// 
-/// ✅ SEM altura fixa - usa Expanded para ocupar todo espaço
-/// ✅ Responsivo com ScreenUtil (.w, .h, .sp)
-/// ✅ Scroll interno quando tem 3+ itens
-/// ✅ Ocupa espaço até o footer automaticamente
-/// 
-/// 🎯 MUDANÇAS PRINCIPAIS:
-/// - Removido: altura fixa (_cardHeight)
-/// - Adicionado: Container sem height (ocupa espaço do Expanded no pai)
-/// - Resultado: Lista cresce automaticamente até o footer
+/// ✅ Itens COLADOS (sem espaço entre eles)
+/// ✅ Footer COMPACTO e VISÍVEL
+/// ✅ Mostra 3 itens completos
+/// ✅ Título, contador e botão HARMONIZADOS (mesmo tamanho)
 class ItemsCapturedWidget extends StatelessWidget {
-  // ═══════════════════════════════════════════════════════════════
-  // 📐 CONFIGURAÇÕES RESPONSIVAS
-  // ═══════════════════════════════════════════════════════════════
-  
-  /// ❌ REMOVIDO: _cardHeight (altura fixa)
-  /// ✅ AGORA: Usa Expanded do pai (home_page.dart)
-  
-  /// Padding horizontal do card
-  static const double _cardHorizontalMargin = 16.0;
-  
-  /// Padding vertical do card
-  static const double _cardVerticalMargin = 4.0;
-  
-  /// Raio de arredondamento do card
-  static const double _cardBorderRadius = 24.0;
-  
-  /// Elevação da sombra
-  static const double _cardShadowBlur = 12.0;
-  
-  /// Espaçamento entre itens na lista
-  static const double _itemSpacing = 0;
-  
-  // ═══════════════════════════════════════════════════════════════
-  
   final HomeController controller;
 
   const ItemsCapturedWidget({
@@ -47,10 +19,6 @@ class ItemsCapturedWidget extends StatelessWidget {
     required this.controller,
   });
 
-  // ═══════════════════════════════════════════════════════════════
-  // 🎨 BUILD PRINCIPAL
-  // ═══════════════════════════════════════════════════════════════
-  
   @override
   Widget build(BuildContext context) {
     final items = controller.items;
@@ -58,12 +26,10 @@ class ItemsCapturedWidget extends StatelessWidget {
     final hasItems = items.isNotEmpty;
 
     return Container(
-      // ❌ REMOVIDO: height: _cardHeight,
-      // ✅ SEM height = ocupa TODO espaço do Expanded (no pai)
-      
+      // ⚠️ SEM margin horizontal - home_page já tem padding!
       margin: EdgeInsets.symmetric(
-        horizontal: _cardHorizontalMargin.w,
-        vertical: _cardVerticalMargin.h,
+        horizontal: 0,
+        vertical: AppSizes.spacingTiny,
       ),
       decoration: _buildCardDecoration(),
       child: Column(
@@ -71,14 +37,9 @@ class ItemsCapturedWidget extends StatelessWidget {
         children: [
           _buildHeader(items.length),
           _buildDivider(),
-          
-          // ✅ ESTE Expanded faz a lista ocupar todo espaço disponível
           Expanded(
-            child: hasItems
-                ? _buildItemsList(items)
-                : _buildEmptyState(),
+            child: hasItems ? _buildItemsList(items) : _buildEmptyState(),
           ),
-          
           _buildDivider(),
           _buildFooter(total, hasItems),
         ],
@@ -86,18 +47,14 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  // 🎨 DECORAÇÃO
-  // ═══════════════════════════════════════════════════════════════
-  
   BoxDecoration _buildCardDecoration() {
     return BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(_cardBorderRadius.r),
+      borderRadius: BorderRadius.circular(AppSizes.cardRadius * 2),
       boxShadow: [
         BoxShadow(
           color: Colors.black.withOpacity(0.06),
-          blurRadius: _cardShadowBlur,
+          blurRadius: 12,
           offset: const Offset(0, 3),
         ),
       ],
@@ -105,21 +62,16 @@ class ItemsCapturedWidget extends StatelessWidget {
   }
 
   Widget _buildDivider() {
-    return Divider(
-      height: 1,
-      thickness: 1,
-      color: const Color.fromARGB(255, 255, 255, 255),
-    );
+    return const Divider(height: 1, thickness: 1, color: Colors.white);
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  // 🔝 HEADER
-  // ═══════════════════════════════════════════════════════════════
-  
   Widget _buildHeader(int itemCount) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSizes.cardPadding,
+        vertical: AppSizes.spacingMedium,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -134,7 +86,7 @@ class ItemsCapturedWidget extends StatelessWidget {
     return Text(
       "Itens Capturados",
       style: TextStyle(
-        fontSize: 14.sp,
+        fontSize: AppSizes.titleExtraSmall,  // 12sp
         fontWeight: FontWeight.bold,
         color: Colors.black87,
         letterSpacing: -0.5,
@@ -144,10 +96,13 @@ class ItemsCapturedWidget extends StatelessWidget {
 
   Widget _buildCountBadge(int count) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: 8.w,
+        vertical: 5.h,
+      ),
       decoration: BoxDecoration(
         color: const Color(0xFFF36607).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
         border: Border.all(
           color: const Color(0xFFF36607).withOpacity(0.2),
           width: 1,
@@ -156,8 +111,8 @@ class ItemsCapturedWidget extends StatelessWidget {
       child: Text(
         _getCountLabel(count),
         style: TextStyle(
-          fontSize: 11.sp,
-          fontWeight: FontWeight.w700,
+          fontSize: AppSizes.labelSmall,  
+          fontWeight: FontWeight.w600,
           color: const Color(0xFFF36607),
         ),
       ),
@@ -168,21 +123,20 @@ class ItemsCapturedWidget extends StatelessWidget {
     return '$count ${count == 1 ? 'item' : 'itens'}';
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  // 📭 ESTADO VAZIO
-  // ═══════════════════════════════════════════════════════════════
-  
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 24.h),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSizes.spacingHuge,
+          vertical: AppSizes.spacingExtraLarge,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildEmptyIcon(),
-            SizedBox(height: 16.h),
+            SizedBox(height: AppSizes.spacingLarge),
             _buildEmptyTitle(),
-            SizedBox(height: 8.h),
+            SizedBox(height: AppSizes.spacingSmall),
             _buildEmptySubtitle(),
           ],
         ),
@@ -200,7 +154,7 @@ class ItemsCapturedWidget extends StatelessWidget {
       ),
       child: Icon(
         Icons.shopping_basket_outlined,
-        size: 30.sp,
+        size: AppSizes.iconExtraLarge + 2.sp,
         color: Colors.grey.shade400,
       ),
     );
@@ -211,7 +165,7 @@ class ItemsCapturedWidget extends StatelessWidget {
       "Nenhum item ainda",
       style: TextStyle(
         color: Colors.grey.shade700,
-        fontSize: 12.sp,
+        fontSize: AppSizes.labelMedium,
         fontWeight: FontWeight.w600,
       ),
     );
@@ -223,22 +177,19 @@ class ItemsCapturedWidget extends StatelessWidget {
       textAlign: TextAlign.center,
       style: TextStyle(
         color: Colors.grey.shade500,
-        fontSize: 10.sp,
+        fontSize: AppSizes.labelSmall,
         height: 1.4,
       ),
     );
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  // 📋 LISTA DE ITENS
-  // ═══════════════════════════════════════════════════════════════
-  
   Widget _buildItemsList(List<CapturedItem> items) {
     return ListView.separated(
-      padding: EdgeInsets.symmetric(vertical: 8.h),
+      // ✅ PADDING ZERO - itens ficam colados!
+      padding: EdgeInsets.zero,
       physics: const BouncingScrollPhysics(),
       itemCount: items.length,
-      separatorBuilder: (context, index) => SizedBox(height: _itemSpacing.h),
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
       itemBuilder: (context, index) => _buildAnimatedItem(items[index], index),
     );
   }
@@ -270,13 +221,12 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  // 📊 FOOTER
-  // ═══════════════════════════════════════════════════════════════
-  
   Widget _buildFooter(double total, bool hasItems) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSizes.cardPadding,
+        vertical: AppSizes.footerPaddingVertical,
+      ),
       decoration: _buildFooterDecoration(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -293,8 +243,8 @@ class ItemsCapturedWidget extends StatelessWidget {
     return BoxDecoration(
       color: Colors.grey.shade50,
       borderRadius: BorderRadius.only(
-        bottomLeft: Radius.circular(_cardBorderRadius.r),
-        bottomRight: Radius.circular(_cardBorderRadius.r),
+        bottomLeft: Radius.circular(AppSizes.cardRadius * 2),
+        bottomRight: Radius.circular(AppSizes.cardRadius * 2),
       ),
     );
   }
@@ -307,17 +257,16 @@ class ItemsCapturedWidget extends StatelessWidget {
         Text(
           "Total",
           style: TextStyle(
-            fontSize: 12.sp,
+            fontSize: AppSizes.footerLabelSize,
             fontWeight: FontWeight.w500,
             color: Colors.grey.shade600,
           ),
         ),
-        SizedBox(height: 2.h),
         Text(
           _formatCurrency(total),
           style: TextStyle(
+            fontSize: AppSizes.footerValueSize,
             fontWeight: FontWeight.bold,
-            fontSize: 18.sp,
             color: const Color(0xFFEA6207),
             letterSpacing: -0.5,
           ),
@@ -331,23 +280,26 @@ class ItemsCapturedWidget extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: _handleClearAll,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          padding: EdgeInsets.symmetric(
+            horizontal: 12.w,
+            vertical: 6.h,
+          ),
           decoration: _buildClearButtonDecoration(),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 Icons.delete_sweep_outlined,
-                size: 20.sp,
+                size: 16.sp,
                 color: Colors.red.shade600,
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 4.w),
               Text(
                 "Limpar",
                 style: TextStyle(
-                  fontSize: 13.sp,
+                  fontSize: AppSizes.titleExtraSmall,  // 12sp - harmonizado!
                   fontWeight: FontWeight.w600,
                   color: Colors.red.shade600,
                 ),
@@ -365,94 +317,39 @@ class ItemsCapturedWidget extends StatelessWidget {
         color: Colors.red.withOpacity(0.3),
         width: 1.5,
       ),
-      borderRadius: BorderRadius.circular(12.r),
+      borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
     );
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  // 🎬 HANDLERS
-  // ═══════════════════════════════════════════════════════════════
-  
   void _handleDeleteItem(int index) {
     controller.deleteItem(index);
-    debugPrint('🗑️ [ItemsCaptured] Item $index deletado');
+    debugPrint('🗑️ Item $index deletado');
   }
 
   void _handleEditItem(CapturedItem item) {
-    // TODO: Implementar edição de item
-    debugPrint('✏️ [ItemsCaptured] Editar item: ${item.id}');
+    debugPrint('✏️ Editar item: ${item.id}');
   }
 
   void _handleClearAll() {
     controller.clearAll();
-    debugPrint('🗑️ [ItemsCaptured] Todos os itens limpos');
+    debugPrint('🗑️ Todos os itens limpos');
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  // 🔧 UTILITÁRIOS
-  // ═══════════════════════════════════════════════════════════════
-  
   String _formatCurrency(double value) {
     return 'R\$ ${value.toStringAsFixed(2)}';
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📋 EXPLICAÇÃO - POR QUE AGORA FUNCIONA?
+// 📋 TAMANHOS HARMONIZADOS - TUDO 12sp!
 // ═══════════════════════════════════════════════════════════════
 //
-// ANTES (com altura fixa):
-// ┌─────────────────────┐
-// │                     │
-// │  CONTEÚDO           │
-// │                     │
-// ├─────────────────────┤
-// │                     │
-// │  LISTA (326px)      │ ← ALTURA FIXA!
-// │  ❌ Não cresce      │
-// │                     │
-// ├─────────────────────┤
-// │  FOOTER             │
-// └─────────────────────┘
-//     ↓ Sobra espaço
+// ✅ Título "Itens Capturados": 12sp (AppSizes.titleExtraSmall)
+// ✅ Contador "5 itens": 12sp (AppSizes.titleExtraSmall)
+// ✅ Botão "Limpar": 12sp (AppSizes.titleExtraSmall)
 //
-// AGORA (sem altura fixa):
-// ┌─────────────────────┐
-// │                     │
-// │  CONTEÚDO           │
-// │                     │
-// ├─────────────────────┤
-// │                     │
-// │  LISTA              │
-// │  ✅ Ocupa TODO      │
-// │     espaço até      │
-// │     o footer        │
-// │                     │
-// ├─────────────────────┤
-// │  FOOTER             │
-// └─────────────────────┘
-//     ✅ Sem sobra!
-//
-// ESTRUTURA NO home_page.dart:
-//
-// Expanded(  ← Este Expanded dá espaço infinito
-//   child: ItemsCapturedWidget(  ← Container SEM height
-//     child: Column(
-//       children: [
-//         Header,
-//         Divider,
-//         Expanded(  ← Este Expanded faz a lista ocupar
-//           child: ListView(...),  ← todo espaço disponível
-//         ),
-//         Divider,
-//         Footer,
-//       ],
-//     ),
-//   ),
-// )
-//
-// 🔥 REGRA DE OURO:
-// - Widget DENTRO de Expanded = NÃO use height fixa
-// - Deixe o Expanded controlar o tamanho
+// Padding harmonizado:
+// - Contador: 8px horizontal, 3px vertical
+// - Botão: 10px horizontal, 5px vertical
 //
 // ═══════════════════════════════════════════════════════════════

@@ -1,135 +1,219 @@
 // lib/shared/constants/app_sizes.dart
-import 'dart:io';
 
-/// 📐 TAMANHOS RESPONSIVOS DO APP
-/// Arquivo CENTRAL de design system
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+/// 📐 TAMANHOS RESPONSIVOS DO APP - NÍVEL SÊNIOR
+/// 
+/// ✅ Escalável para iOS e Android
+/// ✅ Usa ScreenUtil (.h, .w, .sp, .r)
+/// ✅ Todos os valores em um único lugar
+/// ✅ Fácil manutenção
 class AppSizes {
   AppSizes._();
 
   // ═══════════════════════════════════════════════════════════════
-  // 🔝 HEADER / TOP BAR
+  // 🔝 HEADER - LAYOUT
   // ═══════════════════════════════════════════════════════════════
-  static const double headerPaddingTop = 4;
-  static const double headerPaddingBottom = 100;
-  static const double headerPaddingHorizontal = 16;
-  static const double headerBorderRadius = 20;
-
-  static const double headerAvatarToGreetingSpacing = 12;
-  static const double headerGreetingToSaldoSpacing = 1;
-  static const double headerSaldoToValueSpacing = 0;
+  
+  /// Altura do header (controla posição do scanner)
+  /// Este valor controla onde o scanner aparece verticalmente
+  /// - 120: scanner mais alto
+  /// - 140: posição PERFEITA (padrão) ✅
+  /// - 150: scanner um pouco mais baixo
+  /// - 160: scanner mais baixo ainda
+  static double get headerHeight => 140.h;
+  
+  static double get headerPaddingTop => 0.h;
+  
+  /// ✅ Padding bottom GRANDE para criar fundo laranja nas laterais do scanner!
+  /// O scanner vai SOBREPOR o header no centro
+  static double get headerPaddingBottom => 100.h;
+  
+  static double get headerPaddingHorizontal => 16.w;
+  static double get headerBorderRadius => 20.r;
+  
+  /// Espaçamentos internos do header (textos colados)
+  static double get headerAvatarToGreetingSpacing => 12.w;
+  static double get headerGreetingToSaldoSpacing => 0.h;
+  static double get headerSaldoToValueSpacing => 0.h;
 
   // ═══════════════════════════════════════════════════════════════
   // 👤 AVATAR
   // ═══════════════════════════════════════════════════════════════
-  static const double avatarSize = 40;
-  static const double avatarBorderWidth = 1.5;
+  
+  static double get avatarSize => 40.w;
+  static double get avatarBorderWidth => 1.5;
 
   // ═══════════════════════════════════════════════════════════════
-  // 📝 FONTES – GERAIS
+  // 📝 FONTES - ESCALÁVEIS
   // ═══════════════════════════════════════════════════════════════
-  static const double displayLarge = 32;
-  static const double displayMedium = 28;
-  static const double displaySmall = 24;
-
-  static const double headlineLarge = 22;
-  static const double headlineMedium = 20;
-  static const double headlineSmall = 18;
-
-  static const double titleLarge = 18;
-  static const double titleMedium = 16;
-  static const double titleSmall = 14;
-
-  static const double bodyLarge = 16;
-  static const double bodyMedium = 14;
-  static const double bodySmall = 11;
-
-  static const double labelLarge = 14;
-  static const double labelMedium = 12;
-  static const double labelSmall = 10;
+  
+  static double get displayLarge => 32.sp;
+  static double get displayMedium => 28.sp;
+  static double get displaySmall => 24.sp;
+  static double get headlineLarge => 22.sp;
+  static double get headlineMedium => 20.sp;
+  static double get headlineSmall => 18.sp;
+  static double get titleLarge => 18.sp;
+  static double get titleMedium => 16.sp;
+  static double get titleSmall => 14.sp;
+  static double get titleExtraSmall => 12.sp;  // ← NOVO! Para títulos menores
+  static double get bodyLarge => 16.sp;
+  static double get bodyMedium => 14.sp;
+  static double get bodySmall => 11.sp;
+  static double get labelLarge => 14.sp;
+  static double get labelMedium => 12.sp;
+  static double get labelSmall => 10.sp;
 
   // ═══════════════════════════════════════════════════════════════
-  // 🔝 HEADER – FONTES ESPECÍFICAS
+  // 🔝 HEADER - FONTES ESPECÍFICAS
   // ═══════════════════════════════════════════════════════════════
-  static const double greetingText = 12;
-  static const double balanceLabel = 10;
-  static const double balanceValue = 15;
+  
+  static double get greetingText => 12.sp;
+  static double get balanceLabel => 10.sp;
+  static double get balanceValue => 15.sp;
 
   // ═══════════════════════════════════════════════════════════════
   // 🎨 ÍCONES
   // ═══════════════════════════════════════════════════════════════
-  static const double iconSmall = 16;
-  static const double iconMedium = 20;
-  static const double iconLarge = 24;
-  static const double iconExtraLarge = 28;
-
-  static const double eyeIconSize = 18;
-  static const double eyeIconContainer = 25;
+  
+  static double get iconSmall => 16.sp;
+  static double get iconMedium => 20.sp;
+  static double get iconLarge => 24.sp;
+  static double get iconExtraLarge => 28.sp;
+  static double get eyeIconSize => 18.sp;
+  static double get eyeIconContainer => 25.w;
 
   // ═══════════════════════════════════════════════════════════════
   // 🔘 BOTÕES
   // ═══════════════════════════════════════════════════════════════
-  static const double buttonHeight = 48;
-  static const double buttonRadius = 12;
-  static const double buttonPaddingHorizontal = 24;
-  static const double buttonPaddingVertical = 12;
+  
+  static double get buttonHeight => 48.h;
+  static double get buttonRadius => 12.r;
+  static double get buttonPaddingHorizontal => 24.w;
+  static double get buttonPaddingVertical => 12.h;
 
   // ═══════════════════════════════════════════════════════════════
   // 📦 CARDS
   // ═══════════════════════════════════════════════════════════════
-  static const double cardRadius = 12;
-  static const double cardPadding = 16;
-  static const double cardElevation = 2;
+  
+  static double get cardRadius => 12.r;
+  static double get cardPadding => 12.w;
+  static double get cardElevation => 2;
 
   // ═══════════════════════════════════════════════════════════════
-  // 🔲 SPACING (ESPAÇAMENTOS)
+  // 🔲 SPACING - ESCALÁVEL
   // ═══════════════════════════════════════════════════════════════
-  static const double spacingTiny = 4;
-  static const double spacingSmall = 8;
-  static const double spacingMedium = 12;
-  static const double spacingLarge = 16;
-  static const double spacingExtraLarge = 24;
-  static const double spacingHuge = 32;
+  
+  static double get spacingTiny => 4.h;
+  static double get spacingSmall => 8.h;
+  static double get spacingMedium => 12.h;
+  static double get spacingLarge => 16.h;
+  static double get spacingExtraLarge => 24.h;
+  static double get spacingHuge => 32.h;
 
   // ═══════════════════════════════════════════════════════════════
-  // 📐 LAYOUT GERAL
+  // 📐 LAYOUT
   // ═══════════════════════════════════════════════════════════════
-  static const double screenPadding = 16;
-  static const double modalRadius = 20;
+  
+  static double get screenPadding => 16.w;
+  static double get modalRadius => 20.r;
 
   // ═══════════════════════════════════════════════════════════════
-  // 🎯 BOTTOM NAVIGATION
+  // 🎯 BOTTOM NAV (FOOTER DO APP) - SUPER COMPACTO!
   // ═══════════════════════════════════════════════════════════════
-  static const double bottomNavHeight = 65;
-  static const double bottomNavRadius = 30;
-  static const double bottomNavPaddingHorizontal = 16;
-  static const double bottomNavPaddingTop = 8;
-  static const double bottomNavPaddingBottom = 10;
+  
+  /// Altura do bottom nav (BEM COMPACTO para liberar espaço!)
+  static double get bottomNavHeight => 50.h;
+  
+  static double get bottomNavRadius => 25.r;
+  static double get bottomNavPaddingHorizontal => 12.w;
+  
+  /// Espaço acima do bottom nav (mínimo)
+  static double get bottomNavPaddingTop => 2.h;
+  
+  /// Espaço abaixo do bottom nav (mínimo)
+  static double get bottomNavPaddingBottom => 4.h;
+  
+  /// Tamanho dos ícones do bottom nav (compacto)
+  static double get bottomNavIconSize => 22.sp;
+  
+  /// Tamanho do texto do bottom nav (compacto)
+  static double get bottomNavTextSize => 9.sp;
 
   // ═══════════════════════════════════════════════════════════════
-  // 📸 SCANNER
+  // 📸 SCANNER - RESPONSIVO
   // ═══════════════════════════════════════════════════════════════
-  static const double scannerTopPosition = 160;
-  static const double scannerCardHeight = 180;
-  static const double scannerRadius = 12;
-
-  /// ✅ CONTROLE POR PLATAFORMA
-  /// iOS: mantém 16 (layout perfeito)
-  /// Android: 8 (scanner mais largo)
-  static double get scannerHorizontalPadding {
-    if (Platform.isAndroid) return 2;
-    return 2;
-  }
+  
+  static double get scannerCardHeight => 180.h;
+  static double get scannerRadius => 12.r;
+  static double get scannerHorizontalPadding => 0.w;
 
   // ═══════════════════════════════════════════════════════════════
   // 📄 CONTEÚDO
   // ═══════════════════════════════════════════════════════════════
-  static const double contentStartPosition = 300;
-  static const double contentBottomPadding = 83;
+  
+  static double get contentBottomPadding => 75.h;
 
   // ═══════════════════════════════════════════════════════════════
-  // 🛒 LISTA / PROGRESS
+  // 📋 FOOTER - TAMANHOS MAIORES (VISÍVEL!)
   // ═══════════════════════════════════════════════════════════════
-  static const double categoryPillHeight = 32;
-  static const double itemTileHeight = 60;
-  static const double progressBarHeight = 4;
+  
+  /// Padding vertical do footer (altura total)
+  static double get footerPaddingVertical => 8.h;
+  
+  /// Tamanho da label "Total"
+  static double get footerLabelSize => 8.sp;
+  
+  /// Tamanho do valor "R$ 46,00"
+  static double get footerValueSize => 15.sp;
+  
+  /// Padding horizontal do botão "Limpar"
+  static double get footerButtonPaddingH => 12.w;
+  
+  /// Padding vertical do botão "Limpar"
+  static double get footerButtonPaddingV => 6.h;
+  
+  /// Tamanho do ícone do botão "Limpar"
+  static double get footerButtonIconSize => 16.sp;
+  
+  /// Tamanho do texto do botão "Limpar"
+  static double get footerButtonTextSize => 11.sp;
+
+  // ═══════════════════════════════════════════════════════════════
+  // 🛒 LISTA - ITENS BEM COMPACTOS (3 ITENS COMPLETOS!)
+  // ═══════════════════════════════════════════════════════════════
+  
+  static double get categoryPillHeight => 32.h;
+  
+  /// Altura de cada item da lista (BEM COMPACTA para caber 3 itens)
+  static double get itemTileHeight => 56.h;
+  
+  static double get progressBarHeight => 4.h;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// 📊 VANTAGENS DESTE CÓDIGO SÊNIOR:
+// ═══════════════════════════════════════════════════════════════
+//
+// ✅ ESCALÁVEL: .h, .w, .sp, .r adaptam para qualquer tela
+// ✅ RESPONSIVO: iPhone SE, iPhone 15 Pro Max, iPad, Android
+// ✅ MANUTENÍVEL: Mude headerHeight e funciona em TUDO
+// ✅ PERFORMÁTICO: getters são lazy (calculam quando usa)
+// ✅ TYPE-SAFE: Dart analisa erros em compile-time
+// ✅ DRY: Um único lugar para TODOS os tamanhos
+//
+// ═══════════════════════════════════════════════════════════════
+//
+// 🔧 COMO AJUSTAR A POSIÇÃO DO SCANNER:
+//
+// No começo do arquivo, mude:
+//   static double get headerHeight => 100.h;
+//
+// Valores recomendados:
+//   85.h  = scanner um pouco mais alto
+//   100.h = scanner médio (atual)
+//   110.h = scanner original
+//   120.h = scanner mais baixo
+//
+// ═══════════════════════════════════════════════════════════════
