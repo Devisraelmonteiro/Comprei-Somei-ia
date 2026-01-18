@@ -4,7 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:comprei_some_ia/shared/painters/scanner_overlay_painter.dart';
 
 /// 📸 Widget do card de scanner com preview da câmera e OCR
-/// 
+///
 /// Exibe:
 /// - Preview da câmera em tempo real
 /// - Overlay com cantos em L e vinheta
@@ -13,22 +13,22 @@ import 'package:comprei_some_ia/shared/painters/scanner_overlay_painter.dart';
 class ScannerCardWidget extends StatelessWidget {
   /// Controller da câmera
   final CameraController? cameraController;
-  
+
   /// Se a câmera está inicializada
   final bool isCameraInitialized;
-  
+
   /// Mensagem de erro (null se não houver erro)
   final String? cameraError;
-  
+
   /// Preço detectado pelo OCR (null se nenhum)
   final double? detectedPrice;
-  
+
   /// Valor capturado atual
   final double capturedValue;
-  
+
   /// Callback para tentar novamente em caso de erro
   final VoidCallback onRetry;
-  
+
   /// Callback para abrir configurações do sistema
   final VoidCallback onOpenSettings;
 
@@ -52,7 +52,7 @@ class ScannerCardWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: detectedPrice != null 
+          color: detectedPrice != null
               ? Colors.green.withValues(alpha: 0.5)
               : Colors.white.withValues(alpha: 0.3),
           width: 1.5,
@@ -71,13 +71,8 @@ class ScannerCardWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: Stack(
           children: [
-            // Preview da câmera
             _buildCameraPreview(),
-            
-            // Overlay com cantos em L
             if (isCameraInitialized) _buildScannerOverlay(),
-            
-            // Valor capturado na parte inferior
             if (isCameraInitialized) _buildCapturedValue(),
           ],
         ),
@@ -87,9 +82,8 @@ class ScannerCardWidget extends StatelessWidget {
 
   /// 📹 Preview da câmera ou estados de erro/loading
   Widget _buildCameraPreview() {
-    // Câmera inicializada: mostrar preview
-    if (isCameraInitialized && 
-        cameraController != null && 
+    if (isCameraInitialized &&
+        cameraController != null &&
         cameraController!.value.isInitialized) {
       return Positioned.fill(
         child: FittedBox(
@@ -103,19 +97,17 @@ class ScannerCardWidget extends StatelessWidget {
       );
     }
 
-    // Erro: mostrar mensagem e botão
     if (cameraError != null) {
       return _buildErrorState();
     }
 
-    // Loading: mostrar spinner
     return _buildLoadingState();
   }
 
   /// ❌ Estado de erro
   Widget _buildErrorState() {
     final isPermissionError = cameraError!.contains('permanentemente');
-    
+
     return Container(
       color: Colors.red.shade100,
       child: Center(
@@ -124,19 +116,12 @@ class ScannerCardWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 40,
-              ),
+              const Icon(Icons.error_outline, color: Colors.red, size: 40),
               const SizedBox(height: 8),
               Text(
                 cameraError!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontSize: 11,
-                ),
+                style: const TextStyle(color: Colors.red, fontSize: 11),
               ),
               const SizedBox(height: 12),
               ElevatedButton.icon(
@@ -146,16 +131,16 @@ class ScannerCardWidget extends StatelessWidget {
                   size: 16,
                 ),
                 label: Text(
-                  isPermissionError ? 'Abrir Configurações' : 'Tentar Novamente',
+                  isPermissionError
+                      ? 'Abrir Configurações'
+                      : 'Tentar Novamente',
                   style: const TextStyle(fontSize: 11),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
               ),
             ],
@@ -177,10 +162,7 @@ class ScannerCardWidget extends StatelessWidget {
             SizedBox(height: 12),
             Text(
               'Inicializando câmera...',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.black54, fontSize: 12),
             ),
           ],
         ),
@@ -206,7 +188,7 @@ class ScannerCardWidget extends StatelessWidget {
     );
   }
 
-  /// 💰 Valor capturado na parte inferior
+  /// 💰 Valor capturado
   Widget _buildCapturedValue() {
     return Positioned(
       bottom: 0,
@@ -214,18 +196,13 @@ class ScannerCardWidget extends StatelessWidget {
       right: 0,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 4),
-        decoration: const BoxDecoration(
-          color: Color(0xB3000000),
-        ),
+        decoration: const BoxDecoration(color: Color(0xB3000000)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
               "Capturado",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 11),
             ),
             _buildAnimatedValue(),
           ],
@@ -234,7 +211,7 @@ class ScannerCardWidget extends StatelessWidget {
     );
   }
 
-  /// ✨ Valor com animação quando muda
+  /// ✨ Valor com animação
   Widget _buildAnimatedValue() {
     final valueText = Text(
       "R\$ ${capturedValue.toStringAsFixed(2).replaceAll('.', ',')}",
@@ -245,31 +222,46 @@ class ScannerCardWidget extends StatelessWidget {
       ),
     );
 
-    // Sem animação quando valor é zero
     if (capturedValue == 0) {
       return valueText;
     }
 
-    // Com animação quando valor muda
     return valueText
         .animate(key: ValueKey(capturedValue))
+
+        // 1️⃣ Pop inicial
         .scale(
-          duration: 300.ms,
-          begin: const Offset(1, 1),
-          end: const Offset(4, 4),
+          duration: 150.ms,
+          begin: const Offset(0.95, 0.95),
+          end: const Offset(1.0, 1.0),
           curve: Curves.easeOut,
         )
+
+        // 2️⃣ EXPLOSÃO (x4)
+        .scale(
+          duration: 250.ms,
+          end: const Offset(4.0, 4.0), // 🔥 multiplica o tamanho
+          curve: Curves.easeOutBack,
+        )
+
+        // 3️⃣ Sobe enquanto cresce
         .moveY(
           begin: 0,
-          end: -50,
+          end: -90,
           curve: Curves.easeOut,
         )
-        .then()
+
+        // 4️⃣ Pausa visual
+        .then(delay: 600.ms)
+
+        // 5️⃣ Encolhe elegante (macOS style)
         .scale(
-          duration: 300.ms,
-          end: const Offset(1, 1),
-          curve: Curves.easeIn,
+          duration: 600.ms,
+          end: const Offset(0.7, 0.6),
+          curve: Curves.easeOutBack,
         )
+
+        // 6️⃣ Volta para base
         .moveY(
           end: 0,
           curve: Curves.easeIn,
