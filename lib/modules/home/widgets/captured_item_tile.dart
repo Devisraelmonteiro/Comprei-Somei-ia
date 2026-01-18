@@ -55,7 +55,7 @@ class CapturedItemTile extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(12.r),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),  // ← MENOR (era 8h)
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),  // ← MENOR (era 8h)
             child: Row(
               children: [
                 // Botão de deletar

@@ -19,17 +19,15 @@ Future<void> main() async {
   /// 📸 INICIALIZA AS CÂMERAS
   cameras = await availableCameras();
 
-  /// ✅ EDGE-TO-EDGE (ANDROID + iOS IGUAIS)
-  SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.edgeToEdge,
-  );
+  /// ✅ EDGE-TO-EDGE (ANDROID + IOS)
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-  /// 🎨 STATUS BAR TRANSPARENTE (INVASÃO CONTROLADA PELO LAYOUT)
+  /// 🎨 STATUS BAR TRANSPARENTE
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent, // 🔥 FUNDAMENTAL
-      statusBarIconBrightness: Brightness.light, // Android
-      statusBarBrightness: Brightness.light, // iOS
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.light,
     ),
   );
 
@@ -46,21 +44,19 @@ class AppRoot extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => HomeController()),
         ChangeNotifierProvider(create: (_) => ShoppingListController()),
       ],
-
-      /// ✅ SCREENUTIL INIT - PADRÃO 2025
       child: ScreenUtilInit(
-        // 📱 BASE DE DESIGN (iPhone 11)
+        /// 📐 BASE DE DESIGN (layout travado)
         designSize: const Size(375, 812),
-        minTextAdapt: true,
+        minTextAdapt: false,
         splitScreenMode: true,
 
         builder: (context, child) {
+          final media = MediaQuery.of(context);
+
           return MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              /// 🔒 CONTROLE DE ESCALA DE TEXTO (UX + OCR)
-              textScaleFactor: MediaQuery.of(context)
-                  .textScaleFactor
-                  .clamp(0.9, 1.2),
+            data: media.copyWith(
+              /// 🔒 TRAVA DEFINITIVA DO TAMANHO DA FONTE
+              textScaleFactor: 1.0,
             ),
             child: child!,
           );

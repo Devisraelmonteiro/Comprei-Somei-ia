@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
@@ -14,6 +15,7 @@ import '../constants/app_strings.dart';
 /// ✅ Bottom Nav SUPER COMPACTO (libera espaço para conteúdo)
 /// ✅ Usa AppSizes (centralizado, escalável)
 /// ✅ Responsivo para TODAS as telas
+/// ✅ Adaptativo iOS + Android
 class BaseScaffold extends StatelessWidget {
   final Widget child;
   final int currentIndex;
@@ -45,13 +47,14 @@ class BaseScaffold extends StatelessWidget {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // 🎯 BOTTOM NAVIGATION - SUPER COMPACTO
+  // 🎯 BOTTOM NAVIGATION - SUPER COMPACTO + ADAPTATIVO
   // ═══════════════════════════════════════════════════════════════
 
   Widget _buildBottomNav(BuildContext context) {
     return Builder(
       builder: (context) {
         final bottomSafeArea = MediaQuery.of(context).padding.bottom;
+        final isAndroid = Platform.isAndroid;
         
         return Padding(
           padding: EdgeInsets.fromLTRB(
@@ -62,60 +65,119 @@ class BaseScaffold extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                height: AppSizes.bottomNavHeight,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius),
-                  gradient: AppColors.bottomNavGradient,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.blackWithOpacity(0.25),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: BottomNavigationBar(
-                  currentIndex: currentIndex,
-                  onTap: (i) => _onItemTapped(context, i),
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  type: BottomNavigationBarType.fixed,
-                  selectedFontSize: AppSizes.bottomNavTextSize,
-                  unselectedFontSize: AppSizes.bottomNavTextSize,
-                  selectedItemColor: AppColors.white,
-                  unselectedItemColor: AppColors.whiteWithOpacity(0.7),
-                  iconSize: AppSizes.bottomNavIconSize,
-                  items: [
-                    BottomNavigationBarItem(
-                      icon: const Icon(Iconsax.home_2),
-                      label: AppStrings.homeTitle,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: const Icon(Iconsax.note_text),
-                      label: AppStrings.listTitle,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: const Icon(Iconsax.ticket_discount),
-                      label: AppStrings.encartesTitle,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: const Icon(Iconsax.wallet_3),
-                      label: AppStrings.budgetTitle,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: const Icon(Iconsax.setting_2),
-                      label: AppStrings.settingsTitle,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: isAndroid
+                ? _buildAndroidNav(context)
+                : _buildIOSNav(context),
           ),
         );
       },
+    );
+  }
+
+  /// 🍎 iOS - EXATAMENTE como estava (BackdropFilter + Gradiente)
+  Widget _buildIOSNav(BuildContext context) {
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      child: Container(
+        height: AppSizes.bottomNavHeight,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius),
+          gradient: AppColors.bottomNavGradient,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.blackWithOpacity(0.25),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (i) => _onItemTapped(context, i),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
+          selectedFontSize: AppSizes.bottomNavTextSize,
+          unselectedFontSize: AppSizes.bottomNavTextSize,
+          selectedItemColor: AppColors.white,
+          unselectedItemColor: AppColors.whiteWithOpacity(0.7),
+          iconSize: AppSizes.bottomNavIconSize,
+          items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Iconsax.home_2),
+              label: AppStrings.homeTitle,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Iconsax.note_text),
+              label: AppStrings.listTitle,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Iconsax.ticket_discount),
+              label: AppStrings.encartesTitle,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Iconsax.wallet_3),
+              label: AppStrings.budgetTitle,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Iconsax.setting_2),
+              label: AppStrings.settingsTitle,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 🤖 ANDROID - Cor sólida + ícones Material maiores
+  Widget _buildAndroidNav(BuildContext context) {
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius),
+        color: const Color(0xFFF36607),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: (i) => _onItemTapped(context, i),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+        selectedFontSize: 12,
+        unselectedFontSize: 11,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white.withOpacity(0.7),
+        iconSize: 26,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_rounded),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt_long_rounded),
+            label: 'Lista',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_offer_rounded),
+            label: 'Encartes',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_balance_wallet_rounded),
+            label: 'Controle',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings_rounded),
+            label: 'Config.',
+          ),
+        ],
+      ),
     );
   }
 
@@ -236,18 +298,22 @@ class BaseScaffold extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📋 VALORES DO BOTTOM NAV (AppSizes)
+// 📋 CONFIGURAÇÕES POR PLATAFORMA
 // ═══════════════════════════════════════════════════════════════
 //
-// Para ajustar o bottom nav, edite: lib/shared/constants/app_sizes.dart
+// 🍎 iOS (MANTIDO ORIGINAL):
+//   - Altura: AppSizes.bottomNavHeight (50.h)
+//   - Ícones: AppSizes.bottomNavIconSize (22.sp) + Iconsax
+//   - Texto: AppSizes.bottomNavTextSize (9.sp)
+//   - Estilo: BackdropFilter + Gradiente
 //
-// bottomNavHeight: 50.h           (altura da barra)
-// bottomNavRadius: 25.r           (arredondamento)
-// bottomNavPaddingTop: 2.h        (espaço acima)
-// bottomNavPaddingBottom: 4.h     (espaço abaixo)
-// bottomNavIconSize: 22.sp        (tamanho ícones)
-// bottomNavTextSize: 9.sp         (tamanho texto)
+// 🤖 ANDROID (NOVO - mais visível):
+//   - Altura: 70px (maior)
+//   - Ícones: 26px + Material Icons (nativos)
+//   - Texto: 11/12px (maior)
+//   - Estilo: Cor sólida laranja (sem blur)
 //
-// ✅ CÓDIGO SÊNIOR: Todos os valores centralizados!
+// ✅ iOS funciona EXATAMENTE como antes!
+// ✅ Android agora tem ícones visíveis!
 //
 // ═══════════════════════════════════════════════════════════════

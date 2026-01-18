@@ -71,7 +71,9 @@ class AppSizes {
   
   static double get greetingText => 12.sp;
   static double get balanceLabel => 10.sp;
-  static double get balanceValue => 15.sp;
+    static double get balanceExtraLabel => 12.sp;
+  static double get balanceValue => 12.sp;
+  static double get balanceExtraValue => 15.sp;
 
   // ═══════════════════════════════════════════════════════════════
   // 🎨 ÍCONES
@@ -145,7 +147,7 @@ class AppSizes {
   // 📸 SCANNER - RESPONSIVO
   // ═══════════════════════════════════════════════════════════════
   
-  static double get scannerCardHeight => 180.h;
+  static double get scannerCardHeight => 175.h;
   static double get scannerRadius => 12.r;
   static double get scannerHorizontalPadding => 0.w;
 
