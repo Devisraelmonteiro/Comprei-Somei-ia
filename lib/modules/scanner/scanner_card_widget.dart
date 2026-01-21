@@ -175,41 +175,95 @@ class ScannerCardWidget extends StatelessWidget {
     return Positioned.fill(
       child: CustomPaint(
         painter: ScannerOverlayPainter(
+          // 📏 LARGURA do retângulo central (scanner)
+          // Valores menores = retângulo mais estreito
+          // Valores maiores = retângulo mais largo
+          // Exemplos: 250, 280, 300, 320
           rectWidth: 280,
-          rectHeight: 150,
+          
+          // 📏 ALTURA do retângulo central (scanner)
+          // Valores menores = retângulo mais baixo
+          // Valores maiores = retângulo mais alto
+          // Exemplos: 120, 150, 180, 200
+          rectHeight: 70,
+          
+          // 🎨 COR dos cantos em L
+          // Muda para verde quando detecta preço
+          // Opções: Colors.white, Colors.green, Colors.blue, etc
           cornerColor: detectedPrice != null ? Colors.green : Colors.white,
-          cornerThickness: 3,
+          
+          // 📐 ESPESSURA das linhas dos cantos em L
+          // Valores menores = linhas mais finas (ex: 2)
+          // Valores maiores = linhas mais grossas (ex: 4, 5)
+          cornerThickness: 1,
+          
+          // 📏 COMPRIMENTO das linhas dos cantos em L
+          // Valores menores = cantos mais curtos (ex: 16, 20)
+          // Valores maiores = cantos mais longos (ex: 28, 32)
           cornerLength: 24,
-          cornerRadius: 16,
+          
+          // ⭕ RAIO de arredondamento dos cantos
+          // Valores menores = cantos mais quadrados (ex: 8, 12)
+          // Valores maiores = cantos mais arredondados (ex: 20, 24)
+          // 0 = cantos totalmente quadrados
+          cornerRadius: 8,
+          
+          // 🌑 OPACIDADE da vinheta escura (área fora do retângulo)
+          // Valores menores = área mais clara/transparente (ex: 0.4, 0.5)
+          // Valores maiores = área mais escura (ex: 0.7, 0.8)
+          // 0.0 = completamente transparente
+          // 1.0 = completamente opaco
           vignetteOpacity: 0.65,
+          
+          // 📊 FATOR de escurecimento da parte INFERIOR
+          // Valores menores = inferior mais claro (ex: 1.0, 1.5)
+          // Valores maiores = inferior mais escuro (ex: 2.0, 2.5)
+          // 1.0 = sem diferença entre topo e fundo
           bottomEdgeFactor: 1.8,
+          
+          // 📍 OFFSET VERTICAL do L de CIMA
+          // Valores NEGATIVOS = L sobe (ex: -10, -20, -30)
+          // Valores POSITIVOS = L desce (ex: 10, 20, 30)
+          // 0 = L fica no canto do retângulo
+          // ← EDITE AQUI para subir/descer o L de cima
+          topOffset: -30,
         ),
       ),
     );
   }
 
   /// 💰 Valor capturado
-  Widget _buildCapturedValue() {
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        decoration: const BoxDecoration(color: Color(0xB3000000)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "Capturado",
-              style: TextStyle(color: Colors.white, fontSize: 11),
-            ),
-            _buildAnimatedValue(),
+ Widget _buildCapturedValue() {
+  return Positioned(
+    bottom: 0,
+    left: 0,
+    right: 0,
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,          // 👈 transição suave
+            Color(0x88000000),            // 👈 fumê médio
+            Color(0xCC000000),            // 👈 mais escuro embaixo
           ],
         ),
       ),
-    );
-  }
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            "Capturado",
+            style: TextStyle(color: Colors.white, fontSize: 11),
+          ),
+          _buildAnimatedValue(),
+        ],
+      ),
+    ),
+  );
+}
 
   /// ✨ Valor com animação
   Widget _buildAnimatedValue() {
@@ -228,43 +282,48 @@ class ScannerCardWidget extends StatelessWidget {
 
     return valueText
         .animate(key: ValueKey(capturedValue))
-
-        // 1️⃣ Pop inicial
         .scale(
           duration: 150.ms,
           begin: const Offset(0.95, 0.95),
           end: const Offset(1.0, 1.0),
           curve: Curves.easeOut,
         )
-
-        // 2️⃣ EXPLOSÃO (x4)
         .scale(
           duration: 250.ms,
-          end: const Offset(4.0, 4.0), // 🔥 multiplica o tamanho
+          end: const Offset(2.5, 4.0),
           curve: Curves.easeOutBack,
         )
-
-        // 3️⃣ Sobe enquanto cresce
         .moveY(
           begin: 0,
-          end: -90,
+          end: -100,
           curve: Curves.easeOut,
         )
-
-        // 4️⃣ Pausa visual
-        .then(delay: 600.ms)
-
-        // 5️⃣ Encolhe elegante (macOS style)
+        .then(delay: 300.ms)
         .scale(
-          duration: 600.ms,
-          end: const Offset(0.7, 0.6),
+          duration: 300.ms,
+          end: const Offset(0.6, 0.5),
           curve: Curves.easeOutBack,
         )
-
-        // 6️⃣ Volta para base
         .moveY(
           end: 0,
           curve: Curves.easeIn,
         );
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// 📋 GUIA RÁPIDO - AJUSTAR POSIÇÃO DO L DE CIMA
+// ═══════════════════════════════════════════════════════════════
+//
+// topOffset: -30  ← MUDE ESTE VALOR!
+//
+// Valores sugeridos:
+// - topOffset: -10  → L sobe pouquinho
+// - topOffset: -20  → L sobe médio
+// - topOffset: -30  → L sobe bastante (padrão)
+// - topOffset: -40  → L sobe muito
+// - topOffset: -50  → L sobe extremo
+// - topOffset: 0    → L fica no canto
+// - topOffset: 20   → L desce (dentro do retângulo)
+//
+// ═══════════════════════════════════════════════════════════════

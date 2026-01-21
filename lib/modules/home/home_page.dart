@@ -8,7 +8,7 @@ import 'package:vibration/vibration.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'home_controller.dart';
-import 'widgets/scanner_card_widget.dart';
+import '../scanner/scanner_card_widget.dart';
 import 'widgets/items_captured_widget.dart';
 
 import 'package:comprei_some_ia/shared/widgets/top_bar_widget.dart';
@@ -18,7 +18,7 @@ import 'package:comprei_some_ia/shared/widgets/favoritos_grid.dart';
 import 'package:comprei_some_ia/core/services/ocr_service.dart';
 import 'package:comprei_some_ia/main.dart';
 import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
-
+import 'package:comprei_some_ia/modules/scanner/scanner_card_widget.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 

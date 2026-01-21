@@ -10,20 +10,22 @@ import 'package:comprei_some_ia/shared/constants/app_strings.dart';
 /// 
 /// Layout:
 /// ┌─────────────────────────┐
-/// │ 👤  Olá, Israel    👁️   │
+/// │ 👤  Olá, Israel    🏢   │
 /// │     Saldo               │
-/// │     R$ 500,00           │
+/// │     R$ 500,00      👁️  │
 /// └─────────────────────────┘
 class TopBarWidget extends StatefulWidget {
   final String userName;
   final double remaining;
   final String? userImagePath;
+  final String? logoPath;
 
   const TopBarWidget({
     super.key,
     required this.userName,
     required this.remaining,
     this.userImagePath,
+    this.logoPath = 'assets/images/logo.png', // Caminho padrão do logo
   });
 
   @override
@@ -66,7 +68,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // ROW: "Olá, Israel" + Olhinho
+                    // ROW: "Olá, Israel" + Logo
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -80,8 +82,8 @@ class _TopBarWidgetState extends State<TopBarWidget> {
                           ),
                         ),
                         
-                        // 👁️ Olhinho (agora alinhado à direita da primeira linha)
-                        _buildEyeToggle(),
+                        // 🏢 Logo da empresa (agora alinhado à direita da primeira linha)
+                        _buildLogo(),
                       ],
                     ),
                     
@@ -101,8 +103,16 @@ class _TopBarWidgetState extends State<TopBarWidget> {
                     // ⚠️ SEM ESPAÇO entre "Saldo" e valor
                     SizedBox(height: AppSizes.headerSaldoToValueSpacing.h),
                     
-                    // 💵 "R$ 500,00"
-                    _buildBalanceValue(),
+                    // ROW: "R$ 500,00" + Olhinho
+                    Row(
+                      children: [
+                        // 💵 "R$ 500,00"
+                        _buildBalanceValue(),
+                        
+                        // 👁️ Olhinho (posicionamento controlado internamente com Padding)
+                        _buildEyeToggle(),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -113,7 +123,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
     );
   }
 
-  /// 👤 Avatar
+  /// 👤 Avatar com borda BRANCA e GROSSA
   Widget _buildAvatar() {
     return GestureDetector(
       onTap: () {
@@ -126,8 +136,8 @@ class _TopBarWidgetState extends State<TopBarWidget> {
           shape: BoxShape.circle,
           color: AppColors.whiteWithOpacity(0.2),
           border: Border.all(
-            color: AppColors.whiteWithOpacity(0.3),
-            width: AppSizes.avatarBorderWidth,
+            color: Colors.white, // ✅ BRANCA
+            width: 1.0, // ✅ GROSSA (antes era 1.5)
           ),
           image: widget.userImagePath != null
               ? DecorationImage(
@@ -145,6 +155,40 @@ class _TopBarWidgetState extends State<TopBarWidget> {
             : null,
       ),
     );
+  }
+
+  /// 🏢 Logo da empresa
+  Widget _buildLogo() {
+    if (widget.logoPath == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: AppSizes.eyeIconContainer.w,
+      height: AppSizes.eyeIconContainer.w,
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(0, 255, 255, 255),
+        //shape: BoxShape.circle,
+      ),
+      //child: ClipOval(
+        //child: Transform.scale(
+          //scale: 2.0
+          //, // ✅ ZOOM: aumenta o logo em 30% (ajuste conforme necessário)
+          //child: Image.asset(
+            //widget.logoPath!,
+            //fit: BoxFit.cover, // ✅ cover para preencher todo o círculo
+            //errorBuilder: (context, error, stackTrace) {
+              // Se der erro ao carregar o logo, mostra um ícone placeholder
+              //return Icon(
+                //Icons.business,
+                //color: AppColors.primary,
+                //size: AppSizes.eyeIconContainer.sp,
+             // );
+            //},
+          //),
+        //),
+      );
+    
   }
 
   /// 💵 Valor do saldo
@@ -165,23 +209,47 @@ class _TopBarWidgetState extends State<TopBarWidget> {
     );
   }
 
-  /// 👁️ Botão toggle
+  /// 👁️ Botão toggle (COM círculo editável)
   Widget _buildEyeToggle() {
-    return GestureDetector(
-      onTap: () => setState(() => showBalance = !showBalance),
-      child: Container(
-        width: AppSizes.eyeIconContainer.w,
-        height: AppSizes.eyeIconContainer.w,
-        decoration: BoxDecoration(
-          color: AppColors.whiteWithOpacity(0.2),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          showBalance 
-              ? Icons.visibility_outlined 
-              : Icons.visibility_off_outlined,
-          color: AppColors.white,
-          size: AppSizes.eyeIconSize.sp,
+    // 🎯 AJUSTE O TAMANHO DO CÍRCULO AQUI:
+    final double circleSize = 20.w; // ← MUDE ESTE VALOR (ex: 24.w, 30.w, 35.w)
+    final double iconSize = 18.sp;  // ← MUDE O TAMANHO DO ÍCONE (ex: 14.sp, 18.sp, 20.sp)
+    
+    return Padding(
+      // 🎯 AJUSTE A POSIÇÃO DO OLHINHO AQUI:
+      // 
+      // left: move para DIREITA (valores positivos) ou ESQUERDA (valores negativos)
+      // top: move para BAIXO (valores positivos) ou CIMA (valores negativos)
+      // right: espaço à direita
+      // bottom: espaço embaixo
+      //
+      // EXEMPLOS:
+      // - EdgeInsets.only(left: 8.w) → move 8px para DIREITA
+      // - EdgeInsets.only(left: -4.w) → move 4px para ESQUERDA (mais perto do valor)
+      // - EdgeInsets.only(top: 2.h) → move 2px para BAIXO
+      // - EdgeInsets.only(top: -2.h) → move 2px para CIMA
+      // - EdgeInsets.only(left: 8.w, top: -2.h) → 8px DIREITA + 2px CIMA
+      //
+      padding: EdgeInsets.only(
+        left: 8.w,  // Espaço à esquerda (distância do valor)
+        top: 0.h,   // Ajuste vertical (negativo = sobe, positivo = desce)
+      ),
+      child: GestureDetector(
+        onTap: () => setState(() => showBalance = !showBalance),
+        child: Container(
+          width: circleSize,   // ← TAMANHO DO CÍRCULO (width)
+          height: circleSize,  // ← TAMANHO DO CÍRCULO (height)
+          decoration: BoxDecoration(
+            color: AppColors.whiteWithOpacity(0.2), // ← COR DO FUNDO (pode mudar a opacidade)
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            showBalance 
+                ? Icons.visibility_outlined 
+                : Icons.visibility_off_outlined,
+            color: const Color.fromARGB(255, 255, 255, 255),
+            size: iconSize, // ← TAMANHO DO ÍCONE
+          ),
         ),
       ),
     );
@@ -189,35 +257,45 @@ class _TopBarWidgetState extends State<TopBarWidget> {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📋 ESTRUTURA DO HEADER
+// 📋 ESTRUTURA DO HEADER (ATUALIZADA!)
 // ═══════════════════════════════════════════════════════════════
 //
 // Row (horizontal):
-//   - Avatar (40x40)
+//   - Avatar (40x40) com BORDA BRANCA GROSSA (3.0)
 //   - Spacing (12px)
 //   - Column (vertical) - TEXTOS COLADOS:
-//       - Row: "Olá, Israel" + Olhinho
+//       - Row: "Olá, Israel" + Logo 🏢
 //       - Spacing = 0 ← SEM ESPAÇO
 //       - "Saldo"
 //       - Spacing = 0 ← SEM ESPAÇO
-//       - "R$ 500,00"
+//       - Row: "R$ 500,00" + Olhinho 👁️
 //
 // ═══════════════════════════════════════════════════════════════
 //
-// 🎯 VALORES DE AppSizes USADOS:
+// 🎯 AJUSTES DISPONÍVEIS NO OLHINHO:
 //
-// headerPaddingTop = 0           (avatar colado no topo)
-// headerPaddingBottom = 100      (espaço para scanner)
-// headerPaddingHorizontal = 16
-// headerAvatarToGreetingSpacing = 12
-// headerGreetingToSaldoSpacing = 0    ← TEXTOS COLADOS
-// headerSaldoToValueSpacing = 0       ← TEXTOS COLADOS
+// No método _buildEyeToggle() (linha ~215):
 //
-// avatarSize = 40
-// greetingText = 12
-// balanceLabel = 10
-// balanceValue = 15
-// eyeIconSize = 18
-// eyeIconContainer = 25
+// ✅ circleSize = 28.w  ← Tamanho do CÍRCULO (aumente/diminua)
+// ✅ iconSize = 16.sp   ← Tamanho do ÍCONE dentro do círculo
+// ✅ color: AppColors.whiteWithOpacity(0.2) ← Cor de fundo (mude opacidade)
+// ✅ left: 8.w  ← Distância do valor R$
+// ✅ top: 0.h   ← Posição vertical
+//
+// EXEMPLOS DE TAMANHOS:
+// - Círculo PEQUENO: circleSize = 24.w, iconSize = 14.sp
+// - Círculo MÉDIO: circleSize = 28.w, iconSize = 16.sp (atual)
+// - Círculo GRANDE: circleSize = 35.w, iconSize = 20.sp
+//
+// ═══════════════════════════════════════════════════════════════
+//
+// 📸 COMO USAR:
+//
+// TopBarWidget(
+//   userName: 'Israel',
+//   remaining: 500.00,
+//   userImagePath: 'assets/images/user.png', // opcional
+//   logoPath: 'assets/images/logo.png', // seu logo!
+// )
 //
 // ═══════════════════════════════════════════════════════════════

@@ -33,7 +33,7 @@ class AppSizes {
   static double get headerBorderRadius => 20.r;
   
   /// Espaçamentos internos do header (textos colados)
-  static double get headerAvatarToGreetingSpacing => 12.w;
+  static double get headerAvatarToGreetingSpacing => 5.w;
   static double get headerGreetingToSaldoSpacing => 0.h;
   static double get headerSaldoToValueSpacing => 0.h;
 
@@ -192,6 +192,27 @@ class AppSizes {
   static double get itemTileHeight => 56.h;
   
   static double get progressBarHeight => 4.h;
+  // ═══════════════════════════════════════════════════════════════
+// 🏢 LOGO DA EMPRESA - ADICIONE ESTA SEÇÃO NO app_sizes.dart
+// ═══════════════════════════════════════════════════════════════
+// 
+// Adicione estas linhas logo após a seção de eyeIconContainer:
+
+  // ═══════════════════════════════════════════════════════════════
+  // 🏢 LOGO DA EMPRESA
+  // ═══════════════════════════════════════════════════════════════
+  
+  /// Tamanho do container do logo (controla o tamanho total do logo)
+  /// AJUSTE ESTE VALOR PARA DEIXAR O LOGO MAIOR OU MENOR:
+  /// - 25.w = pequeno
+  /// - 30.w = médio
+  /// - 35.w = grande (recomendado) ✅
+  /// - 40.w = extra grande
+  /// - 45.w = muito grande
+  static double get logoIconContainer => 35.w;
+  
+  /// Tamanho do ícone de fallback do logo
+  static double get logoIconSize => 20.sp;
 }
 
 // ═══════════════════════════════════════════════════════════════
