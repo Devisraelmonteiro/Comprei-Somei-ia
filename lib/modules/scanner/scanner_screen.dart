@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'controllers/scanner_controller.dart';
-// import CameraPreview / overlay quando quiser
 
 class ScannerScreen extends StatelessWidget {
   const ScannerScreen({super.key});
@@ -24,7 +23,7 @@ class ScannerScreen extends StatelessWidget {
             // 🔴 Card com valor + ações
             const Align(
               alignment: Alignment.bottomCenter,
-              child: ScannerCardWidget(),
+              child: SizedBox(), // ScannerCardWidget removido temporariamente pois requer controller
             ),
           ],
         ),

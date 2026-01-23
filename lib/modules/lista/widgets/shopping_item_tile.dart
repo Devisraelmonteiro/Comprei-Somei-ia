@@ -16,26 +16,24 @@ class ShoppingItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = context.read<ShoppingListController>();
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return Card( // Usando Card para elevação (efeito Matrix/Material)
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        side: BorderSide(
+          color: item.isChecked ? Colors.green.withOpacity(0.3) : Colors.grey.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Material(
-        color: Colors.transparent,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () => controller.toggleItemCheck(item.id),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(
               children: [
                 // Checkbox circular
@@ -43,16 +41,36 @@ class ShoppingItemTile extends StatelessWidget {
                 
                 const SizedBox(width: 16),
                 
-                // Conteúdo (Nome + Quantidade)
+                // Conteúdo (Nome + Quantidade + Categoria)
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // Categoria (Título para saber qual lista está)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(70, 249, 200, 153).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          item.category.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 4),
+
                       // Nome do produto
                       Text(
                         item.name,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: item.isChecked 
                               ? Colors.grey.shade400 
@@ -63,13 +81,13 @@ class ShoppingItemTile extends StatelessWidget {
                         ),
                       ),
                       
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       
                       // Quantidade
                       Text(
                         'Qtd: ${item.quantity}',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 10,
                           color: Colors.grey.shade600,
                         ),
                       ),
@@ -91,20 +109,10 @@ class ShoppingItemTile extends StatelessWidget {
                     
                     const SizedBox(width: 4),
                     
-                    // Duplicar
-                    _buildActionIcon(
-                      icon: Icons.content_copy_outlined,
-                      color: Colors.orange.shade600,
-                      onTap: () => _duplicateItem(context, controller),
-                      enabled: true,
-                    ),
-                    
-                    const SizedBox(width: 4),
-                    
                     // Excluir
                     _buildActionIcon(
                       icon: Icons.delete_outline,
-                      color: Colors.red.shade600,
+                      color: Colors.red.shade400,
                       onTap: () => _confirmDelete(context, controller),
                       enabled: true,
                     ),
@@ -118,29 +126,38 @@ class ShoppingItemTile extends StatelessWidget {
     );
   }
 
+  /// Cor do indicador baseado no nome (Simulação para demo)
+  Color _getItemIndicatorColor(String name) {
+    // Demo logic conforme imagem
+    if (name.toLowerCase().contains('arroz')) return const Color(0xFFFF8C42); // Laranja
+    if (name.toLowerCase().contains('feijão')) return const Color(0xFFE84545); // Vermelho
+    if (name.toLowerCase().contains('maarn')) return const Color(0xFFE84545); // Vermelho
+    return Colors.grey.shade400; // Padrão
+  }
+
   /// Checkbox circular
   Widget _buildCheckbox(BuildContext context, ShoppingListController controller) {
     return GestureDetector(
       onTap: () => controller.toggleItemCheck(item.id),
       child: Container(
-        width: 32,
-        height: 32,
+        width: 28, // Aumentado
+        height: 28, 
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: item.isChecked 
               ? const Color(0xFF4CAF50) 
-              : Colors.white,
+              : Colors.transparent, // Transparente quando não marcado
           border: Border.all(
             color: item.isChecked 
                 ? const Color(0xFF4CAF50) 
-                : Colors.grey.shade300,
-            width: 2.5,
+                : Colors.grey.shade400, // Cinza mais escuro na borda
+            width: 1.5,
           ),
         ),
         child: item.isChecked
             ? const Icon(
                 Icons.check,
-                size: 20,
+                size: 18, // Aumentado
                 color: Colors.white,
               )
             : null,
@@ -156,20 +173,20 @@ class ShoppingItemTile extends StatelessWidget {
     required bool enabled,
   }) {
     return Opacity(
-      opacity: enabled ? 1.0 : 0.3,
+      opacity: enabled ? 1.0 : 0.5,
       child: InkWell(
         onTap: enabled ? onTap : null,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         child: Container(
-          width: 36,
+          width: 36, // Botões maiores para toque fácil
           height: 36,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: color.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1), // Fundo mais suave
           ),
           child: Icon(
             icon,
-            size: 18,
+            size: 20, // Ícone maior
             color: color,
           ),
         ),

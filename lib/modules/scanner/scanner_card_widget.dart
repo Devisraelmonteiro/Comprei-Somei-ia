@@ -206,7 +206,7 @@ class ScannerCardWidget extends StatelessWidget {
           // Valores menores = cantos mais quadrados (ex: 8, 12)
           // Valores maiores = cantos mais arredondados (ex: 20, 24)
           // 0 = cantos totalmente quadrados
-          cornerRadius: 8,
+          cornerRadius: 6,
           
           // 🌑 OPACIDADE da vinheta escura (área fora do retângulo)
           // Valores menores = área mais clara/transparente (ex: 0.4, 0.5)
