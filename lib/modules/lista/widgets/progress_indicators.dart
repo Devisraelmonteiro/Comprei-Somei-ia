@@ -115,17 +115,17 @@ class _CompactProgressBar extends StatelessWidget {
 
   Color _getCategoryColor(String category) {
     switch (category) {
-      case 'Lista de Alimentos':
+      case 'Alimentos':
         return const Color(0xFFD9722E); // Laranja queimado
-      case 'Lista de Limpeza':
+      case 'Limpeza':
         return const Color(0xFF5D9B9B); // Verde água (Teal)
-      case 'Lista de Higiene':
+      case 'Higiene':
         return const Color(0xFFEBC866); // Amarelo mostarda
-      case 'Lista de Bebidas':
+      case 'Bebidas':
         return const Color(0xFF4A90E2); // Azul Bebidas
-      case 'Lista de Frios':
+      case 'Frios':
         return const Color(0xFF7BADD1); // Azul Frios/Gelo
-      case 'Lista de Hortifruti':
+      case 'Hortifruti':
         return const Color(0xFF6DA34D); // Verde Hortifruti
       default:
         return const Color(0xFF999999);

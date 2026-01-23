@@ -186,21 +186,21 @@ class ShoppingHeader extends StatelessWidget {
         decoration: BoxDecoration(
           color: _getCategoryColor(category),
           borderRadius: BorderRadius.circular(20.r),
-          border: isSelected ? Border.all(color: Colors.white, width: 1.5) : null, // Borda branca se selecionado
+          border: isSelected ? Border.all(color: AppColors.white, width: 1.5) : null, // Borda branca se selecionado
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               _getCategoryIcon(category),
-              color: category == 'Higiene' ? const Color(0xFF5A4A10) : Colors.white,
+              color: category == 'Higiene' ? const Color(0xFF5A4A10) : AppColors.white,
               size: 16.sp,
             ),
             SizedBox(width: 8.w),
             Text(
               category,
               style: TextStyle(
-                color: category == 'Higiene' ? const Color(0xFF5A4A10) : Colors.white, // Texto escuro só no amarelo
+                color: category == 'Higiene' ? const Color(0xFF5A4A10) : AppColors.white, // Texto escuro só no amarelo
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w700, // Mais bold
               ),
