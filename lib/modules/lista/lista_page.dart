@@ -6,6 +6,7 @@ import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controll
 import 'package:comprei_some_ia/modules/lista/widgets/shopping_header.dart';
 import 'package:comprei_some_ia/modules/lista/widgets/progress_indicators.dart';
 import 'package:comprei_some_ia/modules/lista/widgets/shopping_list_view.dart';
+import 'package:comprei_some_ia/modules/lista/widgets/add_item_dialog.dart';
 
 /// 🛒 Lista Page COMPLETA - VERSÃO 2025
 class ListaPage extends StatefulWidget {
@@ -57,51 +58,115 @@ class _ListaPageState extends State<ListaPage> {
               // ═══════════════════════════════════════════════════════════
               // 📋 CONTEÚDO PRINCIPAL DA PÁGINA
               // ═══════════════════════════════════════════════════════════
-              Column(
-                children: [
-                  // ───────────────────────────────────────────────────────
-                  // 📌 HEADER (Título "Sua Lista de Compras" + Categorias)
-                  // Widget: shopping_header.dart
-                  // Contém: Título, subtítulo, botões de categoria
-                  // ───────────────────────────────────────────────────────
-                  const ShoppingHeader(),
-                  
-                  // ───────────────────────────────────────────────────────
-                  // 📊 ÁREA DE CONTEÚDO (Barras de Progresso + Lista)
-                  // Fundo: Branco
-                  // ───────────────────────────────────────────────────────
-                  Expanded(
-                    child: Column(
-                      children: [
-                        SizedBox(height: 16.h), // 📏 Espaçamento superior
-                        
-                        // ───────────────────────────────────────────────
-                        // 📊 BARRAS DE PROGRESSO
-                        // Widget: progress_indicators.dart
-                        // Mostra: "Alimentos Concluídos: 50%" etc
-                        // ───────────────────────────────────────────────
-                        const ProgressIndicators(),
-                        
-                        SizedBox(height: 2.h), // 📏 Espaçamento entre progresso e lista
-                        
-                        // ───────────────────────────────────────────────
-                        // 📝 LISTA DE PRODUTOS
-                        // Widget: shopping_list_view.dart
-                        // Contém: arroz, feijão, maarn (com checkboxes)
-                        // ───────────────────────────────────────────────
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              // 📏 Espaçamento inferior (para evitar colisão com botões + NavBar)
-                              bottom: hasItems ? 120.h + safeAreaBottom : 100.h + safeAreaBottom,
+              Positioned.fill(
+                child: Column(
+                  children: [
+                    // ───────────────────────────────────────────────────────
+                    // 📌 HEADER (Título "Sua Lista de Compras" + Categorias)
+                    // Widget: shopping_header.dart
+                    // Contém: Título, subtítulo, botões de categoria
+                    // ───────────────────────────────────────────────────────
+                    const ShoppingHeader(),
+                    
+                    // ───────────────────────────────────────────────────────
+                    // 📊 ÁREA DE CONTEÚDO (Barras de Progresso + Lista)
+                    // Fundo: Branco
+                    // ───────────────────────────────────────────────────────
+                    Expanded(
+                      child: Column(
+                        children: [
+                          SizedBox(height: 16.h), // 📏 Espaçamento superior
+                          
+                          // ───────────────────────────────────────────────
+                          // 📊 BARRAS DE PROGRESSO
+                          // Widget: progress_indicators.dart
+                          // Mostra: "Alimentos Concluídos: 50%" etc
+                          // ───────────────────────────────────────────────
+                          const ProgressIndicators(),
+                          
+                          SizedBox(height: 16.h), // 📏 Espaçamento superior
+                          
+                          // ───────────────────────────────────────────────
+                          // 📌 TÍTULO DA LISTA (Categoria Selecionada) + Botão Adicionar
+                          // ───────────────────────────────────────────────
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Título da Categoria
+                                Text(
+                                  controller.selectedCategory, // Ex: "Alimentos", "Limpeza"
+                                  style: TextStyle(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF333333),
+                                  ),
+                                ),
+                                
+                                // Botão Adicionar Produto
+                                GestureDetector(
+                                  onTap: () => showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (context) => const AddItemDialog(),
+                                  ),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(18.r),
+                                      border: Border.all(
+                                        color: const Color(0xFFE8833A),
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.add,
+                                          color: const Color(0xFFE8833A),
+                                          size: 16.sp,
+                                        ),
+                                        SizedBox(width: 4.w),
+                                        Text(
+                                          'Adicionar',
+                                          style: TextStyle(
+                                            color: const Color(0xFFE8833A),
+                                            fontSize: 12.sp,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            child: const ShoppingListView(),
                           ),
-                        ),
-                      ],
+
+                          SizedBox(height: 8.h), // 📏 Espaçamento entre título e lista
+                          
+                          // ───────────────────────────────────────────────
+                          // 📝 LISTA DE PRODUTOS
+                          // Widget: shopping_list_view.dart
+                          // Contém: arroz, feijão, maarn (com checkboxes)
+                          // ───────────────────────────────────────────────
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                // 📏 Espaçamento inferior (para evitar colisão com botões + NavBar)
+                                bottom: hasItems ? 120.h + safeAreaBottom : 100.h + safeAreaBottom,
+                              ),
+                              child: const ShoppingListView(),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               
               // ═══════════════════════════════════════════════════════════
@@ -111,8 +176,8 @@ class _ListaPageState extends State<ListaPage> {
               if (hasItems)
                 Positioned(
                   bottom: 70.h + safeAreaBottom, // 📍 Distância do fundo (acima da NavBar)
-                  left: 30.w,   // 📍 Margem esquerda
-                  right: 30.w,  // 📍 Margem direita
+                  left: 16.w,   // 📍 Margem esquerda
+                  right: 16.w,  // 📍 Margem direita
                   child: Row(
                     children: [
                       // ───────────────────────────────────────────────────
@@ -124,12 +189,12 @@ class _ListaPageState extends State<ListaPage> {
                         child: _buildActionButton(
                           icon: Icons.share_outlined,
                           label: 'Compartilhar',
-                          color: const Color(0xFFE8833A), // 🟠 COR LARANJA
+                          color: const Color.fromARGB(255, 2, 115, 12), // 🟠 COR LARANJA
                           onTap: () => _handleShare(context, controller),
                         ),
                       ),
                       
-                      SizedBox(width: 35.w), // 📏 Espaçamento entre botões
+                      SizedBox(width: 18.w), // 📏 Espaçamento entre botões
                       
                       // ───────────────────────────────────────────────────
                       // 🔵 BOTÃO "GERAR RECEITAS"
@@ -184,7 +249,7 @@ class _ListaPageState extends State<ListaPage> {
             Text(
               label,
               style: TextStyle(
-                fontSize: 13.sp, // Fonte levemente menor
+                fontSize: 12.sp, // Fonte levemente menor
                 fontWeight: FontWeight.bold,
               ),
             ),

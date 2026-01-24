@@ -16,110 +16,80 @@ class ShoppingItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = context.read<ShoppingListController>();
 
-    return Card( // Usando Card para elevação (efeito Matrix/Material)
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: item.isChecked ? Colors.green.withOpacity(0.3) : Colors.grey.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Material(
+    return Container(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => controller.toggleItemCheck(item.id),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              children: [
-                // Checkbox circular
-                _buildCheckbox(context, controller),
-                
-                const SizedBox(width: 16),
-                
-                // Conteúdo (Nome + Quantidade + Categoria)
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Categoria (Título para saber qual lista está)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(70, 249, 200, 153).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          item.category.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 4),
-
-                      // Nome do produto
-                      Text(
-                        item.name,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: item.isChecked 
-                              ? Colors.grey.shade400 
-                              : Colors.black87,
-                          decoration: item.isChecked 
-                              ? TextDecoration.lineThrough 
-                              : null,
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 2),
-                      
-                      // Quantidade
-                      Text(
-                        'Qtd: ${item.quantity}',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                // Ícones de ação
-                Row(
-                  mainAxisSize: MainAxisSize.min,
+      ),
+      child: InkWell(
+        onTap: () => controller.toggleItemCheck(item.id),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              // Checkbox circular
+              _buildCheckbox(context, controller),
+              
+              const SizedBox(width: 16),
+              
+              // Conteúdo (Nome + Quantidade)
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Editar
-                    _buildActionIcon(
-                      icon: Icons.edit_outlined,
-                      color: Colors.blue.shade600,
-                      onTap: () => _showEditDialog(context),
-                      enabled: !item.isChecked,
+                    // Nome do produto
+                    Text(
+                      item.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: item.isChecked 
+                            ? Colors.grey.shade400 
+                            : Colors.black87,
+                        decoration: item.isChecked 
+                            ? TextDecoration.lineThrough 
+                            : null,
+                      ),
                     ),
                     
-                    const SizedBox(width: 4),
+                    const SizedBox(height: 4),
                     
-                    // Excluir
-                    _buildActionIcon(
-                      icon: Icons.delete_outline,
-                      color: Colors.red.shade400,
-                      onTap: () => _confirmDelete(context, controller),
-                      enabled: true,
+                    // Quantidade
+                    Text(
+                      'Qtd: ${item.quantity}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              
+              // Ícones de ação
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Editar
+                  _buildActionIcon(
+                    icon: Icons.edit_outlined,
+                    color: Colors.blue.shade600,
+                    onTap: () => _showEditDialog(context),
+                    enabled: !item.isChecked,
+                  ),
+                  
+                  const SizedBox(width: 4),
+                  
+                  // Excluir
+                  _buildActionIcon(
+                    icon: Icons.delete_outline,
+                    color: Colors.red.shade400,
+                    onTap: () => _confirmDelete(context, controller),
+                    enabled: true,
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
