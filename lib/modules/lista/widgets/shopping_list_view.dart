@@ -35,12 +35,18 @@ class ShoppingListView extends StatelessWidget {
         }
 
         // Lista de itens
-        return ListView.builder(
+        return ListView.separated(
           padding: EdgeInsets.symmetric(
             horizontal: AppSizes.screenPadding.w,
-            vertical: AppSizes.spacingSmall.h,
+            vertical: 4.h,
           ),
           itemCount: items.length,
+          separatorBuilder: (context, index) => Divider(
+            height: 1,
+            color: Colors.grey[200],
+            indent: 16.w,
+            endIndent: 16.w,
+          ),
           itemBuilder: (context, index) {
             final item = items[index];
             return ShoppingItemTile(

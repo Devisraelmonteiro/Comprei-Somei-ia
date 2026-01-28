@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
 import 'package:comprei_some_ia/modules/lista/widgets/add_item_dialog.dart';
@@ -23,13 +24,13 @@ class ShoppingItemTile extends StatelessWidget {
       child: InkWell(
         onTap: () => controller.toggleItemCheck(item.id),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h), // Mais compacto
           child: Row(
             children: [
               // Checkbox circular
               _buildCheckbox(context, controller),
               
-              const SizedBox(width: 16),
+              SizedBox(width: 12.w), // Reduzido
               
               // Conteúdo (Nome + Quantidade)
               Expanded(
@@ -41,7 +42,7 @@ class ShoppingItemTile extends StatelessWidget {
                     Text(
                       item.name,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14.sp, // Reduzido (antes 16)
                         fontWeight: FontWeight.w600,
                         color: item.isChecked 
                             ? Colors.grey.shade400 
@@ -52,13 +53,13 @@ class ShoppingItemTile extends StatelessWidget {
                       ),
                     ),
                     
-                    const SizedBox(height: 4),
+                    SizedBox(height: 2.h), // Reduzido
                     
                     // Quantidade
                     Text(
                       'Qtd: ${item.quantity}',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 11.sp, // Reduzido (antes 13)
                         color: Colors.grey.shade600,
                       ),
                     ),
@@ -73,12 +74,12 @@ class ShoppingItemTile extends StatelessWidget {
                   // Editar
                   _buildActionIcon(
                     icon: Icons.edit_outlined,
-                    color: Colors.blue.shade600,
+                    color: const Color.fromARGB(255, 0, 0, 0),
                     onTap: () => _showEditDialog(context),
                     enabled: !item.isChecked,
                   ),
                   
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4.w),
                   
                   // Excluir
                   _buildActionIcon(
@@ -110,8 +111,8 @@ class ShoppingItemTile extends StatelessWidget {
     return GestureDetector(
       onTap: () => controller.toggleItemCheck(item.id),
       child: Container(
-        width: 28, // Aumentado
-        height: 28, 
+        width: 28.w, // Aumentado
+        height: 28.w, 
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: item.isChecked 
@@ -121,13 +122,13 @@ class ShoppingItemTile extends StatelessWidget {
             color: item.isChecked 
                 ? const Color(0xFF4CAF50) 
                 : Colors.grey.shade400, // Cinza mais escuro na borda
-            width: 1.5,
+            width: 1.5.w,
           ),
         ),
         child: item.isChecked
-            ? const Icon(
+            ? Icon(
                 Icons.check,
-                size: 18, // Aumentado
+                size: 18.sp, // Aumentado
                 color: Colors.white,
               )
             : null,
@@ -146,17 +147,17 @@ class ShoppingItemTile extends StatelessWidget {
       opacity: enabled ? 1.0 : 0.5,
       child: InkWell(
         onTap: enabled ? onTap : null,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         child: Container(
-          width: 36, // Botões maiores para toque fácil
-          height: 36,
+          width: 32.w, // Reduzido (antes 36)
+          height: 32.w,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.grey.withValues(alpha: 0.1), // Fundo mais suave
+            color: Colors.grey.withOpacity(0.1), // Fundo mais suave
           ),
           child: Icon(
             icon,
-            size: 20, // Ícone maior
+            size: 18.sp, // Reduzido (antes 20)
             color: color,
           ),
         ),

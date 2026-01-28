@@ -37,179 +37,151 @@ class _ListaPageState extends State<ListaPage> {
           
           return Stack(
             children: [
-              // ═══════════════════════════════════════════════════════════
-              // 🎨 FUNDO BRANCO GERAL DA PÁGINA
-              // ═══════════════════════════════════════════════════════════
-              Container(color: Colors.white),
+              // 1. Fundo Geral (iOS Grouped Background)
+              Container(color: const Color(0xFFF2F2F7)),
 
-              // ═══════════════════════════════════════════════════════════
-              // 🟠 FUNDO LARANJA DO CABEÇALHO
-              // Cor: #FFE8833A (laranja primário)
-              // Posição: Fixo no topo, altura 150.h
-              // ═══════════════════════════════════════════════════════════
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 80.h, // ⚠️ Ajustar altura se necessário
-                child: Container(color: const Color(0xFFE8833A)), // 🟠 COR DO HEADER
-              ),
+              // 2. Conteúdo Principal
+              Column(
+                children: [
+                  // Header (Já inclui SafeArea top)
+                  const ShoppingHeader(),
+                  
+                  // Área Rolável (Indicadores + Lista)
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Indicadores de Progresso
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 6.h),
+                          child: const ProgressIndicators(),
+                        ),
 
-              // ═══════════════════════════════════════════════════════════
-              // 📋 CONTEÚDO PRINCIPAL DA PÁGINA
-              // ═══════════════════════════════════════════════════════════
-              Positioned.fill(
-                child: Column(
-                  children: [
-                    // ───────────────────────────────────────────────────────
-                    // 📌 HEADER (Título "Sua Lista de Compras" + Categorias)
-                    // Widget: shopping_header.dart
-                    // Contém: Título, subtítulo, botões de categoria
-                    // ───────────────────────────────────────────────────────
-                    const ShoppingHeader(),
-                    
-                    // ───────────────────────────────────────────────────────
-                    // 📊 ÁREA DE CONTEÚDO (Barras de Progresso + Lista)
-                    // Fundo: Branco
-                    // ───────────────────────────────────────────────────────
-                    Expanded(
-                      child: Column(
-                        children: [
-                          SizedBox(height: 16.h), // 📏 Espaçamento superior
-                          
-                          // ───────────────────────────────────────────────
-                          // 📊 BARRAS DE PROGRESSO
-                          // Widget: progress_indicators.dart
-                          // Mostra: "Alimentos Concluídos: 50%" etc
-                          // ───────────────────────────────────────────────
-                          const ProgressIndicators(),
-                          
-                          SizedBox(height: 16.h), // 📏 Espaçamento superior
-                          
-                          // ───────────────────────────────────────────────
-                          // 📌 TÍTULO DA LISTA (Categoria Selecionada) + Botão Adicionar
-                          // ───────────────────────────────────────────────
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Título da Categoria
-                                Text(
-                                  controller.selectedCategory, // Ex: "Alimentos", "Limpeza"
+                        // Título da Lista e Botão Adicionar
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(20.w, 4.h, 20.w, 12.h),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  controller.selectedCategory,
                                   style: TextStyle(
                                     fontSize: 18.sp,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF333333),
+                                    color: const Color(0xFF1C1C1E),
                                   ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                
-                                // Botão Adicionar Produto
-                                GestureDetector(
+                              ),
+                              
+                              SizedBox(width: 10.w),
+
+                              // Botão Adicionar (Estilo Pill Outlined)
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
                                   onTap: () => showModalBottomSheet(
                                     context: context,
                                     isScrollControlled: true,
                                     backgroundColor: Colors.transparent,
                                     builder: (context) => const AddItemDialog(),
                                   ),
+                                  borderRadius: BorderRadius.circular(20.r),
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(18.r),
                                       border: Border.all(
-                                        color: const Color(0xFFE8833A),
+                                        color: const Color(0xFFF68A07),
                                         width: 1.5,
                                       ),
+                                      borderRadius: BorderRadius.circular(20.r),
                                     ),
                                     child: Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Icon(
                                           Icons.add,
-                                          color: const Color(0xFFE8833A),
-                                          size: 16.sp,
+                                          color: const Color(0xFFF68A07),
+                                          size: 18.sp,
                                         ),
                                         SizedBox(width: 4.w),
                                         Text(
-                                          'Adicionar',
+                                          'Adicionar Produto',
                                           style: TextStyle(
-                                            color: const Color(0xFFE8833A),
-                                            fontSize: 12.sp,
+                                            fontSize: 10.sp,
                                             fontWeight: FontWeight.bold,
+                                            color: const Color(0xFFF68A07),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        // Lista de Produtos (Estilo Inset Grouped)
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 120.h + safeAreaBottom),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(14.r),
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: Column(
+                              children: [
+                                // Lista com Scroll Interno
+                                const Expanded(
+                                  child: ShoppingListView(),
+                                ),
                               ],
                             ),
                           ),
-
-                          SizedBox(height: 8.h), // 📏 Espaçamento entre título e lista
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              
+              // 3. Botões de Ação Flutuantes (Apple Style)
+              if (hasItems)
+                Positioned(
+                  bottom: 70.h + safeAreaBottom, // Mais perto do footer (AppSizes.bottomNavHeight ~56h + 4h de margem)
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Botão Compartilhar
+                          _buildFloatingActionButton(
+                            context: context,
+                            icon: Icons.share_rounded,
+                            label: 'Compartilhar',
+                            backgroundColor: const Color(0xFF4CAF50), // Verde
+                            onTap: () => _handleShare(context, controller),
+                          ),
                           
-                          // ───────────────────────────────────────────────
-                          // 📝 LISTA DE PRODUTOS
-                          // Widget: shopping_list_view.dart
-                          // Contém: arroz, feijão, maarn (com checkboxes)
-                          // ───────────────────────────────────────────────
-                          Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                // 📏 Espaçamento inferior (para evitar colisão com botões + NavBar)
-                                bottom: hasItems ? 120.h + safeAreaBottom : 100.h + safeAreaBottom,
-                              ),
-                              child: const ShoppingListView(),
-                            ),
+                          SizedBox(width: 12.w), // Espaço reduzido entre botões
+                          
+                          // Botão Receitas
+                          _buildFloatingActionButton(
+                            context: context,
+                            icon: Icons.restaurant_menu_rounded,
+                            label: 'Gerar Receitas',
+                            backgroundColor: const Color(0xFF006064), // Azul Petróleo
+                            onTap: () => _handleRecipes(context, controller),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              
-              // ═══════════════════════════════════════════════════════════
-              // 🔘 BOTÕES FIXOS NO RODAPÉ (Compartilhar + Gerar Receitas)
-              // Posição: Acima da BottomNavBar
-              // ═══════════════════════════════════════════════════════════
-              if (hasItems)
-                Positioned(
-                  bottom: 70.h + safeAreaBottom, // 📍 Distância do fundo (acima da NavBar)
-                  left: 16.w,   // 📍 Margem esquerda
-                  right: 16.w,  // 📍 Margem direita
-                  child: Row(
-                    children: [
-                      // ───────────────────────────────────────────────────
-                      // 🟠 BOTÃO "COMPARTILHAR"
-                      // Cor: Laranja (#FFE8833A)
-                      // Ícone: share_outlined
-                      // ───────────────────────────────────────────────────
-                      Expanded(
-                        child: _buildActionButton(
-                          icon: Icons.share_outlined,
-                          label: 'Compartilhar',
-                          color: const Color.fromARGB(255, 2, 115, 12), // 🟠 COR LARANJA
-                          onTap: () => _handleShare(context, controller),
-                        ),
-                      ),
-                      
-                      SizedBox(width: 18.w), // 📏 Espaçamento entre botões
-                      
-                      // ───────────────────────────────────────────────────
-                      // 🔵 BOTÃO "GERAR RECEITAS"
-                      // Cor: Azul Petróleo (#FF2C5461)
-                      // Ícone: restaurant_menu
-                      // ───────────────────────────────────────────────────
-                      Expanded(
-                        child: _buildActionButton(
-                          icon: Icons.restaurant_menu,
-                          label: 'Gerar Receitas',
-                          color: const Color(0xFF2C5461), // 🔵 COR AZUL PETRÓLEO
-                          onTap: () => _handleRecipes(context, controller),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
             ],
@@ -219,41 +191,48 @@ class _ListaPageState extends State<ListaPage> {
     );
   }
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // 🏗️ CONSTRUTOR DE BOTÕES DE AÇÃO (Compartilhar / Gerar Receitas)
-  // ═══════════════════════════════════════════════════════════════════════
-  Widget _buildActionButton({
+  Widget _buildFloatingActionButton({
+    required BuildContext context,
     required IconData icon,
     required String label,
-    required Color color,
     required VoidCallback onTap,
+    required Color backgroundColor,
   }) {
-    return SizedBox(
-      height: 35.h, // Altura reduzida (era 50)
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25.r), // Pílula
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20.r), // Mais compacto
+        boxShadow: [
+          BoxShadow(
+            color: backgroundColor.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 12.w),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 18.sp), // Ícone levemente menor
-            SizedBox(width: 8.w),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12.sp, // Fonte levemente menor
-                fontWeight: FontWeight.bold,
-              ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20.r),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h), // Padding vertical reduzido para 4
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 18.sp, color: Colors.white), // Ícone menor e branco
+                SizedBox(width: 6.w),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13.sp, // Fonte menor
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white, // Texto branco
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -3,10 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
 
-/// 📊 Indicadores de Progresso - VERSÃO PROFISSIONAL 2025
+/// 📊 Indicadores de Progresso - VERSÃO CLEAN (Apple Style)
 /// 
-/// Mostra barras de progresso para cada categoria com itens.
-/// Design compacto: categoria + progresso na mesma barra.
+/// Visual:
+/// - Minimalista e Fino
+/// - Tipografia refinada
+/// - 3 itens por vez na tela
 class ProgressIndicators extends StatelessWidget {
   const ProgressIndicators({super.key});
 
@@ -14,27 +16,52 @@ class ProgressIndicators extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ShoppingListController>(
       builder: (context, controller, _) {
-        // Mostra todas as categorias para o usuário ver o progresso de tudo
         final categoriesToShow = ShoppingListController.categories;
 
-        // Cálculo para caber exatamente 3 itens na tela
-        // Tela - Padding Horizontal (32) - Espaço entre itens (2 * 12) = Espaço disponível
-        // Dividido por 3 itens
-        final itemWidth = (MediaQuery.of(context).size.width - 56.w) / 3;
-
-        return SizedBox(
-          height: 50.h, // Altura fixa e compacta
-          child: ListView.builder(
+        return Container(
+          height: 40.h, // Altura reduzida para ser mais fino (antes 46)
+          margin: EdgeInsets.symmetric(horizontal: 16.w),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10.r), // Borda mais suave
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03), // Sombra muito sutil
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+            border: Border.all(color: Colors.grey[100]!), // Borda sutil
+          ),
+          child: ListView.separated(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h), // Reduzido (antes 8)
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
             itemCount: categoriesToShow.length,
+            separatorBuilder: (context, index) => Container(
+              width: 1,
+              height: 16.h, // Reduzido (antes 20)
+              color: const Color.fromARGB(28, 238, 238, 238), // Divisor vertical muito leve
+              margin: EdgeInsets.symmetric(horizontal: 12.w),
+            ),
             itemBuilder: (context, index) {
               final category = categoriesToShow[index];
-              return Padding(
-                padding: EdgeInsets.only(right: 12.w),
-                child: _CompactProgressBar(
-                  category: category,
-                  width: itemWidth,
+              // Largura calculada para mostrar exatamente 3 itens (ajustando padding e divisores)
+              // Container Width = 1.sw - 40.w (margin)
+              // Inner Width = Container Width - 32.w (padding)
+              // Separator Width = 1 + 24.w (~25.w)
+              // Visible Space = Inner Width - (2 * Separator Width)
+              // Item Width = Visible Space / 3
+              final innerWidth = 1.sw - 40.w - 32.w;
+              final separatorWidth = 25.w;
+              final itemWidth = (innerWidth - (2 * separatorWidth)) / 3;
+
+              return Container(
+                width: itemWidth,
+                alignment: Alignment.center,
+                child: _buildIndicatorItem(
+                  context, 
+                  category, 
+                  _getCategoryColor(category),
                 ),
               );
             },
@@ -43,91 +70,68 @@ class ProgressIndicators extends StatelessWidget {
       },
     );
   }
-}
 
-/// 🔹 Barra de progresso compacta (Card Horizontal)
-class _CompactProgressBar extends StatelessWidget {
-  final String category;
-  final double width;
+  Color _getCategoryColor(String category) {
+    // Cores Apple-like (menos saturadas, mais elegantes)
+    if (category.contains('Alimentos')) return const Color(0xFFFF9500); // System Orange
+    if (category.contains('Limpeza')) return const Color(0xFF5AC8FA);   // System Teal/Blue
+    if (category.contains('Higiene')) return const Color(0xFFFFCC00);   // System Yellow
+    if (category.contains('Bebidas')) return const Color(0xFF007AFF);   // System Blue
+    if (category.contains('Frios')) return const Color(0xFFAF52DE);     // System Purple
+    if (category.contains('Hortifruti')) return const Color(0xFF34C759); // System Green
+    return Colors.grey;
+  }
 
-  const _CompactProgressBar({
-    required this.category,
-    required this.width,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildIndicatorItem(BuildContext context, String category, Color color) {
     return Consumer<ShoppingListController>(
       builder: (context, controller, _) {
         final percentage = controller.completionPercentage(category);
+        final hasProgress = percentage > 0;
         
-        return Container(
-          width: width,
-          padding: EdgeInsets.all(8.w),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    category.replaceFirst('Lista de ', ''), // Nome limpo
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    category.replaceAll('Lista de ', ''),
                     style: TextStyle(
                       fontSize: 10.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      fontWeight: FontWeight.w500, // Peso médio
+                      color: Colors.grey[700], // Cinza escuro elegante
+                      letterSpacing: -0.2,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  Text(
-                    '${percentage.toInt()}%',
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.bold,
-                      color: _getProgressColor(percentage, category),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 6.h),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(2.r),
-                child: LinearProgressIndicator(
-                  value: percentage > 0 ? percentage / 100 : 0,
-                  backgroundColor: Colors.grey.shade100,
-                  valueColor: AlwaysStoppedAnimation<Color>(_getProgressColor(percentage, category)),
-                  minHeight: 4.h,
                 ),
+                SizedBox(width: 4.w),
+                Text(
+                  '${percentage.toInt()}%',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: hasProgress ? color : Colors.grey[400],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 5.h), // Espaçamento reduzido
+            ClipRRect(
+              borderRadius: BorderRadius.circular(2.r),
+              child: LinearProgressIndicator(
+                value: hasProgress ? percentage / 100 : 0,
+                backgroundColor: Colors.grey[100],
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+                minHeight: 6.5.h, // Barra bem fina
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
-  }
-
-  Color _getCategoryColor(String category) {
-    if (category.contains('Alimentos')) return const Color(0xFFD9722E);
-    if (category.contains('Limpeza')) return const Color(0xFF5D9B9B);
-    if (category.contains('Higiene')) return const Color(0xFFEBC866);
-    if (category.contains('Bebidas')) return const Color(0xFF4A90E2);
-    if (category.contains('Frios')) return const Color(0xFF7BADD1);
-    if (category.contains('Hortifruti')) return const Color(0xFF6DA34D);
-    return const Color(0xFF999999);
-  }
-
-  Color _getProgressColor(double percentage, String category) {
-    return _getCategoryColor(category);
   }
 }
