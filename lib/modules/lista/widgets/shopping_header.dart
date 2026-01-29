@@ -9,152 +9,147 @@ class ShoppingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFFF2F2F7), // Fundo estilo iOS Grouped
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return SizedBox(
+      height: 180.h, // Aumentado para garantir visibilidade do título
+      width: double.infinity,
+      child: Stack(
         children: [
-          // 1. Header com Banner (Topo Total)
-          Stack(
-            children: [
-              // Imagem de Fundo (Banner)
-              SizedBox(
-                height: 150.h, // Altura reduzida para compactar (antes 220)
-                width: double.infinity,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(0.r),
-                    bottomRight: Radius.circular(0.r),
-                  ),
-                  child: Image.asset(
-                    'assets/images/compras.jpg',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              
-              // Gradiente para legibilidade
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(0.r),
-                      bottomRight: Radius.circular(0.r),
-                    ),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.3),
-                        Colors.black.withOpacity(0.7),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              // Conteúdo do Header (SafeArea)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Barra Superior (Voltar + Logo)
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: Container(
-                                padding: EdgeInsets.all(8.w),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18.sp),
-                              ),
-                            ),
-                            const Spacer(),
-                            CircleAvatar(
-                              radius: 18.r,
-                              backgroundColor: Colors.white.withOpacity(0.9),
-                              backgroundImage: const AssetImage('assets/images/logo.png'),
-                            ),
-                          ],
-                        ),
-                        
-                        SizedBox(height: 20.h),
-                        
-                        // Títulos Dentro do Banner
-                        Text(
-                          'Lista de Compras',
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          '',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: Colors.white.withOpacity(0.9),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: 24.h),
-
-         
-
-          // 3. Categorias (Cards Estilo Imagem de Referência)
-          SizedBox(
-            height: 110.h, // Altura ajustada
-            child: Consumer<ShoppingListController>(
-              builder: (context, controller, _) {
-                return ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  itemCount: ShoppingListController.categories.length,
-                  separatorBuilder: (context, index) => SizedBox(width: 12.w),
-                  itemBuilder: (context, index) {
-                    final category = ShoppingListController.categories[index];
-                    
-                    // Cálculo para exibir exatamente 3 itens
-                    // Largura total - Padding lateral (16*2) - Espaçamento entre itens (12*2 para 3 itens)
-                    final double screenWidth = MediaQuery.of(context).size.width;
-                    final double availableWidth = screenWidth - (32.w); 
-                    final double itemWidth = (availableWidth - (24.w)) / 3;
-
-                    return _buildCategoryCard(
-                      category: category,
-                      isSelected: controller.selectedCategory == category,
-                      onTap: () => controller.selectCategory(category),
-                      width: itemWidth,
-                    );
-                  },
-                );
-              },
+          // Imagem de Fundo (Banner)
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/compras.jpg',
+              fit: BoxFit.cover,
             ),
           ),
           
-          SizedBox(height: 4.h),
+          // Gradiente para legibilidade
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(0.r),
+                  bottomRight: Radius.circular(0.r),
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.3),
+                    Colors.black.withOpacity(0.7),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Conteúdo do Header (SafeArea)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Barra Superior (Voltar + Logo)
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            padding: EdgeInsets.all(8.w),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18.sp),
+                          ),
+                        ),
+                        const Spacer(),
+                        CircleAvatar(
+                          radius: 18.r,
+                          backgroundColor: Colors.white.withOpacity(0.9),
+                          backgroundImage: const AssetImage('assets/images/logo.png'),
+                        ),
+                      ],
+                    ),
+                    
+                    SizedBox(height: 20.h),
+                    
+                    // Títulos Dentro do Banner
+                    // CONTROLE DE POSIÇÃO DO TÍTULO "Lista de Compras"
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 0.w,  // Edite aqui: Esquerda
+                        top: 0.h,   // Edite aqui: Cima
+                        right: 0.w, // Edite aqui: Direita
+                        bottom: 5.h // Edite aqui: Baixo
+                      ),
+                      child: Text(
+                        'Lista de Compras',
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      '',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.white.withOpacity(0.9),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+/// 📱 Seletor de Categorias (Extraído para Folha Sobreposta)
+class ShoppingCategoriesSelector extends StatelessWidget {
+  const ShoppingCategoriesSelector({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 110.h,
+      child: Consumer<ShoppingListController>(
+        builder: (context, controller, _) {
+          return ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            itemCount: ShoppingListController.categories.length,
+            separatorBuilder: (context, index) => SizedBox(width: 12.w),
+            itemBuilder: (context, index) {
+              final category = ShoppingListController.categories[index];
+              
+              // Cálculo para exibir exatamente 3 itens
+              final double screenWidth = MediaQuery.of(context).size.width;
+              final double availableWidth = screenWidth - (32.w); 
+              final double itemWidth = (availableWidth - (24.w)) / 3;
+
+              return _buildCategoryCard(
+                category: category,
+                isSelected: controller.selectedCategory == category,
+                onTap: () => controller.selectCategory(category),
+                width: itemWidth,
+              );
+            },
+          );
+        },
       ),
     );
   }

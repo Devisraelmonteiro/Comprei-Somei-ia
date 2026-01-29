@@ -37,115 +37,136 @@ class _ListaPageState extends State<ListaPage> {
           
           return Stack(
             children: [
-              // 1. Fundo Geral (iOS Grouped Background)
-              Container(color: const Color(0xFFF2F2F7)),
+              // 1. Header (Banner) Fixo no Fundo
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: ShoppingHeader(),
+              ),
 
-              // 2. Conteúdo Principal
-              Column(
-                children: [
-                  // Header (Já inclui SafeArea top)
-                  const ShoppingHeader(),
-                  
-                  // Área Rolável (Indicadores + Lista)
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Indicadores de Progresso
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 6.h),
-                          child: const ProgressIndicators(),
-                        ),
-
-                        // Título da Lista e Botão Adicionar
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20.w, 4.h, 20.w, 12.h),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  controller.selectedCategory,
-                                  style: TextStyle(
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF1C1C1E),
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              
-                              SizedBox(width: 10.w),
-
-                              // Botão Adicionar (Estilo Pill Outlined)
-                              Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () => showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    backgroundColor: Colors.transparent,
-                                    builder: (context) => const AddItemDialog(),
-                                  ),
-                                  borderRadius: BorderRadius.circular(20.r),
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: const Color(0xFFF68A07),
-                                        width: 1.5,
-                                      ),
-                                      borderRadius: BorderRadius.circular(20.r),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.add,
-                                          color: const Color(0xFFF68A07),
-                                          size: 18.sp,
-                                        ),
-                                        SizedBox(width: 4.w),
-                                        Text(
-                                          'Adicionar Produto',
-                                          style: TextStyle(
-                                            fontSize: 10.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: const Color(0xFFF68A07),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        // Lista de Produtos (Estilo Inset Grouped)
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 120.h + safeAreaBottom),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(14.r),
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: Column(
-                              children: [
-                                // Lista com Scroll Interno
-                                const Expanded(
-                                  child: ShoppingListView(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+              // 2. Folha Sobreposta (Conteúdo Principal)
+              Positioned.fill(
+                top: 155.h, // Ajustado para 160.h para mostrar o título "Lista de Compras"
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF2F2F7), // Fundo iOS Grouped
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.r),
+                      topRight: Radius.circular(30.r),
                     ),
                   ),
-                ],
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20.h), // Espaço topo da folha
+                      
+                      // Categorias (Agora dentro da folha)
+                      const ShoppingCategoriesSelector(),
+                      
+                      SizedBox(height: 4.h),
+
+                      // Área Rolável (Indicadores + Lista)
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Indicadores de Progresso
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 6.h),
+                              child: const ProgressIndicators(),
+                            ),
+
+                            // Título da Lista e Botão Adicionar
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(20.w, 4.h, 20.w, 12.h),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      controller.selectedCategory,
+                                      style: TextStyle(
+                                        fontSize: 18.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0xFF1C1C1E),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  
+                                  SizedBox(width: 10.w),
+
+                                  // Botão Adicionar (Estilo Pill Outlined)
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      onTap: () => showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (context) => const AddItemDialog(),
+                                      ),
+                                      borderRadius: BorderRadius.circular(20.r),
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: const Color(0xFFF68A07),
+                                            width: 1.5,
+                                          ),
+                                          borderRadius: BorderRadius.circular(20.r),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.add,
+                                              color: const Color(0xFFF68A07),
+                                              size: 18.sp,
+                                            ),
+                                            SizedBox(width: 4.w),
+                                            Text(
+                                              'Adicionar Produto',
+                                              style: TextStyle(
+                                                fontSize: 10.sp,
+                                                fontWeight: FontWeight.bold,
+                                                color: const Color(0xFFF68A07),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            
+                            // Lista de Produtos (Estilo Inset Grouped)
+                            Expanded(
+                              child: Container(
+                                margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 120.h + safeAreaBottom),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(14.r),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: Column(
+                                  children: [
+                                    // Lista com Scroll Interno
+                                    const Expanded(
+                                      child: ShoppingListView(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
               
               // 3. Botões de Ação Flutuantes (Apple Style)

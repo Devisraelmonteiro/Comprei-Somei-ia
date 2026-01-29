@@ -5,6 +5,7 @@ import 'package:comprei_some_ia/modules/home/home_page.dart';
 // import '../modules/scanner/scanner_page.dart';
 // import '../modules/orcamento/orcamento_page.dart';
 import 'package:comprei_some_ia/modules/lista/lista_page.dart';
+import 'package:comprei_some_ia/modules/orcamento/orcamento_page.dart';
 // import '../modules/encartes/encartes_page.dart';
 
 final router = GoRouter(
@@ -34,11 +35,11 @@ final router = GoRouter(
     //   builder: (context, state) => const ScannerPage(),
     // ),
     
-    // ORÇAMENTO (comentado)
-    // GoRoute(
-    //   path: '/orcamento',
-    //   builder: (context, state) => const OrcamentoPage(),
-    // ),
+    // ORÇAMENTO
+    GoRoute(
+      path: '/orcamento',
+      builder: (context, state) => const OrcamentoPage(),
+    ),
     
     // LISTA
     GoRoute(
