@@ -8,6 +8,7 @@ import 'app/app.dart';
 
 // Controllers
 import 'modules/home/home_controller.dart';
+import 'modules/login/login_controller.dart';
 import 'modules/lista/controllers/shopping_list_controller.dart';
 import 'modules/encartes/controllers/encarte_controller.dart';
 import 'modules/churrascometro/controllers/churrascometro_controller.dart';
@@ -43,6 +44,7 @@ class AppRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => LoginController()),
         ChangeNotifierProvider(create: (_) => HomeController()),
         ChangeNotifierProvider(create: (_) => ShoppingListController()),
         ChangeNotifierProvider(create: (_) => EncarteController()),

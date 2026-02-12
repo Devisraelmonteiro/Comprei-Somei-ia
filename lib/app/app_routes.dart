@@ -1,7 +1,8 @@
 import 'package:go_router/go_router.dart';
 
 import 'package:comprei_some_ia/modules/home/home_page.dart';
-// import '../modules/login/login_page.dart';
+import 'package:comprei_some_ia/modules/login/login_page.dart';
+import 'package:comprei_some_ia/modules/cadastro/cadastro_page.dart';
 // import '../modules/scanner/scanner_page.dart';
 // import '../modules/orcamento/orcamento_page.dart';
 import 'package:comprei_some_ia/modules/lista/lista_page.dart';
@@ -10,12 +11,12 @@ import 'package:comprei_some_ia/modules/encartes/pages/encarte_page.dart';
 import 'package:comprei_some_ia/modules/churrascometro/pages/churrascometro_page.dart';
 
 final router = GoRouter(
-  initialLocation: '/home',
+  initialLocation: '/login',
   routes: [
     // Rota raiz redireciona para /home
     GoRoute(
       path: '/',
-      redirect: (context, state) => '/home',
+      redirect: (context, state) => '/login',
     ),
     
     // HOME
@@ -24,11 +25,17 @@ final router = GoRouter(
       builder: (context, state) => HomePage(), // ← SEM const
     ),
     
-    // LOGIN (comentado)
-    // GoRoute(
-    //   path: '/login',
-    //   builder: (context, state) => const LoginPage(),
-    // ),
+    // LOGIN
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginPage(),
+    ),
+    
+    // CADASTRO
+    GoRoute(
+      path: '/cadastro',
+      builder: (context, state) => const CadastroPage(),
+    ),
     
     // SCANNER (comentado)
     // GoRoute(
