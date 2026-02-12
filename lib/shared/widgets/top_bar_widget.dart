@@ -1,5 +1,6 @@
 // lib/shared/widgets/top_bar_widget.dart
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
@@ -33,6 +34,13 @@ class TopBarWidget extends StatefulWidget {
 }
 
 class _TopBarWidgetState extends State<TopBarWidget> {
+  // ==========================================================
+  // ⚙️ CONTROLE VISUAL DO VIDRO (Edite aqui)
+  // ==========================================================
+  final double _blurIntensity = 1.0;    // 🌫️ Desfoque: Quanto maior, mais embaçado (Ex: 5.0 a 15.0)
+  final double _fumeOpacity = 0.3;       // 🌑 Escuridão: Quanto maior, mais escuro (Ex: 0.1 a 0.5)
+  // ==========================================================
+
   bool showBalance = true;
 
   @override
@@ -45,80 +53,115 @@ class _TopBarWidgetState extends State<TopBarWidget> {
           bottom: Radius.circular(AppSizes.headerBorderRadius.r),
         ),
       ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            AppSizes.headerPaddingHorizontal.w,
-            AppSizes.headerPaddingTop.h,
-            AppSizes.headerPaddingHorizontal.w,
-            AppSizes.headerPaddingBottom.h,
+      clipBehavior: Clip.hardEdge, // ✅ Garante que o logo de fundo respeite as bordas
+      child: Stack(
+        children: [
+          // 🏢 LOGO DE FUNDO (WATERMARK)
+          /*
+          if (widget.logoPath != null)
+            Positioned(
+              right: -40.w, // Alinhado à direita conforme solicitado anteriormente
+              top: -0.h,   // "Sem margem top" (subindo para ajustar o corte)
+              width: 150.w,  // Tamanho solicitado (Login Page)
+              height: 150.h, // Tamanho solicitado (Login Page)
+              child: Opacity(
+                opacity: 0.5,
+                child: Image.asset(
+                  widget.logoPath!,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.center,
+                ),
+              ),
+            ),
+          */
+
+          // 🌫️ CONTROLE FUME (Glassmorphism)
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: _blurIntensity, sigmaY: _blurIntensity),
+              child: Container(
+                color: Colors.black.withOpacity(_fumeOpacity),
+              ),
+            ),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 👤 AVATAR
-              _buildAvatar(),
-              
-              SizedBox(width: AppSizes.headerAvatarToGreetingSpacing.w),
-              
-              // 📝 TEXTOS (COLADOS)
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // ROW: "Olá, Israel" + Logo
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+          // 📄 CONTEÚDO ORIGINAL
+          SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSizes.headerPaddingHorizontal.w,
+                AppSizes.headerPaddingTop.h,
+                AppSizes.headerPaddingHorizontal.w,
+                AppSizes.headerPaddingBottom.h,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 👤 AVATAR
+                  _buildAvatar(),
+                  
+                  SizedBox(width: AppSizes.headerAvatarToGreetingSpacing.w),
+                  
+                  // 📝 TEXTOS (COLADOS)
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        // 👋 "Olá, Israel"
+                        // ROW: "Olá, Israel" + Logo
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // 👋 "Olá, Israel"
+                            Text(
+                              AppStrings.greeting(widget.userName),
+                              style: TextStyle(
+                                color: Colors.yellow,
+                                fontSize: AppSizes.greetingText.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            
+                            // 🏢 Logo da empresa (agora alinhado à direita da primeira linha)
+                            _buildLogo(),
+                          ],
+                        ),
+                        
+                        // ⚠️ SEM ESPAÇO entre "Olá" e "Saldo"
+                        SizedBox(height: AppSizes.headerGreetingToSaldoSpacing.h),
+                        
+                        // 💼 "Saldo"
                         Text(
-                          AppStrings.greeting(widget.userName),
+                          AppStrings.balanceLabel,
                           style: TextStyle(
-                            color: Colors.yellow,
-                            fontSize: AppSizes.greetingText.sp,
-                            fontWeight: FontWeight.w600,
+                            color: const Color.fromARGB(183, 255, 255, 255),
+                            fontSize: AppSizes.balanceLabel.sp,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         
-                        // 🏢 Logo da empresa (agora alinhado à direita da primeira linha)
-                        _buildLogo(),
-                      ],
-                    ),
-                    
-                    // ⚠️ SEM ESPAÇO entre "Olá" e "Saldo"
-                    SizedBox(height: AppSizes.headerGreetingToSaldoSpacing.h),
-                    
-                    // 💼 "Saldo"
-                    Text(
-                      AppStrings.balanceLabel,
-                      style: TextStyle(
-                        color: const Color.fromARGB(183, 255, 255, 255),
-                        fontSize: AppSizes.balanceLabel.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    
-                    // ⚠️ SEM ESPAÇO entre "Saldo" e valor
-                    SizedBox(height: AppSizes.headerSaldoToValueSpacing.h),
-                    
-                    // ROW: "R$ 500,00" + Olhinho
-                    Row(
-                      children: [
-                        // 💵 "R$ 500,00"
-                        _buildBalanceValue(),
+                        // ⚠️ SEM ESPAÇO entre "Saldo" e valor
+                        SizedBox(height: AppSizes.headerSaldoToValueSpacing.h),
                         
-                        // 👁️ Olhinho (posicionamento controlado internamente com Padding)
-                        _buildEyeToggle(),
+                        // ROW: "R$ 500,00" + Olhinho
+                        Row(
+                          children: [
+                            // 💵 "R$ 500,00"
+                            _buildBalanceValue(),
+                            
+                            // 👁️ Olhinho (posicionamento controlado internamente com Padding)
+                            _buildEyeToggle(),
+                          ],
+                        ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

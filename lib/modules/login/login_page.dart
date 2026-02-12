@@ -94,11 +94,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           // "Logo alinhado a esquerda , gingande ao fundo do header ate o imputs de fundo"
           Positioned(
             left: -80.w, // Alinhado bem à esquerda
-            top: 100.h,    // Começando da área do header
+            top: 120.h,    // Começando da área do header
             width: 500.w, // Tamanho massivo (10x maior) para dominar o fundo
             height: 500.h, // Altura massiva para permitir a largura crescer
             child: Opacity(
-              opacity: 1.0, // Opacidade total para ser o elemento principal
+              opacity: 0.3, // Opacidade total para ser o elemento principal
               child: Image.asset(
                 'assets/images/logo.png',
                 fit: BoxFit.contain,
@@ -131,17 +131,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Spacer(flex: 2),
-                      
-                      // Logo Principal (Removida conforme solicitação)
-                      // "tem 2 logo o de fundo e o no header o do header apaga"
-                      // Hero(
-                      //   tag: 'app_logo',
-                      //   child: Image.asset(
-                      //     'assets/images/logo.png',
-                      //     width: 64.w,
-                      //     height: 64.w,
-                      //   ),
-                      // ),
                       
                       SizedBox(height: 100.h), // Espaço compensatório para o header limpo
 
@@ -197,7 +186,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         child: TextButton(
                           onPressed: () {},
                           style: TextButton.styleFrom(
-                            foregroundColor: const Color.fromARGB(255, 240, 154, 6).withOpacity(0.8),
+                            foregroundColor: const Color.fromARGB(255, 19, 89, 1).withOpacity(0.8),
                             padding: EdgeInsets.zero,
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -219,10 +208,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         builder: (context, controller, child) {
                           return Column(
                             children: [
-                              // Botão Acessar (Primário - Branco)
-                              SizedBox(
+                              // Botão Acessar (Gradiente Laranja - Footer Style)
+                              Container(
                                 width: double.infinity,
                                 height: 50.h,
+                                decoration: BoxDecoration(
+                                  gradient: AppColors.bottomNavGradient,
+                                  borderRadius: BorderRadius.circular(100.r),
+                                ),
                                 child: ElevatedButton(
                                   onPressed: controller.isLoading
                                       ? null
@@ -247,12 +240,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                           }
                                         },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    foregroundColor: Colors.black, // Contraste máximo
+                                    backgroundColor: Colors.transparent,
+                                    foregroundColor: Colors.white,
                                     elevation: 0,
                                     shadowColor: Colors.transparent,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(100.r), // Pílula perfeita
+                                      borderRadius: BorderRadius.circular(100.r),
                                     ),
                                   ),
                                   child: controller.isLoading
@@ -260,7 +253,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                           height: 24.h,
                                           width: 24.h,
                                           child: const CircularProgressIndicator(
-                                            valueColor: AlwaysStoppedAnimation(Colors.black),
+                                            valueColor: AlwaysStoppedAnimation(Colors.white),
                                             strokeWidth: 2,
                                           ),
                                         )
@@ -277,7 +270,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
                               SizedBox(height: 16.h),
 
-                              // Botão Cadastrar (Secundário - Outline)
+                              // Botão Cadastrar (Secundário - Outline Laranja)
                               SizedBox(
                                 width: double.infinity,
                                 height: 56.h,
@@ -286,8 +279,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     context.push('/cadastro');
                                   },
                                   style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.white.withOpacity(0.3), width: 1),
-                                    foregroundColor: Colors.white,
+                                    side: const BorderSide(color: AppColors.primary, width: 2), // Borda Laranja
+                                    foregroundColor: AppColors.primary, // Texto Laranja
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(100.r),
                                     ),
@@ -332,9 +325,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         Text(
           label,
           style: GoogleFonts.poppins(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w500,
-            color: Colors.white.withOpacity(0.8),
+            fontSize: 16.sp, // Aumentado (Stronger)
+            fontWeight: FontWeight.bold, // Bold (Stronger)
+            color: Colors.white, // Opacidade total (Stronger)
             letterSpacing: 0.5,
           ),
         ),

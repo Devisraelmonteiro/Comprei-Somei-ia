@@ -102,7 +102,7 @@ class AppDrawer extends StatelessWidget {
                   ),
                   _buildMenuItem(
                     icon: Icons.account_balance_wallet,
-                    title: "Controle de Gastos",
+                    title: " Gastos",
                     onTap: () {
                       Navigator.pop(context);
                       // Navegar para controle
