@@ -24,8 +24,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   // ==========================================================
   // ⚙️ CONTROLE VISUAL DO FUNDO (Edite aqui)
   // ==========================================================
-  final double _backgroundOpacity = 0.7; // 0.0 (invisível) a 1.0 (totalmente visível)
-  final double _blurIntensity = 8.0;    // Quanto maior, mais desfocado (vidro fosco)
+  final double _backgroundOpacity = 0.9; // 0.0 (invisível) a 1.0 (totalmente visível)
+  final double _blurIntensity = 10.0;    // Quanto maior, mais desfocado (vidro fosco)
   // ==========================================================
 
   late AnimationController _animationController;
@@ -84,7 +84,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             child: Opacity(
               opacity: _backgroundOpacity, // Controlado pela constante acima
               child: Image.asset(
-                'assets/images/login.png',
+                'assets/images/fundo9.png',
                 fit: BoxFit.cover,
               ),
             ),
@@ -151,7 +151,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         style: TextStyle(
                           fontSize: 30.sp,
                           fontWeight: FontWeight.bold, // San Francisco Bold
-                          color: Colors.white,
+                          color: const Color.fromARGB(255, 233, 118, 3),
                           letterSpacing: -0.5,
                           height: 1.1,
                           fontFamily: '.SF Pro Display', // Força SF Pro no iOS se disponível
@@ -163,7 +163,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500, // Medium weight
-                          color: const Color.fromARGB(255, 169, 168, 168), // Cor da marca (Laranja) conforme solicitado "não tudo branco"
+                          color: const Color.fromARGB(255, 22, 22, 22), // Cor da marca (Laranja) conforme solicitado "não tudo branco"
                           letterSpacing: 0,
                           fontFamily: '.SF Pro Text', // Força SF Pro Text no iOS
                         ),
@@ -197,7 +197,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         child: TextButton(
                           onPressed: () {},
                           style: TextButton.styleFrom(
-                            foregroundColor: Colors.white.withOpacity(0.8),
+                            foregroundColor: const Color.fromARGB(255, 240, 154, 6).withOpacity(0.8),
                             padding: EdgeInsets.zero,
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
