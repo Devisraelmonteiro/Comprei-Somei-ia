@@ -1,0 +1,509 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:comprei_some_ia/shared/widgets/base_scaffold.dart';
+import '../controllers/churrascometro_controller.dart';
+
+class ChurrascometroPage extends StatelessWidget {
+  const ChurrascometroPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseScaffold(
+      currentIndex: 4,
+      child: Stack(
+        children: [
+          // 1. Imagem de Fundo (Banner) com Blur e Overlay
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 160.h,
+            child: Stack(
+              children: [
+                Image.asset(
+                  'assets/images/churrasco.png',
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.7),
+                        Colors.black.withOpacity(0.2),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 2. Header Content
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            padding: EdgeInsets.all(6.r),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 16.sp),
+                          ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: EdgeInsets.all(2.r),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
+                          ),
+                          child: CircleAvatar(
+                            radius: 16.r,
+                            backgroundColor: Colors.white,
+                            backgroundImage: const AssetImage('assets/images/logo.png'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Churrascômetro',
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        height: 1.1,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // 3. Conteúdo Principal
+          Positioned.fill(
+            top: 140.h,
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFF2F2F7), // iOS System Gray 6
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30.r),
+                  topRight: Radius.circular(30.r),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30.r),
+                  topRight: Radius.circular(30.r),
+                ),
+                child: Consumer<ChurrascometroController>(
+                  builder: (context, controller, _) {
+                    final model = controller.model;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildSectionTitle('CONVIDADOS'),
+                              SizedBox(height: 8.h),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildGuestCard(context, 'Homens', model.homens, (v) => controller.updateHomens(v), 'assets/images/homem.jpg', Colors.blue),
+                                  _buildGuestCard(context, 'Mulheres', model.mulheres, (v) => controller.updateMulheres(v), 'assets/images/mulher.jpg', Colors.pink),
+                                  _buildGuestCard(context, 'Crianças', model.criancas, (v) => controller.updateCriancas(v), 'assets/images/crianca.jpg', const Color.fromARGB(255, 255, 102, 0)),
+                                ],
+                              ),
+                              
+                              SizedBox(height: 24.h),
+                              
+                              Container(
+                                padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(Icons.timer_outlined, color: Colors.orange, size: 18.sp),
+                                            SizedBox(width: 8.w),
+                                            Text('Duração', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600)),
+                                          ],
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                                          decoration: BoxDecoration(
+                                            color: Colors.orange.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(20.r),
+                                          ),
+                                          child: Text('${model.duracaoHoras}h', style: TextStyle(fontSize: 12.sp, color: Colors.orange, fontWeight: FontWeight.bold)),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 0.h),
+                                    SliderTheme(
+                                      data: SliderTheme.of(context).copyWith(
+                                        activeTrackColor: Colors.orange,
+                                        inactiveTrackColor: Colors.grey[200],
+                                        thumbColor: Colors.white,
+                                        trackHeight: 4.h,
+                                        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.r, elevation: 4),
+                                        overlayShape: RoundSliderOverlayShape(overlayRadius: 14.r),
+                                      ),
+                                      child: Slider(
+                                        value: model.duracaoHoras.toDouble(),
+                                        min: 2,
+                                        max: 12,
+                                        divisions: 10,
+                                        onChanged: (v) => controller.updateDuracao(v.round()),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 12.h),
+                              _buildSectionTitle('OPÇÕES EXTRAS'),
+                              SizedBox(height: 8.h),
+                              
+                              Container(
+                                padding: EdgeInsets.all(12.r),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        _buildToggleTile(context, 'Cerveja', model.bebidaAlcoolica, (v) => controller.toggleBebidaAlcoolica(v), 'assets/images/cerveja.jpg', Colors.amber),
+                                        _buildToggleTile(context, 'Pão Alho', model.paoDeAlho, (v) => controller.togglePaoDeAlho(v), 'assets/images/pao_de_alho.jpg', Colors.brown),
+                                        _buildToggleTile(context, 'Carvão', model.carvao, (v) => controller.toggleCarvao(v), 'assets/images/carvao.jpg', Colors.grey),
+                                        _buildToggleTile(context, 'Gelo', model.gelo, (v) => controller.toggleGelo(v), 'assets/images/gelo.jpg', Colors.cyan),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              SizedBox(height: 12.h),
+                              _buildSectionTitle('LISTA DE COMPRAS'),
+                              SizedBox(height: 8.h),
+                            ],
+                          ),
+                        ),
+
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 110.h),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20.r),
+                              child: ListView(
+                                padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                                children: [
+                                  _buildResultItem(context, 'Carne', '${model.carneTotalKg.toStringAsFixed(1)}', 'kg', 'assets/images/carne.jpg', Colors.red, isFirst: true),
+                                  if (model.bebidaAlcoolica)
+                                    _buildResultItem(context, 'Cerveja', '${model.cervejaTotalLitros.toStringAsFixed(1)}', 'L', 'assets/images/cerveja.jpg', Colors.amber),
+                                  _buildResultItem(context, 'Bebidas', '${model.refrigeranteTotalLitros.toStringAsFixed(1)}', 'L', 'assets/images/bebidas.png', Colors.blue),
+                                  if (model.paoDeAlho)
+                                    _buildResultItem(context, 'Pão Alho', '${model.paoDeAlhoUnidades}', 'pct', 'assets/images/pao_de_alho.jpg', Colors.brown),
+                                  if (model.carvao)
+                                    _buildResultItem(context, 'Carvão', '${model.carvaoSacos}', 'sc', 'assets/images/carvao.jpg', Colors.grey),
+                                  if (model.gelo)
+                                    _buildResultItem(context, 'Gelo', '${model.geloSacos}', 'sc', 'assets/images/gelo.jpg', Colors.cyan),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.only(left: 16.w),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 13.sp,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF8E8E93),
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGuestCard(BuildContext context, String label, int value, Function(int) onChanged, String imageAsset, Color color) {
+    return Container(
+      width: (MediaQuery.of(context).size.width - 32.w - 24.w) / 3,
+      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 40.r,
+            height: 40.r,
+            padding: EdgeInsets.all(2.r), // Border width
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: ClipOval(
+              child: Image.asset(imageAsset, fit: BoxFit.cover),
+            ),
+          ),
+          SizedBox(height: 4.h),
+          Text(label, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color: Colors.grey[700])),
+          SizedBox(height: 8.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSmallStepper(Icons.remove, () => onChanged(value - 1)),
+              Text('$value', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold)),
+              _buildSmallStepper(Icons.add, () => onChanged(value + 1)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSmallStepper(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(4.r),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, size: 12.sp, color: Colors.black87),
+      ),
+    );
+  }
+
+  Widget _buildToggleTile(BuildContext context, String label, bool value, Function(bool) onChanged, String imageAsset, Color color) {
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            children: [
+              Container(
+                width: 44.r,
+                height: 44.r,
+                padding: EdgeInsets.all(2.r),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: value ? color : Colors.transparent,
+                    width: 2,
+                  ),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: AssetImage(imageAsset),
+                      fit: BoxFit.cover,
+                      colorFilter: value ? null : const ColorFilter.mode(Colors.grey, BlendMode.saturation),
+                    ),
+                  ),
+                ),
+              ),
+              if (value)
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    padding: EdgeInsets.all(4.r),
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                    child: Icon(Icons.check, size: 8.sp, color: Colors.white),
+                  ),
+                ),
+            ],
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10.sp,
+              fontWeight: value ? FontWeight.w600 : FontWeight.w500,
+              color: value ? Colors.black87 : Colors.grey[600],
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultItem(BuildContext context, String label, String value, String unit, String imageAsset, Color color, {bool isFirst = false}) {
+    return Column(
+      children: [
+        if (!isFirst)
+          Divider(height: 1, color: Colors.grey.withOpacity(0.1)),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.h),
+          child: Row(
+            children: [
+              Container(
+                width: 30.r,
+                height: 30.r,
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage(imageAsset),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+              const Spacer(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(width: 2.w),
+                  Text(
+                    unit,
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStepperButton(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 28.w,
+        height: 28.w,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(6.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 2,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Icon(icon, size: 16.sp, color: Colors.black),
+      ),
+    );
+  }
+}

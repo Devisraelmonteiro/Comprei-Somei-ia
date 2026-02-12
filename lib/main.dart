@@ -9,6 +9,8 @@ import 'app/app.dart';
 // Controllers
 import 'modules/home/home_controller.dart';
 import 'modules/lista/controllers/shopping_list_controller.dart';
+import 'modules/encartes/controllers/encarte_controller.dart';
+import 'modules/churrascometro/controllers/churrascometro_controller.dart';
 
 /// 🔥 LISTA GLOBAL DE CÂMERAS (OBRIGATÓRIO NO iOS)
 late List<CameraDescription> cameras;
@@ -43,6 +45,8 @@ class AppRoot extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => HomeController()),
         ChangeNotifierProvider(create: (_) => ShoppingListController()),
+        ChangeNotifierProvider(create: (_) => EncarteController()),
+        ChangeNotifierProvider(create: (_) => ChurrascometroController()),
       ],
       child: ScreenUtilInit(
         /// 📐 BASE DE DESIGN (layout travado)

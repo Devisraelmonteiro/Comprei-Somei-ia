@@ -18,25 +18,29 @@ class OrcamentoPage extends StatefulWidget {
 
 class _OrcamentoPageState extends State<OrcamentoPage> {
   final TextEditingController _moneyController = TextEditingController(text: 'R\$ 0,00');
+  final TextEditingController _orcamentoController = TextEditingController(text: 'R\$ 0,00');
   final FocusNode _budgetFocus = FocusNode();
+  final FocusNode _orcamentoFocus = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _moneyController.addListener(_onTextChanged);
+    _moneyController.addListener(() => _onTextChanged(_moneyController));
+    _orcamentoController.addListener(() => _onTextChanged(_orcamentoController));
   }
 
   @override
   void dispose() {
-    _moneyController.removeListener(_onTextChanged);
     _moneyController.dispose();
+    _orcamentoController.dispose();
     _budgetFocus.dispose();
+    _orcamentoFocus.dispose();
     super.dispose();
   }
 
-  void _onTextChanged() {
+  void _onTextChanged(TextEditingController controller) {
     // Remove tudo que não é dígito
-    String text = _moneyController.text;
+    String text = controller.text;
     String digits = text.replaceAll(RegExp(r'[^\d]'), '');
     
     if (digits.isEmpty) digits = '0';
@@ -47,8 +51,8 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
     final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
     String newText = formatter.format(doubleValue);
     
-    if (_moneyController.text != newText) {
-        _moneyController.value = _moneyController.value.copyWith(
+    if (controller.text != newText) {
+        controller.value = controller.value.copyWith(
             text: newText,
             selection: TextSelection.collapsed(offset: newText.length),
         );
@@ -56,10 +60,20 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
   }
 
   void _saveBudget() {
-    // TODO: Implementar salvamento do orçamento
+    // Salva o orçamento definido
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Orçamento definido: ${_moneyController.text}'),
+        content: Text('Orçamento definido: ${_orcamentoController.text}'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _addExpense() {
+    // Adiciona o gasto
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Gasto adicionado: ${_moneyController.text}'),
         backgroundColor: Colors.green,
       ),
     );
@@ -123,6 +137,12 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                             onTap: () => Navigator.pop(context),
                             child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
                           ),
+                          const Spacer(),
+                          CircleAvatar(
+                            radius: 18.r,
+                            backgroundColor: Colors.white.withOpacity(0.9),
+                            backgroundImage: const AssetImage('assets/images/logo.png'),
+                          ),
                         ],
                       ),
                       SizedBox(height: 20.h),
@@ -135,7 +155,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                           bottom: 0.h // Edite aqui: Baixo
                         ),
                         child: Text(
-                          'Controle Gastos', // Título em 2 linhas
+                          'Controle de Gastos', // Título em 2 linhas
                           style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
@@ -165,124 +185,148 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                   padding: EdgeInsets.only(top: 30.h, bottom: 40.h),
                   child: Column(
                     children: [
-                      // Seção de Input de Orçamento
+                      // Card "Adicionar gasto"
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Qual seu orçamento para compras?',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                        child: Container(
+                          padding: EdgeInsets.all(20.r),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(10, 244, 132, 4),
+                            borderRadius: BorderRadius.circular(24.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 15,
+                                offset: const Offset(0, 5),
                               ),
-                            ),
-                            SizedBox(height: 8.h),
-                            Text(
-                              'Digite o valor do seu orçamento',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                color: Colors.grey[500],
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            SizedBox(height: 24.h),
-                            // Input Field Estilo Pill (Branco com sombra)
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
-                              child: Row(
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Expanded(
-                                    child: TextField(
-                                      controller: _moneyController,
-                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                      focusNode: _budgetFocus,
-                                      onTap: () => _budgetFocus.requestFocus(),
-                                      style: TextStyle(
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: 'R\$ 0,00',
-                                        hintStyle: TextStyle(color: Colors.grey[400]),
-                                        contentPadding: EdgeInsets.zero,
-                                      ),
+                                  Text(
+                                    'Adicionar gasto',
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
                                     ),
                                   ),
                                   Container(
                                     padding: EdgeInsets.all(6.r),
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFFEDF5EA),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[100],
                                       shape: BoxShape.circle,
                                     ),
-                                    child: Icon(
-                                      Icons.edit,
-                                      color: const Color(0xFF5B9A4C), // Verde
-                                      size: 16.sp,
+                                    child: Icon(Icons.edit, size: 16.sp, color: const Color.fromARGB(255, 189, 189, 189)),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 8.h),
+                              Text(
+                                'Adicione o valor gasto em suas compras\ne acompanhe seus gastos',
+                                style: TextStyle(
+                                  fontSize: 11.sp,
+                                  color: Colors.grey[500],
+                                  height: 1.2,
+                                ),
+                              ),
+                              SizedBox(height: 16.h),
+                              
+                              // Input Field Grande
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(28.r),
+                                ),
+                                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 9.h),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: _moneyController,
+                                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                        focusNode: _budgetFocus,
+                                        onTap: () => _budgetFocus.requestFocus(),
+                                        style: TextStyle(
+                                          fontSize: 20.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'R\$ 0,00',
+                                          hintStyle: TextStyle(color: Colors.grey[400]),
+                                          contentPadding: EdgeInsets.zero,
+                                          isDense: true,
+                                        ),
+                                      ),
+                                    ),
+                                   // Container(
+                                     // padding: EdgeInsets.all(8.r),
+                                      //decoration: const BoxDecoration(
+                                        //color: Color(0xFFE8F5E9),
+                                        //shape: BoxShape.circle,
+                                      //),
+                                      //child: Icon(
+                                        //Icons.edit,
+                                        //color: const Color.fromARGB(255, 76, 175, 79),
+                                        //size: 8.sp,
+                                      //),
+                                   // ),
+                                  ],
+                                ),
+                              ),
+                              
+                              SizedBox(height: 24.h),
+                              
+                              // Botão Laranja
+                              Container(
+                                width: double.infinity,
+                                height: 40.h,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFFFFA726), Color(0xFFFF7043)],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(28.r),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFFFF7043).withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: _addExpense,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(28.r),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 24.h),
-                            // Botão Laranja Gradiente
-                            Container(
-                              width: double.infinity,
-                              height: 52.h,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFFFFA726), Color(0xFFFF7043)], // Laranja vibrante
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(30.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFFFF7043).withOpacity(0.3),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: ElevatedButton(
-                                onPressed: _saveBudget,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.r),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Definir Orçamento',
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                  child: Text(
+                                    'Adicionar ',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                      SizedBox(height: 30.h),
+                      
+                      SizedBox(height: 24.h),
                       // Card de Relatórios
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -314,7 +358,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
         // Obter orçamento atual do input
         double orcamento = 0.0;
         try {
-          final cleanValue = _moneyController.text.replaceAll(RegExp(r'[^\d,]'), '').replaceAll(',', '.');
+          final cleanValue = _orcamentoController.text.replaceAll(RegExp(r'[^\d,]'), '').replaceAll(',', '.');
           orcamento = double.tryParse(cleanValue) ?? 0.0;
         } catch (_) {}
         
@@ -388,7 +432,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                     child: Text(
                       'Relatórios',
                       style: TextStyle(
-                        fontSize: 18.sp,
+                        fontSize: 15.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),

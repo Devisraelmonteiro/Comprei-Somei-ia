@@ -6,7 +6,8 @@ import 'package:comprei_some_ia/modules/home/home_page.dart';
 // import '../modules/orcamento/orcamento_page.dart';
 import 'package:comprei_some_ia/modules/lista/lista_page.dart';
 import 'package:comprei_some_ia/modules/orcamento/orcamento_page.dart';
-// import '../modules/encartes/encartes_page.dart';
+import 'package:comprei_some_ia/modules/encartes/pages/encarte_page.dart';
+import 'package:comprei_some_ia/modules/churrascometro/pages/churrascometro_page.dart';
 
 final router = GoRouter(
   initialLocation: '/home',
@@ -48,13 +49,17 @@ final router = GoRouter(
       builder: (context, state) => const ListaPage(),
     ),
     
-    // ENCARTES (comentado)
-    // GoRoute(
-    //   path: '/encartes',
-    //   builder: (context, state) => const EncartesPage(),
-    // ),
+    // ENCARTES
+    GoRoute(
+      path: '/encartes',
+      builder: (context, state) => const EncartePage(),
+    ),
     
-    // SETTINGS (adicional - para o drawer)
+    // CHURRASCÔMETRO
+    GoRoute(
+      path: '/churrascometro',
+      builder: (context, state) => const ChurrascometroPage(),
+    ),
     // GoRoute(
     //   path: '/settings',
     //   builder: (context, state) => const SettingsPage(),
