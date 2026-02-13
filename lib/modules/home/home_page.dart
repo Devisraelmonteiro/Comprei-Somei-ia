@@ -19,6 +19,8 @@ import 'package:comprei_some_ia/shared/widgets/favoritos_grid.dart';
 import 'package:comprei_some_ia/core/services/ocr_service.dart';
 import 'package:comprei_some_ia/main.dart';
 import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
+import 'widgets/multiplier_sheet.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -218,7 +220,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  void _showMultiplySheet(HomeController controller) {}
+  void _showMultiplySheet(HomeController controller) {
+    if (controller.capturedValue <= 0) {
+      // Opcional: Mostrar aviso que precisa capturar valor primeiro
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Capture ou digite um valor primeiro!'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => MultiplierSheet(controller: controller),
+    );
+  }
 }
 // ═══════════════════════════════════════════════════════════════
 // 📋 CÓDIGO NÍVEL SÊNIOR - RESPONSIVO E ESCALÁVEL

@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Import para Haptics
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import '../home_controller.dart';
@@ -16,12 +18,12 @@ class _ManualValueSheetState extends State<ManualValueSheet> {
   String _currentValue = "0,00";
   
   double get _numericValue {
-    // Remove formatting characters (thousands separator dots) and replace decimal comma
     String clean = _currentValue.replaceAll('.', '').replaceAll(',', '.');
     return double.tryParse(clean) ?? 0.0;
   }
 
   void _onKeyPress(String key) {
+    HapticFeedback.lightImpact(); // Feedback tátil premium
     setState(() {
       if (key == 'backspace') {
         _removeDigit();
@@ -37,7 +39,7 @@ class _ManualValueSheetState extends State<ManualValueSheet> {
   int _rawValue = 0;
 
   void _addDigit(int digit) {
-    if (_rawValue.toString().length >= 9) return; // Limit length
+    if (_rawValue.toString().length >= 9) return;
     setState(() {
       _rawValue = _rawValue * 10 + digit;
       _updateDisplay(_rawValue);
@@ -45,7 +47,7 @@ class _ManualValueSheetState extends State<ManualValueSheet> {
   }
 
   void _addDoubleZero() {
-    if (_rawValue.toString().length >= 8) return; // Ensure space for 2 zeros
+    if (_rawValue.toString().length >= 8) return;
     setState(() {
       _rawValue = _rawValue * 100;
       _updateDisplay(_rawValue);
@@ -67,211 +69,253 @@ class _ManualValueSheetState extends State<ManualValueSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 0.85.sh, // Mais alto para dar ar de "Apple Design"
-      padding: EdgeInsets.fromLTRB(24.w, 12.h, 24.w, 34.h),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF2F2F7),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(32.r),
-          topRight: Radius.circular(32.r),
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(32.r),
+        topRight: Radius.circular(32.r),
       ),
-      child: Column(
-        children: [
-          // Handle bar
-          Center(
-            child: Container(
-              width: 36.w,
-              height: 5.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFFD1D1D6), // iOS Handle color
-                borderRadius: BorderRadius.circular(2.5.r),
+      child: Container(
+        height: 0.5.sh, // Metade da tela
+        decoration: const BoxDecoration(
+          color: Colors.black, // Fundo preto igual Login/Profile
+        ),
+        child: Stack(
+          children: [
+            // 1. BACKGROUND IMAGE (Igual Login)
+            Positioned.fill(
+              child: Opacity(
+                opacity: 0.9,
+                child: Image.asset(
+                  'assets/images/fundo9.png',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 30.h),
-          
-          // Title
-          Text(
-            "Adicionar valor",
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF1A1A1A),
-              letterSpacing: -0.5,
+
+            // 2. LOGO GIGANTE DE FUNDO (Igual Login)
+            Positioned(
+              left: -80.w,
+              top: -50.h,
+              width: 500.w,
+              height: 500.h,
+              child: Opacity(
+                opacity: 0.3,
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.contain,
+                  alignment: Alignment.topLeft,
+                ),
+              ),
             ),
-          ),
-          
-          SizedBox(height: 10.h),
-          
-          // Display
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 10.h),
-            alignment: Alignment.center,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                _currentValue,
-                style: TextStyle(
-                  fontSize: 72.sp, // Muito maior, estilo Calculadora iOS
-                  fontWeight: FontWeight.w300, // Mais fino (Light)
-                  color: const Color(0xFF000000),
-                  letterSpacing: -2.0,
+
+            // 3. CAMADA DE VIDRO (Blur Original)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  color: Colors.black.withOpacity(0.1), // Tintura escura original
+                ),
+              ),
+            ),
+
+            // 4. CONTEÚDO (Calculadora)
+            Padding(
+              padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 12.h), // Padding reduzido
+              child: Column(
+                children: [
+                  // Handle bar (White for contrast)
+                  Center(
+                    child: Container(
+                      width: 36.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                  
+                  SizedBox(height: 4.h), // Reduzido de 8.h
+
+                  // Header (Título e Subtítulo)
+                  Column(
+                    children: [
+                      Text(
+                        'Valor Manual',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      Text(
+                        'Digite o valor do item',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.6),
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  SizedBox(height: 8.h), // Reduzido de 12.h
+
+                  // Display Limpo Centralizado
+                  Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        _currentValue,
+                        style: TextStyle(
+                          fontSize: 40.sp,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  SizedBox(height: 20.h), // Margem fixa entre Display e Teclas
+                  
+                  // Teclado Limpo (Texto Branco)
+                  Padding(
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      children: [
+                        _buildKeyRow(['7', '8', '9']), 
+                        SizedBox(height: 6.h), // Reduzido de 8.h
+                        _buildKeyRow(['4', '5', '6']), 
+                        SizedBox(height: 6.h), // Reduzido de 8.h
+                        _buildKeyRow(['1', '2', '3']), 
+                        SizedBox(height: 6.h), // Reduzido de 8.h
+                        _buildKeyRow(['C', '0', 'backspace']),
+                      ],
+                    ),
+                  ),
+                  
+                  SizedBox(height: 8.h), // Reduzido de 12.h
+                  
+                  // Botão Principal de Ação (Outline Style)
+          GestureDetector(
+            onTap: () {
+              final val = _numericValue;
+              if (val > 0) {
+                HapticFeedback.mediumImpact();
+                widget.controller.addManualValue(val);
+                Navigator.pop(context);
+              }
+            },
+            child: Container(
+              height: 42.h, // Reduzido de 44.h
+              width: double.infinity,
+              margin: EdgeInsets.symmetric(horizontal: 30.w),
+              decoration: BoxDecoration(
+                color: Colors.transparent, // Sem preenchimento
+                borderRadius: BorderRadius.circular(21.r),
+                border: Border.all(
+                  color: Colors.white, // Borda Branca
+                  width: 1.5,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  "ADICIONAR",
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white, // Texto Branco
+                    letterSpacing: 1.5,
+                  ),
                 ),
               ),
             ),
           ),
-          
-          Spacer(), // Empurra o teclado para baixo
-          
-          // Keypad
-          SizedBox(
-            width: 320.w, // Largura controlada para centralizar bem os botões
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildKeyRow(['1', '2', '3']),
-                SizedBox(height: 20.h),
-                _buildKeyRow(['4', '5', '6']),
-                SizedBox(height: 20.h),
-                _buildKeyRow(['7', '8', '9']),
-                SizedBox(height: 20.h),
-                _buildKeyRow(['00', '0', 'backspace']),
-              ],
+                ],
+              ),
             ),
-          ),
-          
-          Spacer(),
-          
-          // Action Buttons
-          Row(
-            children: [
-              Expanded(
-                child: _buildCancelButton(context),
-              ),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: _buildApplyButton(),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildKeyRow(List<String> keys) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween, // Espaçamento igual
-      children: keys.map((key) {
-        return _buildKey(key);
-      }).toList(),
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildKey(keys[0]),
+        SizedBox(width: 16.w),
+        _buildKey(keys[1]),
+        SizedBox(width: 16.w),
+        _buildKey(keys[2]),
+      ],
     );
   }
 
   Widget _buildKey(String key) {
     bool isBackspace = key == 'backspace';
-    double size = 82.r; // Botões maiores estilo iOS
-
-    return GestureDetector(
-      onTap: () {
-        // Feedback tátil leve estilo iOS
-        // HapticFeedback.selectionClick(); // Requereria importar services
-        _onKeyPress(key);
-      },
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05), // Sombra muito sutil
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Center(
-          child: isBackspace
-              ? Icon(Icons.backspace_rounded, color: const Color(0xFFE45C00), size: 32.sp)
-              : Text(
-                  key,
-                  style: TextStyle(
-                    fontSize: 34.sp,
-                    fontWeight: FontWeight.w400, // Regular weight
-                    color: const Color(0xFF000000),
-                  ),
+    bool isClear = key == 'C';
+    
+    return Container(
+      width: 54.w, // Reduzido de 60.w
+      height: 50.h, // Reduzido de 60.h
+      alignment: Alignment.center,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+             if (isClear) {
+               HapticFeedback.lightImpact();
+               setState(() {
+                 _rawValue = 0;
+                 _updateDisplay(_rawValue);
+               });
+             } else {
+               _onKeyPress(key);
+             }
+          },
+          borderRadius: BorderRadius.circular(14.r), // Arredondamento ajustado
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              // Gradiente Laranja (Igual ícones do perfil)
+              gradient: const LinearGradient(
+                colors: [Color(0xFFF68A07), Color(0xFFE45C00)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(14.r),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFE45C00).withOpacity(0.3),
+                  blurRadius: 6, // Reduzido de 8
+                  offset: const Offset(0, 3), // Reduzido de 4
                 ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildApplyButton() {
-    return GestureDetector(
-      onTap: () {
-        final val = _numericValue;
-        if (val > 0) {
-          widget.controller.addManualValue(val);
-          Navigator.pop(context);
-        }
-      },
-      child: Container(
-        height: 56.h,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFFF68A07), Color(0xFFE45C00)], // User's preferred gradient
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(30.r),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFFE45C00).withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+              ],
             ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            "Adicionar",
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            child: isBackspace
+                ? Icon(Icons.backspace_outlined, color: Colors.white, size: 20.sp)
+                : Text(
+                    key,
+                    style: TextStyle(
+                      fontSize: 20.sp, // Reduzido de 24.sp
+                      fontWeight: FontWeight.w600, // Bold para contrastar
+                      color: Colors.white,
+                    ),
+                  ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCancelButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.pop(context),
-      child: Container(
-        height: 56.h,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30.r),
-          border: Border.all(color: Colors.grey[200]!),
-        ),
-        child: Center(
-          child: Text(
-            "Cancelar",
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-              color: const Color.fromARGB(255, 229, 18, 18),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // ... (rest of the file)
+
+  
+  // Métodos auxiliares removidos pois integrei diretamente (buildButton e buildCancelButton)
+  // para simplificar o layout full-screen.
 }
