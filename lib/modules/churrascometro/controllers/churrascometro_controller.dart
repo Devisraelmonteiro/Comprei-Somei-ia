@@ -6,15 +6,9 @@ class ChurrascometroController extends ChangeNotifier {
 
   ChurrascoModel get model => _model;
 
-  void updateHomens(int value) {
+  void updateAdultos(int value) {
     if (value < 0) return;
-    _model = _model.copyWith(homens: value);
-    notifyListeners();
-  }
-
-  void updateMulheres(int value) {
-    if (value < 0) return;
-    _model = _model.copyWith(mulheres: value);
+    _model = _model.copyWith(adultos: value);
     notifyListeners();
   }
 

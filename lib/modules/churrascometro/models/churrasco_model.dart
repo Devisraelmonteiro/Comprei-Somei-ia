@@ -1,6 +1,5 @@
 class ChurrascoModel {
-  final int homens;
-  final int mulheres;
+  final int adultos;
   final int criancas;
   final int duracaoHoras;
   final bool bebidaAlcoolica;
@@ -9,8 +8,7 @@ class ChurrascoModel {
   final bool gelo;
 
   const ChurrascoModel({
-    this.homens = 0,
-    this.mulheres = 0,
+    this.adultos = 0,
     this.criancas = 0,
     this.duracaoHoras = 4,
     this.bebidaAlcoolica = true,
@@ -20,8 +18,7 @@ class ChurrascoModel {
   });
 
   ChurrascoModel copyWith({
-    int? homens,
-    int? mulheres,
+    int? adultos,
     int? criancas,
     int? duracaoHoras,
     bool? bebidaAlcoolica,
@@ -30,8 +27,7 @@ class ChurrascoModel {
     bool? gelo,
   }) {
     return ChurrascoModel(
-      homens: homens ?? this.homens,
-      mulheres: mulheres ?? this.mulheres,
+      adultos: adultos ?? this.adultos,
       criancas: criancas ?? this.criancas,
       duracaoHoras: duracaoHoras ?? this.duracaoHoras,
       bebidaAlcoolica: bebidaAlcoolica ?? this.bebidaAlcoolica,
@@ -41,32 +37,36 @@ class ChurrascoModel {
     );
   }
 
+  // Fator de duração: aumenta 10% a cada hora extra acima de 4h
+  double get _durationFactor {
+    if (duracaoHoras <= 4) return 1.0;
+    return 1.0 + ((duracaoHoras - 4) * 0.1);
+  }
+
   // Cálculos base
   double get carneTotalKg {
-    // 400g por homem, 300g por mulher, 150g por criança (base 4h)
-    // Se passar de 4h, aumenta 20%
-    double base = (homens * 0.4) + (mulheres * 0.3) + (criancas * 0.15);
-    return duracaoHoras > 4 ? base * 1.2 : base;
+    // 400g por adulto, 150g por criança (base 4h)
+    double base = (adultos * 0.4) + (criancas * 0.15);
+    return base * _durationFactor;
   }
 
   double get cervejaTotalLitros {
     if (!bebidaAlcoolica) return 0;
-    // 1.5L por adulto (homens e mulheres)
-    // Se passar de 4h, aumenta 30%
-    double base = (homens + mulheres) * 1.5;
-    return duracaoHoras > 4 ? base * 1.3 : base;
+    // 1.5L por adulto
+    double base = adultos * 1.5;
+    return base * _durationFactor;
   }
 
   double get refrigeranteTotalLitros {
     // 500ml por pessoa (incluindo crianças)
-    double base = (homens + mulheres + criancas) * 0.5;
-    return duracaoHoras > 4 ? base * 1.2 : base;
+    double base = (adultos + criancas) * 0.5;
+    return base * _durationFactor;
   }
 
   int get paoDeAlhoUnidades {
     if (!paoDeAlho) return 0;
     // 2 unidades por adulto, 1 por criança
-    int totalUnidades = (homens * 2) + (mulheres * 2) + (criancas * 1);
+    int totalUnidades = (adultos * 2) + (criancas * 1);
     // Assumindo pacote com 5 unidades (média de mercado)
     return (totalUnidades / 5).ceil(); // Retorna número de pacotes
   }
@@ -82,7 +82,7 @@ class ChurrascoModel {
   int get geloSacos {
     if (!gelo) return 0;
     // 1 saco de 5kg para cada 10 pessoas
-    int totalPessoas = homens + mulheres + criancas;
+    int totalPessoas = adultos + criancas;
     if (totalPessoas == 0) return 0;
     return (totalPessoas / 10).ceil();
   }

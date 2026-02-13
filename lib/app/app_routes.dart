@@ -25,25 +25,25 @@ final router = GoRouter(
     // SPLASH
     GoRoute(
       path: '/splash',
-      builder: (context, state) => const SplashPage(),
+      pageBuilder: (context, state) => _fadeTransition(context, state, const SplashPage()),
     ),
     
     // HOME
     GoRoute(
       path: '/home',
-      builder: (context, state) => HomePage(), // ← SEM const
+      pageBuilder: (context, state) => _fadeTransition(context, state, HomePage()), // ← SEM const
     ),
     
     // LOGIN
     GoRoute(
       path: '/login',
-      builder: (context, state) => const LoginPage(),
+      pageBuilder: (context, state) => _fadeTransition(context, state, const LoginPage()),
     ),
     
     // CADASTRO
     GoRoute(
       path: '/cadastro',
-      builder: (context, state) => const CadastroPage(),
+      pageBuilder: (context, state) => _fadeTransition(context, state, const CadastroPage()),
     ),
     
     // SCANNER (comentado)
@@ -55,10 +55,10 @@ final router = GoRouter(
     // ORÇAMENTO
     GoRoute(
       path: '/orcamento',
-      builder: (context, state) => const OrcamentoPage(),
+      pageBuilder: (context, state) => _fadeTransition(context, state, const OrcamentoPage()),
     ),
     
-    // LISTA
+    // LISTA - Mantém a transição padrão (Slide)
     GoRoute(
       name: 'lista',
       path: '/lista',
@@ -68,29 +68,19 @@ final router = GoRouter(
     // ENCARTES
     GoRoute(
       path: '/encartes',
-      builder: (context, state) => const EncartePage(),
+      pageBuilder: (context, state) => _fadeTransition(context, state, const EncartePage()),
     ),
     
     // CHURRASCÔMETRO
     GoRoute(
       path: '/churrascometro',
-      builder: (context, state) => const ChurrascometroPage(),
+      pageBuilder: (context, state) => _fadeTransition(context, state, const ChurrascometroPage()),
     ),
     
     // PERFIL (MENU)
     GoRoute(
       path: '/profile',
-      pageBuilder: (context, state) => CustomTransitionPage(
-        key: state.pageKey,
-        child: const ProfilePage(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // Efeito de surgir (Fade) suave, sem deslizar
-          return FadeTransition(
-            opacity: CurveTween(curve: Curves.easeIn).animate(animation),
-            child: child,
-          );
-        },
-      ),
+      pageBuilder: (context, state) => _fadeTransition(context, state, const ProfilePage()),
     ),
     // GoRoute(
     //   path: '/settings',
@@ -98,3 +88,17 @@ final router = GoRouter(
     // ),
   ],
 );
+
+// Helper para transição de Fade
+Page<dynamic> _fadeTransition(BuildContext context, GoRouterState state, Widget child) {
+  return CustomTransitionPage(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurveTween(curve: Curves.easeIn).animate(animation),
+        child: child,
+      );
+    },
+  );
+}
