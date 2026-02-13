@@ -19,6 +19,7 @@ class _ModernDrawerState extends State<ModernDrawer> with SingleTickerProviderSt
   late AnimationController _controller;
   late Animation<double> _slideAnimation;
   late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
   File? _profileImage;
   // ImagePicker removed as per request to disable direct image changing
 
@@ -27,7 +28,7 @@ class _ModernDrawerState extends State<ModernDrawer> with SingleTickerProviderSt
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 600),
     );
 
     _slideAnimation = Tween<double>(begin: -0.2, end: 0.0).animate(
@@ -36,6 +37,10 @@ class _ModernDrawerState extends State<ModernDrawer> with SingleTickerProviderSt
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
 
     _controller.forward();
@@ -62,25 +67,43 @@ class _ModernDrawerState extends State<ModernDrawer> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    // 🔧 Margens Editáveis
+    final double marginTop = 80;
+    final double marginBottom = 250;
+    final double marginLeft = 36;
+
     return Drawer(
       backgroundColor: Colors.transparent,
       elevation: 0,
       width: MediaQuery.of(context).size.width * 0.7,
-      child: Stack(
-        children: [
-          // Glassmorphism Background
+      child: Container(
+        margin: EdgeInsets.only(top: marginTop, bottom: marginBottom, left: marginLeft),
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          alignment: Alignment.topLeft,
+          child: Stack(
+            children: [
+              // Glassmorphism Background
           Positioned.fill(
-            child: ClipRect(
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(30.r),
+                bottomRight: Radius.circular(30.r),
+                bottomLeft: Radius.circular(30.r),
+              ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
-                    border: Border(
-                      right: BorderSide(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 1,
-                      ),
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(30.r),
+                      bottomRight: Radius.circular(30.r),
+                      bottomLeft: Radius.circular(30.r),
+                    ),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.3),
+                      width: 1,
                     ),
                   ),
                 ),
@@ -205,7 +228,7 @@ class _ModernDrawerState extends State<ModernDrawer> with SingleTickerProviderSt
                   ),
                 ),
 
-                SizedBox(height: 40.h),
+                SizedBox(height: 30.h),
                 
                 // Menu Items
                 Expanded(
@@ -222,43 +245,7 @@ class _ModernDrawerState extends State<ModernDrawer> with SingleTickerProviderSt
                           },
                           delay: 0,
                         ),
-                        _buildMenuItem(
-                          icon: CupertinoIcons.list_bullet,
-                          title: 'Lista de Compras',
-                          onTap: () {
-                            Navigator.pop(context);
-                            context.go('/lista');
-                          },
-                          delay: 100,
-                        ),
-                        _buildMenuItem(
-                          icon: CupertinoIcons.tag_fill,
-                          title: 'Encartes',
-                          onTap: () {
-                            Navigator.pop(context);
-                            context.go('/encartes');
-                          },
-                          delay: 200,
-                        ),
-                        _buildMenuItem(
-                          icon: CupertinoIcons.money_dollar_circle,
-                          title: 'Controle de Gastos',
-                          onTap: () {
-                            Navigator.pop(context);
-                            context.go('/orcamento');
-                          },
-                          delay: 300,
-                        ),
-                        _buildMenuItem(
-                          icon: CupertinoIcons.flame_fill,
-                          title: 'Churrascômetro',
-                          onTap: () {
-                            Navigator.pop(context);
-                            context.go('/churrascometro');
-                          },
-                          delay: 400,
-                        ),
-                        Divider(height: 32.h, color: Colors.black12),
+                        SizedBox(height: 2.h),
                         _buildMenuItem(
                           icon: CupertinoIcons.question_circle,
                           title: 'Ajuda',
@@ -266,7 +253,17 @@ class _ModernDrawerState extends State<ModernDrawer> with SingleTickerProviderSt
                             Navigator.pop(context);
                             // Implement help navigation
                           },
-                          delay: 500,
+                          delay: 100,
+                        ),
+                        SizedBox(height: 2.h),
+                        _buildMenuItem(
+                          icon: Icons.exit_to_app,
+                          title: 'Sair',
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.go('/login');
+                          },
+                          delay: 200,
                         ),
                       ],
                     ),
@@ -277,7 +274,7 @@ class _ModernDrawerState extends State<ModernDrawer> with SingleTickerProviderSt
                 Padding(
                   padding: EdgeInsets.all(24.w),
                   child: Text(
-                    'Versão 1.0.0',
+                    'Versão 2.0.0',
                     style: TextStyle(
                       fontSize: 12.sp,
                       color: Colors.black38,
@@ -288,6 +285,8 @@ class _ModernDrawerState extends State<ModernDrawer> with SingleTickerProviderSt
             ),
           ),
         ],
+      ),
+    ),
       ),
     );
   }
@@ -313,8 +312,8 @@ class _ModernDrawerState extends State<ModernDrawer> with SingleTickerProviderSt
                 onTap: onTap,
                 borderRadius: BorderRadius.circular(16.r),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  margin: EdgeInsets.only(bottom: 8.h),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                  margin: EdgeInsets.zero,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16.r),
                   ),

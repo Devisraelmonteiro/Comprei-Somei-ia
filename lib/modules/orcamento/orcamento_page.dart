@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import 'package:comprei_some_ia/shared/widgets/base_scaffold.dart';
 import 'package:comprei_some_ia/shared/constants/app_colors.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -134,9 +135,15 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                       Row(
                         children: [
                           GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
-                          ),
+                          onTap: () {
+                            if (context.canPop()) {
+                              context.pop();
+                            } else {
+                              context.go('/home');
+                            }
+                          },
+                          child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
+                        ),
                           const Spacer(),
                           CircleAvatar(
                             radius: 18.r,

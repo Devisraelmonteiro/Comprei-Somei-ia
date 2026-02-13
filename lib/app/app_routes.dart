@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:comprei_some_ia/modules/home/home_page.dart';
@@ -10,6 +11,7 @@ import 'package:comprei_some_ia/modules/lista/lista_page.dart';
 import 'package:comprei_some_ia/modules/orcamento/orcamento_page.dart';
 import 'package:comprei_some_ia/modules/encartes/pages/encarte_page.dart';
 import 'package:comprei_some_ia/modules/churrascometro/pages/churrascometro_page.dart';
+import 'package:comprei_some_ia/modules/profile/profile_page.dart';
 
 final router = GoRouter(
   initialLocation: '/splash', // Define Splash como inicial
@@ -73,6 +75,22 @@ final router = GoRouter(
     GoRoute(
       path: '/churrascometro',
       builder: (context, state) => const ChurrascometroPage(),
+    ),
+    
+    // PERFIL (MENU)
+    GoRoute(
+      path: '/profile',
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const ProfilePage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // Efeito de surgir (Fade) suave, sem deslizar
+          return FadeTransition(
+            opacity: CurveTween(curve: Curves.easeIn).animate(animation),
+            child: child,
+          );
+        },
+      ),
     ),
     // GoRoute(
     //   path: '/settings',

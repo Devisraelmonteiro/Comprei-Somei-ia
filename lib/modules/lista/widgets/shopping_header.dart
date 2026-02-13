@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
 
 /// 📱 Header da Lista de Compras - VERSÃO BANNER HEADER
@@ -58,7 +59,13 @@ class ShoppingHeader extends StatelessWidget {
                     Row(
                       children: [
                         GestureDetector(
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            if (context.canPop()) {
+                              context.pop();
+                            } else {
+                              context.go('/home');
+                            }
+                          },
                           child: Container(
                             padding: EdgeInsets.all(8.w),
                             decoration: BoxDecoration(

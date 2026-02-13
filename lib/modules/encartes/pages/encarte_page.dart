@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:comprei_some_ia/shared/widgets/base_scaffold.dart';
 import '../controllers/encarte_controller.dart';
 import '../widgets/encarte_card.dart';
@@ -71,7 +72,13 @@ class EncartePage extends StatelessWidget {
                     Row(
                       children: [
                         GestureDetector(
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            if (context.canPop()) {
+                              context.pop();
+                            } else {
+                              context.go('/home');
+                            }
+                          },
                           child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
                         ),
                         const Spacer(),

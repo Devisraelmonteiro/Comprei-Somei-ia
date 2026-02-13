@@ -2,6 +2,7 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 import 'package:comprei_some_ia/shared/constants/app_colors.dart';
@@ -38,7 +39,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   // ⚙️ CONTROLE VISUAL DO VIDRO (Edite aqui)
   // ==========================================================
   final double _blurIntensity = 1.0;    // 🌫️ Desfoque: Quanto maior, mais embaçado (Ex: 5.0 a 15.0)
-  final double _fumeOpacity = 0.3;       // 🌑 Escuridão: Quanto maior, mais escuro (Ex: 0.1 a 0.5)
+  final double _fumeOpacity = 0.2;       // 🌑 Escuridão: Quanto maior, mais escuro (Ex: 0.1 a 0.5)
   // ==========================================================
 
   bool showBalance = true;
@@ -48,7 +49,11 @@ class _TopBarWidgetState extends State<TopBarWidget> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: AppColors.headerGradient,
+        // gradient: AppColors.headerGradient, // Comentado para usar imagem de fundo
+        image: const DecorationImage(
+          image: AssetImage('assets/images/fundoh.png'),
+          fit: BoxFit.cover,
+        ),
         borderRadius: BorderRadius.vertical(
           bottom: Radius.circular(AppSizes.headerBorderRadius.r),
         ),
@@ -75,12 +80,18 @@ class _TopBarWidgetState extends State<TopBarWidget> {
             ),
           */
 
-          // 🌫️ CONTROLE FUME (Glassmorphism)
+          // 🌫️ CONTROLE FUME (Gradient Overlay) - Imitando ShoppingHeader
           Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: _blurIntensity, sigmaY: _blurIntensity),
-              child: Container(
-                color: Colors.black.withOpacity(_fumeOpacity),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.1),
+                    Colors.black.withOpacity(0.2),
+                  ],
+                ),
               ),
             ),
           ),
@@ -170,7 +181,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   Widget _buildAvatar() {
     return GestureDetector(
       onTap: () {
-        Scaffold.of(context).openDrawer();
+        context.push('/profile');
       },
       child: Container(
         width: AppSizes.avatarSize.w,
