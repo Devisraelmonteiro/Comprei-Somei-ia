@@ -44,16 +44,16 @@ class _ProfilePageState extends State<ProfilePage> {
           icon: Icon(CupertinoIcons.back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
-        title: Text(
-          'Menu',
-          style: TextStyle(
-            color: const Color.fromARGB(255, 208, 204, 204),
-            fontWeight: FontWeight.bold,
-            fontSize: 18.sp,
+        //title: Text(
+          //'Menu',
+          //style: TextStyle(
+           // color: const Color.fromARGB(255, 208, 204, 204),
+            //fontWeight: FontWeight.bold,
+            //fontSize: 18.sp,
           ),
-        ),
-        centerTitle: true,
-      ),
+        //),
+        //centerTitle: true,
+      //),
       body: Stack(
         children: [
           // Background Gradient
@@ -175,8 +175,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   
                   _buildMenuItem(
                     icon: CupertinoIcons.home,
-                    title: 'Início',
-                    subtitle: 'Voltar para a tela principal',
+                    title: 'Editar Perfil',
+                    subtitle: 'Atualize seu dados',
                     onTap: () {
                       if (context.canPop()) {
                         context.pop();

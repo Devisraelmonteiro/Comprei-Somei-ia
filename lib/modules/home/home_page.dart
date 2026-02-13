@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'home_controller.dart';
 import 'widgets/items_captured_widget.dart';
+import 'widgets/manual_value_sheet.dart';
 import 'package:comprei_some_ia/modules/scanner/scanner_card_widget.dart';
 
 import 'package:comprei_some_ia/shared/widgets/top_bar_widget.dart';
@@ -208,7 +209,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     setState(() => _detectedPrice = null);
   }
 
-  void _showManualCaptureSheet(HomeController controller) {}
+  void _showManualCaptureSheet(HomeController controller) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ManualValueSheet(controller: controller),
+    );
+  }
+
   void _showMultiplySheet(HomeController controller) {}
 }
 // ═══════════════════════════════════════════════════════════════
