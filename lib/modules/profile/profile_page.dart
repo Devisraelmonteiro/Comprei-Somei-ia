@@ -17,6 +17,12 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   File? _profileImage;
 
+  // ==========================================================
+  // ⚙️ CONTROLE VISUAL DO FUNDO (Consistente com Login)
+  // ==========================================================
+  final double _backgroundOpacity = 0.9;
+  final double _blurIntensity = 10.0;
+
   @override
   void initState() {
     super.initState();
@@ -44,28 +50,44 @@ class _ProfilePageState extends State<ProfilePage> {
           icon: Icon(CupertinoIcons.back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
-        //title: Text(
-          //'Menu',
-          //style: TextStyle(
-           // color: const Color.fromARGB(255, 208, 204, 204),
-            //fontWeight: FontWeight.bold,
-            //fontSize: 18.sp,
-          ),
-        //),
-        //centerTitle: true,
-      //),
+      ),
       body: Stack(
         children: [
-          // Background Gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: const [
-                  Color.fromARGB(255, 236, 113, 6),
-                  Color.fromARGB(255, 236, 113, 6),
-                ],
+          // 1. BACKGROUND IMAGE (login.png)
+          SizedBox(
+            height: double.infinity,
+            width: double.infinity,
+            child: Opacity(
+              opacity: _backgroundOpacity,
+              child: Image.asset(
+                'assets/images/fundo9.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+
+          // 2. LOGO GIGANTE ARTÍSTICA (Background Element)
+          Positioned(
+            left: -80.w,
+            top: 120.h,
+            width: 500.w,
+            height: 500.h,
+            child: Opacity(
+              opacity: 0.3,
+              child: Image.asset(
+                'assets/images/logo.png',
+                fit: BoxFit.contain,
+                alignment: Alignment.topLeft,
+              ),
+            ),
+          ),
+
+          // 3. CAMADA DE VIDRO (Blur sobre toda a tela para unificar)
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: _blurIntensity, sigmaY: _blurIntensity),
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
               ),
             ),
           ),
@@ -139,7 +161,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(
                             fontSize: 24.sp,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: const Color.fromARGB(255, 255, 255, 255),
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -148,7 +170,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           'Bem-vindo de volta',
                           style: TextStyle(
                             fontSize: 14.sp,
-                            color: const Color.fromARGB(255, 246, 187, 10).withOpacity(0.9),
+                            color: const Color.fromARGB(255, 255, 179, 0).withOpacity(0.9),
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -211,7 +233,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       'Versão 2.0.0',
                       style: TextStyle(
                         fontSize: 12.sp,
-                        color: Colors.white.withOpacity(0.6),
+                        color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.6),
                       ),
                     ),
                   ),
@@ -238,11 +260,11 @@ class _ProfilePageState extends State<ProfilePage> {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.2), // Fundo mais fumê (escuro)
             borderRadius: BorderRadius.circular(20.r),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
-              width: 1.5,
+              color: Colors.white.withOpacity(0.1),
+              width: 1.0,
             ),
           ),
           child: Material(
@@ -250,8 +272,8 @@ class _ProfilePageState extends State<ProfilePage> {
             child: InkWell(
               onTap: onTap,
               borderRadius: BorderRadius.circular(20.r),
-              highlightColor: Colors.white.withOpacity(0.1),
-              splashColor: Colors.white.withOpacity(0.2),
+              highlightColor: Colors.white.withOpacity(0.05),
+              splashColor: Colors.white.withOpacity(0.1),
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                 child: Row(
@@ -259,18 +281,31 @@ class _ProfilePageState extends State<ProfilePage> {
                     Container(
                       padding: EdgeInsets.all(12.r),
                       decoration: BoxDecoration(
-                        color: isDestructive 
-                            ? Colors.red.withOpacity(0.2) 
-                            : Colors.white.withOpacity(0.2),
+                        gradient: isDestructive
+                            ? const LinearGradient(
+                                colors: [Color(0xFFFF453A), Color(0xFFFF3B30)], // Vermelho iOS
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              )
+                            : const LinearGradient(
+                                colors: [Color(0xFFF68A07), Color(0xFFE45C00)], // Laranja App
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
                         borderRadius: BorderRadius.circular(16.r),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                          width: 1,
-                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isDestructive 
+                                ? Colors.red.withOpacity(0.3) 
+                                : const Color(0xFFE45C00).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: Icon(
                         icon, 
-                        color: isDestructive ? Colors.white : Colors.white, 
+                        color: Colors.white, 
                         size: 24.sp
                       ),
                     ),
@@ -284,7 +319,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
-                              color: isDestructive ? const Color.fromARGB(255, 239, 40, 40) : Colors.white,
+                              color: isDestructive ? const Color(0xFFFF453A) : Colors.white,
                               letterSpacing: 0.5,
                             ),
                           ),
@@ -294,7 +329,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               subtitle,
                               style: TextStyle(
                                 fontSize: 12.sp,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withOpacity(0.6),
                               ),
                             ),
                           ],
@@ -303,7 +338,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     Icon(
                       CupertinoIcons.chevron_right,
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withOpacity(0.3),
                       size: 20.sp,
                     ),
                   ],
