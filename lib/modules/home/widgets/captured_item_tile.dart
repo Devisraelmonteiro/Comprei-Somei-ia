@@ -37,10 +37,13 @@ class CapturedItemTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
+        // ⬇️ COMENTADO A PEDIDO (BORDAS COLORIDAS)
+        /*
         border: Border.all(
           color: _getBorderColor(),
           width: 1,
         ),
+        */
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
@@ -140,18 +143,18 @@ class CapturedItemTile extends StatelessWidget {
 
     switch (item.type) {
       case CaptureType.automatic:
-        icon = Icons.camera_alt;  // ← Ícone de câmera!
-        color = const Color(0xFFF36607);
+        icon = Icons.camera_alt;  // Ícone de câmera (Verde)
+        color = const Color.fromARGB(255, 3, 136, 36); // Verde iOS Oficial
         tooltip = 'Capturado automaticamente';
         break;
       case CaptureType.manual:
-        icon = Icons.edit;
-        color = Colors.blue;
+        icon = Icons.create_outlined; // Ícone do botão Manual (Lápis)
+        color = const Color.fromARGB(255, 243, 122, 41); // Laranja App
         tooltip = 'Adicionado manualmente';
         break;
       case CaptureType.multiplied:
-        icon = Icons.close;
-        color = Colors.purple;
+        icon = Icons.cached; // Ícone do botão Multiplicador (Loop)
+        color = const Color.fromARGB(255, 15, 125, 242); // Azul iOS
         tooltip = 'Multiplicado';
         break;
     }
@@ -160,7 +163,7 @@ class CapturedItemTile extends StatelessWidget {
       message: tooltip,
       child: Icon(
         icon,
-        size: 12.sp,  // ← MENOR (era 14sp)
+        size: 16.sp,  // Aumentei um pouco para visibilidade
         color: color,
       ),
     );
@@ -182,7 +185,7 @@ class CapturedItemTile extends StatelessWidget {
     return Text(
       extras.join(' • '),
       style: TextStyle(
-        fontSize: 9.sp,  // ← MENOR (era 10sp)
+        fontSize: 10.sp,
         color: Colors.grey.shade600,
       ),
     );
@@ -198,9 +201,9 @@ class CapturedItemTile extends StatelessWidget {
         Text(
           '+R\$ ${item.finalValue.toStringAsFixed(2)}',
           style: TextStyle(
-            fontSize: 13.sp,  // ← MENOR (era 14sp)
+            fontSize: 13.sp,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF039D2C),
+            color: const Color(0xFF34C759), // Verde iOS unificado
           ),
         ),
         
@@ -209,7 +212,7 @@ class CapturedItemTile extends StatelessWidget {
           Text(
             'R\$ ${item.value.toStringAsFixed(2)} cada',
             style: TextStyle(
-              fontSize: 8.sp,  // ← MENOR (era 9sp)
+              fontSize: 9.sp,
               color: Colors.grey.shade600,
             ),
           ),
@@ -221,11 +224,11 @@ class CapturedItemTile extends StatelessWidget {
   Color _getBorderColor() {
     switch (item.type) {
       case CaptureType.automatic:
-        return const Color(0xFFF36607).withOpacity(0.2);
+        return const Color.fromARGB(0, 2, 83, 22).withOpacity(0.5); // Verde iOS Oficial
       case CaptureType.manual:
-        return Colors.blue.withOpacity(0.2);
+        return const Color.fromARGB(0, 236, 106, 6).withOpacity(0.5); // Laranja
       case CaptureType.multiplied:
-        return Colors.purple.withOpacity(0.2);
+        return const Color.fromARGB(0, 10, 86, 167).withOpacity(0.5); // Azul
     }
   }
 

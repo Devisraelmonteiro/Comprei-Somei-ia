@@ -12,6 +12,8 @@ import 'package:comprei_some_ia/modules/orcamento/orcamento_page.dart';
 import 'package:comprei_some_ia/modules/encartes/pages/encarte_page.dart';
 import 'package:comprei_some_ia/modules/churrascometro/pages/churrascometro_page.dart';
 import 'package:comprei_some_ia/modules/profile/profile_page.dart';
+import 'package:comprei_some_ia/modules/profile/edit_profile_page.dart';
+import 'package:comprei_some_ia/modules/calculator/calculator_page.dart';
 
 final router = GoRouter(
   initialLocation: '/splash', // Define Splash como inicial
@@ -82,6 +84,19 @@ final router = GoRouter(
       path: '/profile',
       pageBuilder: (context, state) => _fadeTransition(context, state, const ProfilePage()),
     ),
+
+    // EDITAR PERFIL
+    GoRoute(
+      path: '/edit_profile',
+      pageBuilder: (context, state) => _fadeTransition(context, state, const EditProfilePage()),
+    ),
+    
+    // CALCULADORA
+    GoRoute(
+      path: '/calculator',
+      pageBuilder: (context, state) => _fadeTransition(context, state, const CalculatorPage()),
+    ),
+    
     // GoRoute(
     //   path: '/settings',
     //   builder: (context, state) => const SettingsPage(),

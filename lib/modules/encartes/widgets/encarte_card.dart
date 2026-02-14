@@ -125,7 +125,7 @@ class EncarteCard extends StatelessWidget {
         return false; // Don't dismiss automatically, let the dialog handle it
       },
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16.r),
@@ -145,23 +145,23 @@ class EncarteCard extends StatelessWidget {
             onLongPress: () => _showOptions(context),
             borderRadius: BorderRadius.circular(16.r),
             child: Padding(
-              padding: EdgeInsets.all(16.r),
+              padding: EdgeInsets.all(12.r),
               child: Row(
                 children: [
                   // Avatar
                   CircleAvatar(
-                    radius: 24.r,
+                    radius: 20.r,
                     backgroundColor: _getAvatarColor(encarte.name),
                     child: Text(
                       _getInitials(encarte.name),
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18.sp,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  SizedBox(width: 16.w),
+                  SizedBox(width: 12.w),
                   
                   // Info
                   Expanded(
@@ -171,18 +171,18 @@ class EncarteCard extends StatelessWidget {
                         Text(
                           encarte.name,
                           style: TextStyle(
-                            fontSize: 16.sp,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.black87,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 4.h),
+                        SizedBox(height: 2.h),
                         Text(
                           encarte.url,
                           style: TextStyle(
-                            fontSize: 12.sp,
+                            fontSize: 10.sp,
                             color: Colors.grey.shade500,
                           ),
                           maxLines: 1,
@@ -194,20 +194,22 @@ class EncarteCard extends StatelessWidget {
                   
                   // Actions
                   IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                     icon: Icon(
                       encarte.isFavorite ? Icons.star_rounded : Icons.star_outline_rounded,
                       color: encarte.isFavorite ? const Color(0xFFFFCC00) : Colors.grey.shade400,
-                      size: 28.sp,
+                      size: 24.sp,
                     ),
                     onPressed: () {
                       context.read<EncarteController>().toggleFavorite(encarte.id);
                     },
                   ),
-                  
+                  SizedBox(width: 8.w),
                   Icon(
                     Icons.chevron_right_rounded,
                     color: Colors.grey.shade300,
-                    size: 24.sp,
+                    size: 20.sp,
                   ),
                 ],
               ),

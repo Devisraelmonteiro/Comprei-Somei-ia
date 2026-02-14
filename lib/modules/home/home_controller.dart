@@ -48,7 +48,7 @@ class HomeController extends ChangeNotifier {
       type: CaptureType.automatic,
     );
     
-    _items.add(item);
+    _items.insert(0, item); // Adiciona no início da lista
     _capturedValue = 0.0;
     notifyListeners();
   }
@@ -63,7 +63,7 @@ class HomeController extends ChangeNotifier {
       customName: customName,
     );
     
-    _items.add(item);
+    _items.insert(0, item); // Adiciona no início da lista
     notifyListeners();
   }
 
@@ -77,7 +77,7 @@ class HomeController extends ChangeNotifier {
       multiplier: multiplier,
     );
     
-    _items.add(item);
+    _items.insert(0, item); // Adiciona no início da lista
     _capturedValue = 0.0;
     notifyListeners();
   }

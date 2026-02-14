@@ -135,15 +135,22 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                       Row(
                         children: [
                           GestureDetector(
-                          onTap: () {
-                            if (context.canPop()) {
-                              context.pop();
-                            } else {
-                              context.go('/home');
-                            }
-                          },
-                          child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
-                        ),
+                            onTap: () {
+                              if (context.canPop()) {
+                                context.pop();
+                              } else {
+                                context.go('/home');
+                              }
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(8.r),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
+                            ),
+                          ),
                           const Spacer(),
                           CircleAvatar(
                             radius: 18.r,

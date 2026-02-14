@@ -75,7 +75,7 @@ class _ManualValueSheetState extends State<ManualValueSheet> {
         topRight: Radius.circular(32.r),
       ),
       child: Container(
-        height: 0.5.sh, // Metade da tela
+        height: 0.6.sh, // Metade da tela
         decoration: const BoxDecoration(
           color: Colors.black, // Fundo preto igual Login/Profile
         ),
@@ -140,12 +140,13 @@ class _ManualValueSheetState extends State<ManualValueSheet> {
                   // Header (Título e Subtítulo)
                   Column(
                     children: [
+                      SizedBox(height: 16.h), // Espaço TOP solicitado
                       Text(
                         'Valor Manual',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 0, 0, 0),
+                          color: Colors.white,
                         ),
                       ),
                       SizedBox(height: 2.h),
@@ -197,7 +198,7 @@ class _ManualValueSheetState extends State<ManualValueSheet> {
                     ),
                   ),
                   
-                  SizedBox(height: 8.h), // Reduzido de 12.h
+                  SizedBox(height: 24.h), // Espaço entre Teclas e Botão
                   
                   // Botão Principal de Ação (Outline Style)
           GestureDetector(

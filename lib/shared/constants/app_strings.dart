@@ -99,7 +99,7 @@ class AppStrings {
   // ===========================
   // 💰 ORÇAMENTO
   // ===========================
-  static const String budgetTitle = 'Controle';
+  static const String budgetTitle = 'Gastos';
   static const String budgetSetTitle = 'Definir Orçamento';
   static const String budgetInputHint = 'Digite o valor';
   static const String budgetAvailable = 'Disponível';

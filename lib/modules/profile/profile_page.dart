@@ -46,9 +46,18 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(CupertinoIcons.back, color: Colors.white),
-          onPressed: () => context.pop(),
+        leading: Padding(
+          padding: EdgeInsets.all(8.r),
+          child: GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(CupertinoIcons.back, color: Colors.white),
+            ),
+          ),
         ),
       ),
       body: Stack(
@@ -104,56 +113,33 @@ class _ProfilePageState extends State<ProfilePage> {
                   Center(
                     child: Column(
                       children: [
-                        Stack(
-                          children: [
-                            Container(
-                              width: 100.r,
-                              height: 100.r,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                image: _profileImage != null
-                                    ? DecorationImage(
-                                        image: FileImage(_profileImage!),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : const DecorationImage(
-                                        image: AssetImage('assets/images/user.jpg'),
-                                        fit: BoxFit.cover,
-                                      ),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.5),
-                                  width: 3.0,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 15,
-                                    spreadRadius: 2,
+                        Container(
+                          width: 100.r,
+                          height: 100.r,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            image: _profileImage != null
+                                ? DecorationImage(
+                                    image: FileImage(_profileImage!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : const DecorationImage(
+                                    image: AssetImage('assets/images/logo.png'),
+                                    fit: BoxFit.cover,
                                   ),
-                                ],
-                              ),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.5),
+                              width: 3.0,
                             ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                padding: EdgeInsets.all(8.r),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Icon(Icons.edit, color: const Color(0xFFE45C00), size: 14.sp),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 15,
+                                spreadRadius: 2,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         SizedBox(height: 16.h),
                         Text(
@@ -196,16 +182,17 @@ class _ProfilePageState extends State<ProfilePage> {
                   SizedBox(height: 16.h),
                   
                   _buildMenuItem(
-                    icon: CupertinoIcons.home,
+                    icon: CupertinoIcons.person,
                     title: 'Editar Perfil',
                     subtitle: 'Atualize seu dados',
-                    onTap: () {
-                      if (context.canPop()) {
-                        context.pop();
-                      } else {
-                        context.go('/home');
-                      }
-                    },
+                    onTap: () => context.push('/edit_profile'),
+                  ),
+                  SizedBox(height: 16.h),
+                  _buildMenuItem(
+                    icon: Icons.calculate_outlined,
+                    title: 'Calculadora',
+                    subtitle: 'Ferramenta de cálculo rápido',
+                    onTap: () => context.push('/calculator'),
                   ),
                   SizedBox(height: 16.h),
                   _buildMenuItem(
@@ -255,13 +242,13 @@ class _ProfilePageState extends State<ProfilePage> {
     bool isDestructive = false,
   }) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20.r),
+      borderRadius: BorderRadius.circular(16.r),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.2), // Fundo mais fumê (escuro)
-            borderRadius: BorderRadius.circular(20.r),
+            color: Colors.black.withOpacity(0.4), // Fundo mais escuro
+            borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: Colors.white.withOpacity(0.1),
               width: 1.0,
@@ -271,15 +258,15 @@ class _ProfilePageState extends State<ProfilePage> {
             color: Colors.transparent,
             child: InkWell(
               onTap: onTap,
-              borderRadius: BorderRadius.circular(20.r),
+              borderRadius: BorderRadius.circular(16.r),
               highlightColor: Colors.white.withOpacity(0.05),
               splashColor: Colors.white.withOpacity(0.1),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 child: Row(
                   children: [
                     Container(
-                      padding: EdgeInsets.all(12.r),
+                      padding: EdgeInsets.all(8.r),
                       decoration: BoxDecoration(
                         gradient: isDestructive
                             ? const LinearGradient(
@@ -292,7 +279,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
-                        borderRadius: BorderRadius.circular(16.r),
+                        borderRadius: BorderRadius.circular(12.r),
                         boxShadow: [
                           BoxShadow(
                             color: isDestructive 
@@ -306,10 +293,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Icon(
                         icon, 
                         color: Colors.white, 
-                        size: 24.sp
+                        size: 20.sp
                       ),
                     ),
-                    SizedBox(width: 20.w),
+                    SizedBox(width: 16.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,14 +304,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           Text(
                             title,
                             style: TextStyle(
-                              fontSize: 16.sp,
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
                               color: isDestructive ? const Color(0xFFFF453A) : Colors.white,
                               letterSpacing: 0.5,
                             ),
                           ),
                           if (subtitle != null) ...[
-                            SizedBox(height: 4.h),
+                            SizedBox(height: 2.h),
                             Text(
                               subtitle,
                               style: TextStyle(
@@ -339,7 +326,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Icon(
                       CupertinoIcons.chevron_right,
                       color: Colors.white.withOpacity(0.3),
-                      size: 20.sp,
+                      size: 16.sp,
                     ),
                   ],
                 ),

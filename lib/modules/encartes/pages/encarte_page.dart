@@ -79,7 +79,14 @@ class EncartePage extends StatelessWidget {
                               context.go('/home');
                             }
                           },
-                          child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
+                          child: Container(
+                            padding: EdgeInsets.all(8.r),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
+                          ),
                         ),
                         const Spacer(),
                         // Botão Adicionar (No Header para fácil acesso)

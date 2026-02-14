@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:comprei_some_ia/modules/home/home_controller.dart';
@@ -41,7 +42,7 @@ class ItemsCapturedWidget extends StatelessWidget {
             child: hasItems ? _buildItemsList(items) : _buildEmptyState(),
           ),
           _buildDivider(),
-          _buildFooter(total, hasItems),
+          _buildFooter(total, hasItems, context),
         ],
       ),
     );
@@ -221,7 +222,7 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter(double total, bool hasItems) {
+  Widget _buildFooter(double total, bool hasItems, BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: AppSizes.cardPadding,
@@ -233,7 +234,7 @@ class ItemsCapturedWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildTotalSection(total),
-          if (hasItems) _buildClearButton(),
+          if (hasItems) _buildClearButton(context),
         ],
       ),
     );
@@ -275,11 +276,11 @@ class ItemsCapturedWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildClearButton() {
+  Widget _buildClearButton(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: _handleClearAll,
+        onTap: () => _handleClearAll(context),
         borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
         child: Container(
           padding: EdgeInsets.symmetric(
@@ -330,9 +331,36 @@ class ItemsCapturedWidget extends StatelessWidget {
     debugPrint('✏️ Editar item: ${item.id}');
   }
 
-  void _handleClearAll() {
-    controller.clearAll();
-    debugPrint('🗑️ Todos os itens limpos');
+  void _handleClearAll(BuildContext context) {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return CupertinoAlertDialog(
+          title: const Text('Limpar Lista?'),
+          content: const Text(
+            'Tem certeza que deseja excluir todos os itens?\nEsta ação não pode ser desfeita.',
+          ),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            CupertinoDialogAction(
+              isDestructiveAction: true,
+              onPressed: () {
+                controller.clearAll();
+                Navigator.of(ctx).pop();
+                debugPrint('🗑️ Todos os itens limpos');
+              },
+              child: const Text('Limpar Tudo'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   String _formatCurrency(double value) {

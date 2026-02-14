@@ -1,23 +1,18 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:camera/camera.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:vibration/vibration.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'home_controller.dart';
 import 'widgets/items_captured_widget.dart';
 import 'widgets/manual_value_sheet.dart';
 import 'package:comprei_some_ia/modules/scanner/scanner_card_widget.dart';
+import 'package:comprei_some_ia/modules/scanner/controllers/scanner_controller.dart';
 
 import 'package:comprei_some_ia/shared/widgets/top_bar_widget.dart';
 import 'package:comprei_some_ia/shared/widgets/promo_banner_widget.dart';
 import 'package:comprei_some_ia/shared/widgets/base_scaffold.dart';
 import 'package:comprei_some_ia/shared/widgets/favoritos_grid.dart';
-import 'package:comprei_some_ia/core/services/ocr_service.dart';
-import 'package:comprei_some_ia/main.dart';
 import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 import 'widgets/multiplier_sheet.dart';
 
@@ -30,76 +25,48 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   static const double mockBudget = 500.0;
-
-  CameraController? _cameraController;
-  final PriceOcrService _ocrService = PriceOcrService();
-
-  bool _isCameraInitialized = false;
-  bool _isProcessing = false;
-  double? _detectedPrice;
-  String? _cameraError;
+  
+  // 1. Instancia o Controller (Separação de Responsabilidade - Senior Level)
+  final ScannerController _scannerController = ScannerController();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initCamera();
+    
+    // 2. Inicializa a câmera via Controller
+    _scannerController.initializeCamera();
+    
+    // 3. Escuta mudanças para atualizar o HomeController
+    _scannerController.addListener(_onScannerChanged);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _cameraController?.dispose();
-    _ocrService.dispose();
+    _scannerController.removeListener(_onScannerChanged);
+    _scannerController.dispose();
     super.dispose();
   }
 
-  Future<void> _initCamera() async {
-    try {
-      final status = await Permission.camera.request();
-      if (!status.isGranted) return;
+  void _onScannerChanged() {
+    // Sincroniza o valor detectado com o HomeController
+    // A lógica de "lock" já está encapsulada no ScannerController
+    if (_scannerController.detectedPrice != null) {
+      context.read<HomeController>().setCapturedValue(_scannerController.detectedPrice!);
+    }
+  }
 
-      final camera = cameras.firstWhere(
-        (c) => c.lensDirection == CameraLensDirection.back,
-        orElse: () => cameras.first,
-      );
-
-      _cameraController = CameraController(
-        camera,
-        ResolutionPreset.medium,
-        enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.yuv420,
-      );
-
-      await _cameraController!.initialize();
-      if (!mounted) return;
-
-      _cameraController!.startImageStream((image) async {
-        if (_isProcessing) return;
-        _isProcessing = true;
-
-        try {
-          final price = await _ocrService.detectPriceFromImage(
-            image: image,
-            camera: _cameraController!.description,
-          );
-
-          if (price != null && mounted) {
-            setState(() => _detectedPrice = price);
-            context.read<HomeController>().setCapturedValue(price);
-
-            if (await Vibration.hasVibrator() ?? false) {
-              Vibration.vibrate(duration: 200);
-            }
-          }
-        } catch (_) {}
-
-        _isProcessing = false;
-      });
-
-      setState(() => _isCameraInitialized = true);
-    } catch (e) {
-      setState(() => _cameraError = e.toString());
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // 🛑 CICLO DE VIDA (SENIOR LEVEL):
+    // Apps de câmera DEVEM pausar a pré-visualização quando o app vai para background
+    // Isso economiza bateria e evita crashes em alguns dispositivos Android.
+    
+    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      _scannerController.stopCamera();
+    } else if (state == AppLifecycleState.resumed) {
+      _scannerController.initializeCamera();
     }
   }
 
@@ -117,11 +84,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final double bottomNavHeight = AppSizes.bottomNavHeight;
     
     /// ✅ Scanner SOBREPÕE o header (metade dentro, metade fora)
-    /// headerHeight controla a posição vertical do scanner
     final double headerHeight = AppSizes.headerHeight;
     
     /// 🎯 CÁLCULO CORRETO: Scanner no meio do header!
-    /// Subtrai metade da altura do scanner para centralizar
     final double scannerTop = safeTop + headerHeight - (scannerHeight / 2);
 
     final double contentTop = scannerTop + scannerHeight + AppSizes.spacingMedium;
@@ -144,7 +109,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ),
           ),
 
-          /// 📸 SCANNER — agora usa scannerTopPosition do AppSizes!
+          /// 📸 SCANNER - Usando ListenableBuilder para reconstruir apenas este widget
           Positioned(
             top: scannerTop,
             left: AppSizes.scannerHorizontalPadding.w,
@@ -152,14 +117,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             child: SizedBox(
               width: double.infinity,
               height: scannerHeight,
-              child: ScannerCardWidget(
-                cameraController: _cameraController,
-                isCameraInitialized: _isCameraInitialized,
-                cameraError: _cameraError,
-                detectedPrice: _detectedPrice,
-                capturedValue: controller.capturedValue,
-                onRetry: _initCamera,
-                onOpenSettings: openAppSettings,
+              child: ListenableBuilder(
+                listenable: _scannerController,
+                builder: (context, child) {
+                  return ScannerCardWidget(
+                    cameraController: _scannerController.cameraController,
+                    isCameraInitialized: _scannerController.isCameraInitialized,
+                    cameraError: _scannerController.cameraError,
+                    detectedPrice: _scannerController.detectedPrice,
+                    capturedValue: controller.capturedValue,
+                    onRetry: _scannerController.initializeCamera,
+                    onOpenSettings: openAppSettings,
+                  );
+                },
               ),
             ),
           ),
@@ -199,30 +169,45 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
+  /// 🔒 Wrapper Seguro para fluxos que precisam pausar o scanner
+  Future<void> _runWithScannerPause(Future<void> Function() action) async {
+    // 1. Pausa o scanner antes de abrir qualquer coisa
+    _scannerController.pauseScanning();
+    
+    try {
+      // 2. Executa a ação (ex: abrir modal)
+      await action();
+    } finally {
+      // 3. Garante que o scanner volte a funcionar, mesmo se der erro
+      _scannerController.resumeScanning();
+    }
+  }
+
   void _onConfirm(HomeController controller) async {
     if (controller.capturedValue <= 0) return;
     await controller.addCapturedValue();
     controller.setCapturedValue(0);
-    setState(() => _detectedPrice = null);
+    _scannerController.clearDetectedPrice(); // Destrava o scanner para próxima leitura
   }
 
   void _onCancel(HomeController controller) {
     controller.setCapturedValue(0);
-    setState(() => _detectedPrice = null);
+    _scannerController.clearDetectedPrice(); // Destrava o scanner
   }
 
   void _showManualCaptureSheet(HomeController controller) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => ManualValueSheet(controller: controller),
-    );
+    _runWithScannerPause(() async {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => ManualValueSheet(controller: controller),
+      );
+    });
   }
 
-  void _showMultiplySheet(HomeController controller) {
+  Future<void> _showMultiplySheet(HomeController controller) async {
     if (controller.capturedValue <= 0) {
-      // Opcional: Mostrar aviso que precisa capturar valor primeiro
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Capture ou digite um valor primeiro!'),
@@ -233,31 +218,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       return;
     }
     
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => MultiplierSheet(controller: controller),
-    );
+    await _runWithScannerPause(() async {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => MultiplierSheet(controller: controller),
+      );
+    });
   }
 }
-// ═══════════════════════════════════════════════════════════════
-// 📋 CÓDIGO NÍVEL SÊNIOR - RESPONSIVO E ESCALÁVEL
-// ═══════════════════════════════════════════════════════════════
-//
-// ✅ USA AppSizes.headerHeight (getter responsivo)
-// ✅ ESCALÁVEL para iOS, Android, tablets
-// ✅ MANUTENÍVEL: Mude em UM lugar (app_sizes.dart)
-// ✅ SEM hardcode de valores
-//
-// CÁLCULO SIMPLES E CORRETO:
-// scannerTop = safeTop + AppSizes.headerHeight
-//
-// Para ajustar a posição do scanner:
-// 1. Abra: lib/shared/constants/app_sizes.dart
-// 2. Mude: static double get headerHeight => 100.h;
-// 3. Valores: 85.h (alto), 100.h (médio), 120.h (baixo)
-//
-// ═══════════════════════════════════════════════════════════════
-//
-// ═══════════════════════════════════════════════════════════════
