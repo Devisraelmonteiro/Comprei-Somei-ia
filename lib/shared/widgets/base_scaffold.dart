@@ -37,8 +37,22 @@ class BaseScaffold extends StatelessWidget {
   void _onItemTapped(BuildContext context, int index) {
     if (index == currentIndex) return;
 
-    final routes = ['/home', '/lista', '/encartes', '/orcamento'];
-    context.go(routes[index]);
+    switch (index) {
+      case 0:
+        context.go('/home');
+        break;
+      case 1:
+        context.go('/lista');
+        break;
+      case 2:
+        context.go('/encartes');
+        break;
+      case 3:
+        context.go('/orcamento');
+        break;
+      default:
+        break;
+    }
   }
 
   @override
@@ -81,7 +95,6 @@ class BaseScaffold extends StatelessWidget {
     );
   }
 
-  /// 🍎 iOS - EXATAMENTE como estava (BackdropFilter + Gradiente)
   Widget _buildIOSNav(BuildContext context) {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -99,7 +112,7 @@ class BaseScaffold extends StatelessWidget {
           ],
         ),
         child: BottomNavigationBar(
-          currentIndex: currentIndex > 3 ? 0 : currentIndex,
+          currentIndex: currentIndex.clamp(0, 3),
           onTap: (i) => _onItemTapped(context, i),
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -109,21 +122,21 @@ class BaseScaffold extends StatelessWidget {
           selectedItemColor: AppColors.white,
           unselectedItemColor: AppColors.whiteWithOpacity(0.7),
           iconSize: AppSizes.bottomNavIconSize,
-          items: [
+          items: const [
             BottomNavigationBarItem(
-              icon: const Icon(Iconsax.home_2),
+              icon: Icon(Iconsax.home_2),
               label: AppStrings.homeTitle,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Iconsax.note_text),
+              icon: Icon(Iconsax.note_text),
               label: AppStrings.listTitle,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Iconsax.ticket_discount),
+              icon: Icon(Iconsax.ticket_discount),
               label: AppStrings.encartesTitle,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(CupertinoIcons.money_dollar_circle),
+              icon: Icon(CupertinoIcons.money_dollar_circle),
               label: AppStrings.budgetTitle,
             ),
           ],
@@ -132,10 +145,9 @@ class BaseScaffold extends StatelessWidget {
     );
   }
 
-  /// 🤖 ANDROID - Cor sólida + ícones Material maiores
   Widget _buildAndroidNav(BuildContext context) {
     return Container(
-      height: 70,
+      height: AppSizes.bottomNavHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppSizes.bottomNavRadius),
         color: const Color(0xFFF36607),
@@ -148,32 +160,32 @@ class BaseScaffold extends StatelessWidget {
         ],
       ),
       child: BottomNavigationBar(
-        currentIndex: currentIndex > 3 ? 0 : currentIndex,
+        currentIndex: currentIndex.clamp(0, 3),
         onTap: (i) => _onItemTapped(context, i),
         backgroundColor: Colors.transparent,
         elevation: 0,
         type: BottomNavigationBarType.fixed,
-        selectedFontSize: 12,
-        unselectedFontSize: 11,
+        selectedFontSize: AppSizes.bottomNavTextSize,
+        unselectedFontSize: AppSizes.bottomNavTextSize,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white.withOpacity(0.7),
-        iconSize: 26,
+        iconSize: AppSizes.bottomNavIconSize,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_rounded),
-            label: 'Home',
+            label: AppStrings.homeTitle,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long_rounded),
-            label: 'Lista de compras',
+            label: AppStrings.listTitle,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_offer_rounded),
-            label: 'Encartes',
+            label: AppStrings.encartesTitle,
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.money_dollar_circle),
-            label: 'Gastos',
+            label: AppStrings.budgetTitle,
           ),
         ],
       ),

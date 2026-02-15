@@ -31,7 +31,7 @@ class AppStrings {
   // ===========================
   // 🏠 HOME PAGE
   // ===========================
-  static const String homeTitle = 'Home';
+  static const String homeTitle = 'Início';
   static const String capturedLabel = 'Capturado';
   static const String totalLabel = 'Total';
   static const String itemsCapturedTitle = 'Itens Capturados';
@@ -69,7 +69,7 @@ class AppStrings {
   // ===========================
   // 🛒 LISTA DE COMPRAS
   // ===========================
-  static const String listTitle = 'Lista';
+  static const String listTitle = 'Lista de Compras';
   static const String listEmpty = 'Nenhum item ainda';
   static const String listEmptySubtitle = 'Capture preços com a câmera\nou adicione manualmente';
   static const String btnShare = 'Compartilhar\nLista';
@@ -99,7 +99,7 @@ class AppStrings {
   // ===========================
   // 💰 ORÇAMENTO
   // ===========================
-  static const String budgetTitle = 'Gastos';
+  static const String budgetTitle = 'Controle de Gastos';
   static const String budgetSetTitle = 'Definir Orçamento';
   static const String budgetInputHint = 'Digite o valor';
   static const String budgetAvailable = 'Disponível';

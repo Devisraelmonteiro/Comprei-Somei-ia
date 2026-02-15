@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -74,9 +75,11 @@ class ScannerController extends ChangeNotifier {
         orElse: () => cameras.first,
       );
 
+      final preset = Platform.isAndroid ? ResolutionPreset.high : ResolutionPreset.medium;
+
       _cameraController = CameraController(
         camera,
-        ResolutionPreset.medium,
+        preset,
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.yuv420,
       );

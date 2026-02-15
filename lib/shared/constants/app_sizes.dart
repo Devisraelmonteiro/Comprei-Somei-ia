@@ -129,7 +129,7 @@ class AppSizes {
   static double get bottomNavHeight => 50.h;
   
   static double get bottomNavRadius => 25.r;
-  static double get bottomNavPaddingHorizontal => 12.w;
+  static double get bottomNavPaddingHorizontal => 16.w;
   
   /// Espaço acima do bottom nav (mínimo)
   static double get bottomNavPaddingTop => 2.h;
@@ -141,7 +141,7 @@ class AppSizes {
   static double get bottomNavIconSize => 22.sp;
   
   /// Tamanho do texto do bottom nav (compacto)
-  static double get bottomNavTextSize => 9.sp;
+  static double get bottomNavTextSize => 8.sp;
 
   // ═══════════════════════════════════════════════════════════════
   // 📸 SCANNER - RESPONSIVO
