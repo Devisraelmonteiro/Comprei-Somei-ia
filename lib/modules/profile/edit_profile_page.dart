@@ -22,6 +22,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _confirmPasswordController = TextEditingController();
   final double _backgroundOpacity = 0.9;
   final double _blurIntensity = 10.0;
+  final double _fieldSmokeOpacity = 0.1;
   
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
@@ -324,7 +325,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         SizedBox(height: 6.h),
         Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withOpacity(_fieldSmokeOpacity),
             borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
               color: Colors.white.withOpacity(0.1),

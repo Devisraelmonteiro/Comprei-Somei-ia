@@ -24,18 +24,20 @@ class BaseScaffold extends StatelessWidget {
   final Widget child;
   final int currentIndex;
   final String? userName;
+  final bool showBottomNav;
 
   const BaseScaffold({
     super.key,
     required this.child,
     required this.currentIndex,
     this.userName,
+    this.showBottomNav = true,
   });
 
   void _onItemTapped(BuildContext context, int index) {
     if (index == currentIndex) return;
 
-    final routes = ['/home', '/lista', '/encartes', '/orcamento', '/churrascometro'];
+    final routes = ['/home', '/lista', '/encartes', '/orcamento'];
     context.go(routes[index]);
   }
 
@@ -47,7 +49,7 @@ class BaseScaffold extends StatelessWidget {
       // Escolha o drawer aqui: ModernDrawer() ou UltraFuturisticDrawer()
       drawer: userName != null ? const ModernDrawer() : null,
       body: child,
-      bottomNavigationBar: _buildBottomNav(context),
+      bottomNavigationBar: showBottomNav ? _buildBottomNav(context) : null,
     );
   }
 
@@ -97,7 +99,7 @@ class BaseScaffold extends StatelessWidget {
           ],
         ),
         child: BottomNavigationBar(
-          currentIndex: currentIndex,
+          currentIndex: currentIndex > 3 ? 0 : currentIndex,
           onTap: (i) => _onItemTapped(context, i),
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -124,10 +126,6 @@ class BaseScaffold extends StatelessWidget {
               icon: const Icon(CupertinoIcons.money_dollar_circle),
               label: AppStrings.budgetTitle,
             ),
-            BottomNavigationBarItem(
-              icon: const Icon(CupertinoIcons.flame_fill),
-              label: 'Churrasco',
-            ),
           ],
         ),
       ),
@@ -150,7 +148,7 @@ class BaseScaffold extends StatelessWidget {
         ],
       ),
       child: BottomNavigationBar(
-        currentIndex: currentIndex,
+        currentIndex: currentIndex > 3 ? 0 : currentIndex,
         onTap: (i) => _onItemTapped(context, i),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -167,7 +165,7 @@ class BaseScaffold extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long_rounded),
-            label: 'Lista',
+            label: 'Lista de compras',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_offer_rounded),
@@ -176,10 +174,6 @@ class BaseScaffold extends StatelessWidget {
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.money_dollar_circle),
             label: 'Gastos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.flame_fill),
-            label: 'Churrasco',
           ),
         ],
       ),

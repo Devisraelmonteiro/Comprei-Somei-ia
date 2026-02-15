@@ -22,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   // ==========================================================
   final double _backgroundOpacity = 0.9;
   final double _blurIntensity = 10.0;
+  final double _menuItemSmokeOpacity = 0.1;
 
   @override
   void initState() {
@@ -196,6 +197,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   SizedBox(height: 16.h),
                   _buildMenuItem(
+                    icon: CupertinoIcons.flame_fill,
+                    title: 'Churrascômetro',
+                    subtitle: 'Calculadora de churrasco',
+                    onTap: () => context.push('/churrascometro'),
+                  ),
+                  SizedBox(height: 16.h),
+                  _buildMenuItem(
                     icon: CupertinoIcons.question_circle,
                     title: 'Ajuda',
                     subtitle: 'Dúvidas e suporte',
@@ -247,7 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.4), // Fundo mais escuro
+            color: Colors.black.withOpacity(_menuItemSmokeOpacity),
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: Colors.white.withOpacity(0.1),
