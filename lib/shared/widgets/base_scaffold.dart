@@ -61,7 +61,7 @@ class BaseScaffold extends StatelessWidget {
       extendBody: true,
       backgroundColor: AppColors.background,
       // Escolha o drawer aqui: ModernDrawer() ou UltraFuturisticDrawer()
-      drawer: userName != null ? const ModernDrawer() : null,
+      drawer: null,
       body: child,
       bottomNavigationBar: showBottomNav ? _buildBottomNav(context) : null,
     );

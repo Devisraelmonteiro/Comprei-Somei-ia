@@ -77,11 +77,15 @@ class ScannerController extends ChangeNotifier {
 
       final preset = Platform.isAndroid ? ResolutionPreset.high : ResolutionPreset.medium;
 
+      final imageFormatGroup = Platform.isAndroid
+          ? ImageFormatGroup.nv21
+          : ImageFormatGroup.bgra8888;
+
       _cameraController = CameraController(
         camera,
         preset,
         enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.yuv420,
+        imageFormatGroup: imageFormatGroup,
       );
 
       await _cameraController!.initialize();

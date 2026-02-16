@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart'; // Para debugPrint
 import 'package:flutter/material.dart'; // Para Rect, Size, Offset
@@ -37,21 +38,20 @@ class PriceOcrService {
 
       final recognizedText = await _textRecognizer.processImage(inputImage);
 
-      // 🎯 ROI (Region of Interest) - Foca no centro da imagem
-      // O scanner visual é retangular (mais largo que alto), então ajustamos a ROI.
-      // Assumindo orientação portrait, a imagem da câmera vem rotacionada.
-      // Largura da imagem = Altura da tela (no portrait)
-      // Altura da imagem = Largura da tela
       final imgWidth = image.width.toDouble();
       final imgHeight = image.height.toDouble();
-      
-      // ROI ajustada para pegar apenas a faixa central onde está o "laser"
-      // O scanner visual tem ~280x70 pixels em um card de ~180px de altura.
-      // Isso significa que a altura útil é pequena (~20% da imagem total visível).
+
+      double centerY;
+      if (Platform.isAndroid) {
+        centerY = imgHeight * 0.85;
+      } else {
+        centerY = imgHeight / 2;
+      }
+
       final roiRect = Rect.fromCenter(
-        center: Offset(imgWidth / 2, imgHeight / 2),
-        width: imgWidth * 0.8,  // 80% da largura (bem largo)
-        height: imgHeight * 0.2, // 20% da altura (bem estreito, só o centro)
+        center: Offset(imgWidth / 2, centerY),
+        width: imgWidth * 0.6,
+        height: imgHeight * 0.12,
       );
 
       // Lista de candidatos a preço
@@ -119,23 +119,18 @@ class PriceOcrService {
     return value > 0.05 && value < 10000.00;
   }
 
-  /// 🔄 Helper para converter CameraImage em InputImage
   InputImage? _convertCameraImage(CameraImage image, CameraDescription camera) {
     final rotation = _rotationFromCamera(camera);
-    
-    // O ML Kit precisa dos bytes corretos.
-    // No iOS é bgra8888, no Android yuv420.
-    // O plugin google_mlkit_commons cuida disso se passarmos os metadados certos.
-    
-    final format = InputImageFormatValue.fromRawValue(image.format.raw);
-    if (format == null) return null;
 
-    // Concatena planos (necessário para alguns formatos)
     final allBytes = WriteBuffer();
     for (final plane in image.planes) {
       allBytes.putUint8List(plane.bytes);
     }
     final bytes = allBytes.done().buffer.asUint8List();
+
+    final format = Platform.isAndroid
+        ? InputImageFormat.nv21
+        : InputImageFormat.bgra8888;
 
     return InputImage.fromBytes(
       bytes: bytes,

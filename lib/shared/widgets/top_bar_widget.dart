@@ -247,6 +247,8 @@ class _TopBarWidgetState extends State<TopBarWidget> {
 
   /// 💵 Valor do saldo
   Widget _buildBalanceValue() {
+    final isNegative = widget.remaining < 0;
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
       child: Text(
@@ -255,7 +257,9 @@ class _TopBarWidgetState extends State<TopBarWidget> {
             : "R\$ ••••••",
         key: ValueKey(showBalance),
         style: TextStyle(
-          color: const Color.fromARGB(255, 255, 255, 255),
+          color: isNegative
+              ? const Color(0xFFFF6B6B) // vermelho quando saldo abaixo de zero
+              : const Color.fromARGB(255, 255, 255, 255),
           fontSize: AppSizes.balanceValue.sp,
           fontWeight: FontWeight.w800,
         ),
