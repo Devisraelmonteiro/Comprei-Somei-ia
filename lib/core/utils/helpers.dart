@@ -1,11 +1,15 @@
+import 'package:intl/intl.dart';
+
 class Helpers {
   static String formatCurrency(double value) {
-    return 'R\$ ${value.toStringAsFixed(2)}';
+    final formatter = NumberFormat("#,##0.00", "pt_BR");
+    return 'R\$ ${formatter.format(value)}';
   }
 
   static double parseCurrency(String s) {
-    // remover R$ e pontuação e converter
-    final cleaned = s.replaceAll(RegExp(r'[^0-9,\.]'), '');
-    return double.tryParse(cleaned.replaceAll(',', '.')) ?? 0.0;
+    String cleaned = s.replaceAll('.', '');
+    cleaned = cleaned.replaceAll(RegExp(r'[^0-9,]'), '');
+    cleaned = cleaned.replaceAll(',', '.');
+    return double.tryParse(cleaned) ?? 0.0;
   }
 }

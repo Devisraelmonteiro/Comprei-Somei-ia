@@ -11,6 +11,9 @@ import 'package:comprei_some_ia/modules/home/models/captured_item.dart';
 class HomeController extends ChangeNotifier {
   // === ESTADO ===
   
+  double _budget = 0.0;
+  final List<PurchaseSummary> _purchases = [];
+  
   /// Lista de itens capturados
   final List<CapturedItem> _items = [];
   
@@ -21,6 +24,11 @@ class HomeController extends ChangeNotifier {
   bool _loading = false;
 
   // === GETTERS ===
+  
+  double get budget => _budget;
+  
+  /// Lista imutável de compras finalizadas
+  List<PurchaseSummary> get purchases => List.unmodifiable(_purchases);
   
   /// Lista imutável de itens
   List<CapturedItem> get items => List.unmodifiable(_items);
@@ -123,18 +131,36 @@ class HomeController extends ChangeNotifier {
     _loading = value;
     notifyListeners();
   }
+  
+  void setBudget(double value) {
+    _budget = value;
+    notifyListeners();
+  }
+  
+  void addFinishedPurchase() {
+    if (_items.isEmpty) return;
+    final summary = PurchaseSummary(
+      date: DateTime.now(),
+      total: total,
+    );
+    _purchases.insert(0, summary);
+    notifyListeners();
+  }
 
   /// 💾 Salva estado (para persistência futura)
   Map<String, dynamic> toJson() {
     return {
       'items': _items.map((item) => item.toJson()).toList(),
       'capturedValue': _capturedValue,
+      'budget': _budget,
+      'purchases': _purchases.map((p) => p.toJson()).toList(),
     };
   }
 
   /// 📂 Restaura estado (para persistência futura)
   void fromJson(Map<String, dynamic> json) {
     _items.clear();
+    _purchases.clear();
     
     final itemsJson = json['items'] as List?;
     if (itemsJson != null) {
@@ -142,8 +168,14 @@ class HomeController extends ChangeNotifier {
         itemsJson.map((json) => CapturedItem.fromJson(json)),
       );
     }
-    
     _capturedValue = (json['capturedValue'] as num?)?.toDouble() ?? 0.0;
+    _budget = (json['budget'] as num?)?.toDouble() ?? 0.0;
+    final purchasesJson = json['purchases'] as List?;
+    if (purchasesJson != null) {
+      _purchases.addAll(
+        purchasesJson.map((json) => PurchaseSummary.fromJson(json)),
+      );
+    }
     notifyListeners();
   }
 
@@ -162,6 +194,31 @@ class HomeController extends ChangeNotifier {
   @override
   void dispose() {
     _items.clear();
+    _purchases.clear();
     super.dispose();
+  }
+}
+
+class PurchaseSummary {
+  final DateTime date;
+  final double total;
+
+  PurchaseSummary({
+    required this.date,
+    required this.total,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'date': date.toIso8601String(),
+      'total': total,
+    };
+  }
+
+  factory PurchaseSummary.fromJson(Map<String, dynamic> json) {
+    return PurchaseSummary(
+      date: DateTime.parse(json['date'] as String),
+      total: (json['total'] as num).toDouble(),
+    );
   }
 }

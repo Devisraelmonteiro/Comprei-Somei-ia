@@ -47,10 +47,9 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
     if (digits.isEmpty) digits = '0';
     int value = int.parse(digits);
     
-    // Formata
     final double doubleValue = value / 100;
-    final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-    String newText = formatter.format(doubleValue);
+    final formatter = NumberFormat("#,##0.00", "pt_BR");
+    String newText = 'R\$ ${formatter.format(doubleValue)}';
     
     if (controller.text != newText) {
         controller.value = controller.value.copyWith(
@@ -61,7 +60,16 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
   }
 
   void _saveBudget() {
-    // Salva o orçamento definido
+    double value = 0.0;
+    try {
+      final cleanValue = _orcamentoController.text
+          .replaceAll(RegExp(r'[^\d,]'), '')
+          .replaceAll(',', '.');
+      value = double.tryParse(cleanValue) ?? 0.0;
+    } catch (_) {}
+
+    context.read<HomeController>().setBudget(value);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Orçamento definido: ${_orcamentoController.text}'),
@@ -71,10 +79,39 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
   }
 
   void _addExpense() {
-    // Adiciona o gasto
+    double value = 0.0;
+    try {
+      final cleanValue = _moneyController.text
+          .replaceAll(RegExp(r'[^\d,]'), '')
+          .replaceAll(',', '.');
+      value = double.tryParse(cleanValue) ?? 0.0;
+    } catch (_) {}
+
+    context.read<HomeController>().setBudget(value);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Gasto adicionado: ${_moneyController.text}'),
+        content: Text('Saldo da compra definido: ${_moneyController.text}'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _finishPurchase() {
+    final controller = context.read<HomeController>();
+    if (controller.items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nenhum item capturado para finalizar'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+    controller.addFinishedPurchase();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Compra finalizada e adicionada ao gráfico'),
         backgroundColor: Colors.green,
       ),
     );
@@ -335,6 +372,44 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                                   ),
                                 ),
                               ),
+                              SizedBox(height: 12.h),
+                              Container(
+                                width: double.infinity,
+                                height: 40.h,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFFFFA726), Color(0xFFFF7043)],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(28.r),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFFFF7043).withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: _finishPurchase,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(28.r),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Finalizar compra',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -362,20 +437,12 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
   Widget _buildRecentPurchasesCard() {
     return Consumer<HomeController>(
       builder: (context, controller, _) {
-        final items = controller.items.toList()
-          ..sort((a, b) => b.capturedAt.compareTo(a.capturedAt));
-        final recent = items.take(7).toList().reversed.toList(); // Mostrar mais dias para o gráfico ficar mais interessante
+        final purchases = controller.purchases.toList()
+          ..sort((a, b) => b.date.compareTo(a.date));
+        final recent = purchases.take(7).toList().reversed.toList();
 
-        // Calcular totais
-        final totalDespesa = controller.items.fold(0.0, (sum, item) => sum + item.finalValue);
-        
-        // Obter orçamento atual do input
-        double orcamento = 0.0;
-        try {
-          final cleanValue = _orcamentoController.text.replaceAll(RegExp(r'[^\d,]'), '').replaceAll(',', '.');
-          orcamento = double.tryParse(cleanValue) ?? 0.0;
-        } catch (_) {}
-        
+        final totalDespesa = controller.total;
+        final orcamento = controller.budget;
         final saldo = orcamento - totalDespesa;
         final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
@@ -412,7 +479,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
           );
         }
 
-        final values = recent.map((e) => e.finalValue).toList();
+        final values = recent.map((e) => e.total).toList();
         final maxY = (values.isEmpty ? 100.0 : values.reduce((a, b) => a > b ? a : b)) * 1.25;
 
         return Container(
@@ -520,11 +587,10 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                           getTitlesWidget: (value, meta) {
                             final idx = value.toInt();
                             if (idx < 0 || idx >= recent.length) return const SizedBox.shrink();
-                            // Mostrar apenas alguns labels para não poluir
                             if (recent.length > 5 && idx % 2 != 0) return const SizedBox.shrink();
                             
-                            final date = recent[idx].capturedAt;
-                            final label = DateFormat('dd').format(date);
+                            final date = recent[idx].date;
+                            final label = DateFormat('dd/MM').format(date);
                             return SideTitleWidget(
                               meta: meta,
                               space: 12,
@@ -545,7 +611,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                       // Linha de Despesas (Colorida)
                       LineChartBarData(
                         spots: recent.asMap().entries.map((e) {
-                          return FlSpot(e.key.toDouble(), e.value.finalValue);
+                          return FlSpot(e.key.toDouble(), e.value.total);
                         }).toList(),
                         isCurved: true,
                         curveSmoothness: 0.35,
@@ -585,76 +651,59 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
               Divider(height: 1, color: Colors.grey[100]),
               SizedBox(height: 24.h),
 
-              // Valores Abaixo (Estilo Imagem)
-              ValueListenableBuilder(
-                valueListenable: _moneyController,
-                builder: (context, value, child) {
-                  // Recalcular saldo quando o input mudar
-                  double currentOrcamento = 0.0;
-                  try {
-                    final cleanValue = _moneyController.text.replaceAll(RegExp(r'[^\d,]'), '').replaceAll(',', '.');
-                    currentOrcamento = double.tryParse(cleanValue) ?? 0.0;
-                  } catch (_) {}
-                  final currentSaldo = currentOrcamento - totalDespesa;
-                  
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
                     children: [
-                      // Coluna Despesa
-                      Column(
-                        children: [
-                          Text(
-                            formatter.format(totalDespesa),
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFFE57373), // Vermelho suave
-                            ),
-                          ),
-                          SizedBox(height: 4.h),
-                          Text(
-                            'despesa',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                        ],
+                      Text(
+                        formatter.format(totalDespesa),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFFE57373),
+                        ),
                       ),
-                      
-                      // Divisor vertical
-                      Container(
-                        height: 40.h,
-                        width: 1,
-                        color: Colors.grey[200],
-                      ),
-                      
-                      // Coluna Saldo
-                      Column(
-                        children: [
-                          Text(
-                            formatter.format(currentSaldo),
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF4DB6AC), // Verde suave/Teal
-                            ),
-                          ),
-                          SizedBox(height: 4.h),
-                          Text(
-                            'saldo',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                        ],
+                      SizedBox(height: 4.h),
+                      Text(
+                        'despesa',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[400],
+                        ),
                       ),
                     ],
-                  );
-                }
+                  ),
+                  Container(
+                    height: 40.h,
+                    width: 1,
+                    color: Colors.grey[200],
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        formatter.format(saldo),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                          color: saldo < 0
+                              ? const Color(0xFFE57373)
+                              : const Color(0xFF4DB6AC),
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        'saldo',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),

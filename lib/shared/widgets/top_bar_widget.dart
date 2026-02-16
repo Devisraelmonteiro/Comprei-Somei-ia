@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 import 'package:comprei_some_ia/shared/constants/app_colors.dart';
 import 'package:comprei_some_ia/shared/constants/app_strings.dart';
+import 'package:comprei_some_ia/core/utils/helpers.dart';
 
 /// 🔝 TopBar - Header COMPACTO com textos COLADOS
 /// 
@@ -253,12 +254,12 @@ class _TopBarWidgetState extends State<TopBarWidget> {
       duration: const Duration(milliseconds: 250),
       child: Text(
         showBalance
-            ? "R\$ ${widget.remaining.toStringAsFixed(2)}"
+            ? Helpers.formatCurrency(widget.remaining)
             : "R\$ ••••••",
         key: ValueKey(showBalance),
         style: TextStyle(
           color: isNegative
-              ? const Color(0xFFFF6B6B) // vermelho quando saldo abaixo de zero
+              ? const Color(0xFFFF6B6B)
               : const Color.fromARGB(255, 255, 255, 255),
           fontSize: AppSizes.balanceValue.sp,
           fontWeight: FontWeight.w800,

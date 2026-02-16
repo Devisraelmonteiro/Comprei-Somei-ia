@@ -24,8 +24,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  static const double mockBudget = 500.0;
-  
   // 1. Instancia o Controller (Separação de Responsabilidade - Senior Level)
   final ScannerController _scannerController = ScannerController();
 
@@ -73,7 +71,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<HomeController>();
-    final remaining = mockBudget - controller.total;
+    final remaining = controller.budget - controller.total;
 
     final media = MediaQuery.of(context);
     final safeTop = media.padding.top;
