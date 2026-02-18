@@ -14,6 +14,7 @@ class ChurrascometroPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseScaffold(
       currentIndex: 4,
+      showBottomNav: false,
       child: Stack(
         children: [
           SizedBox(
@@ -126,7 +127,7 @@ class ChurrascometroPage extends StatelessWidget {
 
           Positioned.fill(
             top: 140.h,
-            bottom: 85.h,
+            bottom: 0,
             child: Consumer<ChurrascometroController>(
               builder: (context, controller, _) {
                 final model = controller.model;

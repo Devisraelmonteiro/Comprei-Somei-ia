@@ -50,6 +50,8 @@ class AppStrings {
   static const String btnRetry = 'Tentar Novamente';
   static const String btnContinue = 'Continuar';
   static const String btnBack = 'Voltar';
+  static const String btnAddExpense = 'Adicionar gasto';
+  static const String btnFinishPurchase = 'Finalizar compra';
 
   // ===========================
   // 📸 SCANNER

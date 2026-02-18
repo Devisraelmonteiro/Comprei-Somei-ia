@@ -144,6 +144,9 @@ class HomeController extends ChangeNotifier {
       total: total,
     );
     _purchases.insert(0, summary);
+    if (_purchases.length > 4) {
+      _purchases.removeRange(4, _purchases.length);
+    }
     notifyListeners();
   }
 

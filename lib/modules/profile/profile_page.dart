@@ -115,8 +115,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       children: [
                         Container(
-                          width: 100.r,
-                          height: 100.r,
+                          width: 90.r,
+                          height: 90.r,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.white,
@@ -146,7 +146,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text(
                           'Olá, Visitante',
                           style: TextStyle(
-                            fontSize: 24.sp,
+                            fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
                             color: const Color.fromARGB(255, 255, 255, 255),
                             letterSpacing: 0.5,
@@ -156,7 +156,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text(
                           'Bem-vindo de volta',
                           style: TextStyle(
-                            fontSize: 14.sp,
+                            fontSize: 12.sp,
                             color: const Color.fromARGB(255, 255, 179, 0).withOpacity(0.9),
                             letterSpacing: 0.5,
                           ),
@@ -207,9 +207,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     icon: CupertinoIcons.question_circle,
                     title: 'Ajuda',
                     subtitle: 'Dúvidas e suporte',
-                    onTap: () {
-                      // Implement help navigation
-                    },
+                    onTap: () => context.push('/help'),
                   ),
                   SizedBox(height: 16.h),
                   _buildMenuItem(

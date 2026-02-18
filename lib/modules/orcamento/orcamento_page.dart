@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:comprei_some_ia/shared/widgets/base_scaffold.dart';
 import 'package:comprei_some_ia/shared/constants/app_colors.dart';
+import 'package:comprei_some_ia/shared/constants/app_strings.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import 'package:comprei_some_ia/modules/home/home_controller.dart';
@@ -87,11 +89,11 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
       value = double.tryParse(cleanValue) ?? 0.0;
     } catch (_) {}
 
-    context.read<HomeController>().setBudget(value);
+    context.read<HomeController>().addManualValue(value);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Saldo da compra definido: ${_moneyController.text}'),
+        content: Text('Gasto adicionado: ${_moneyController.text}'),
         backgroundColor: Colors.green,
       ),
     );
@@ -119,6 +121,39 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final safeBottom = media.padding.bottom;
+    final double bottomNavHeight = AppSizes.bottomNavHeight;
+    // LEGENDAS DE CONFIGURAÇÃO (ajuste visual rápido da página):
+    // - Banner topo:
+    //   • Altura: Positioned(height: 280.h)
+    //   • Fit da imagem: BoxFit.contain (troque para cover se quiser preencher)
+    //   • Gradiente de legibilidade do voltar: opacidade em Colors.black.withOpacity(0.6)
+    // - Cabeçalho (voltar + título):
+    //   • Padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h)
+    //   • Ícone voltar: size: 20.sp | fundo: .withOpacity(0.2)
+    //   • Título: fontSize: 18.sp, weight bold, color branco
+    // - Folha branca de conteúdo:
+    //   • Top offset: Positioned.fill(top: 150.h)
+    //   • Bottom offset: bottomNavHeight + safeBottom (não sobrepor footer)
+    //   • Fundo: 0xFFF5F5F7 | Raio topo: 30.r
+    // - Card “Adicionar gasto”:
+    //   • Margem lateral: 20.w | Raio: 24.r | Sombra: blur 15
+    //   • Campo valor: fonte 18.sp bold | hint “R$ 0,00”
+    //   • Botões: altura 40.h, raio 28.r, gap 12.w
+    //     · Primário (preenchido): gradient [0xFFFFA726, 0xFFFF7043]
+    //     · Secundário (outlined): borda 0xFFFF7043
+    // - Card “Relatórios”:
+    //   • Raio: 24.r | padding interno: EdgeInsets.fromLTRB(20.r, 24.r, 20.r, 20.r)
+    //   • Título: 15.sp | mês chip: 12.sp
+    //   • Linha de resumo: despesa 14.sp vermelha (0xFFE57373), saldo 14.sp verde (0xFF4DB6AC) se >= 0
+    // - Gráfico:
+    //   • Altura: 90.h | Padding horizontal interno: 12.w
+    //   • Linha: barWidth 3.5 | curva 0.35 | cor 0xFFFF8A3C
+    //   • Pontos: raio 5, stroke 2.5, strokeColor 0xFFFF8A3C
+    //   • Área inferior: gradient/top opacidades baixas
+    //   • Rótulos bottom: reservedSize 46, tag valor com maxWidth ~68.w e ellipsis
+
     return BaseScaffold(
       currentIndex: 2,
       child: GestureDetector(
@@ -216,14 +251,15 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                         ),
                       ),
                     ],
+                    ),
                   ),
                 ),
-              ),
             ),
             
             // 3. Conteúdo em "Folha Branca" (Bottom Sheet look)
             Positioned.fill(
-              top: 150.h, // Ajustado para subir mais (era 180.h)
+              top: 150.h,
+              bottom: bottomNavHeight + safeBottom,
               child: Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFFF5F5F7), // Fundo levemente cinza do app
@@ -278,7 +314,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                               ),
                               SizedBox(height: 8.h),
                               Text(
-                                'Adicione o valor gasto em suas compras\ne acompanhe seus gastos',
+                                'Adicione o valor e acompanhe seus gastos',
                                 style: TextStyle(
                                   fontSize: 11.sp,
                                   color: Colors.grey[500],
@@ -303,7 +339,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                                         focusNode: _budgetFocus,
                                         onTap: () => _budgetFocus.requestFocus(),
                                         style: TextStyle(
-                                          fontSize: 20.sp,
+                                          fontSize: 18.sp,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black87,
                                         ),
@@ -333,82 +369,85 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                               ),
                               
                               SizedBox(height: 24.h),
-                              
-                              // Botão Laranja
-                              Container(
-                                width: double.infinity,
-                                height: 40.h,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFFFFA726), Color(0xFFFF7043)],
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(28.r),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFFF7043).withOpacity(0.3),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: ElevatedButton(
-                                  onPressed: _addExpense,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.transparent,
-                                    shadowColor: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(28.r),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Adicionar ',
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 12.h),
-                              Container(
-                                width: double.infinity,
-                                height: 40.h,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFFFFA726), Color(0xFFFF7043)],
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(28.r),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFFF7043).withOpacity(0.3),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: ElevatedButton(
-                                  onPressed: _finishPurchase,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.transparent,
-                                    shadowColor: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(28.r),
+
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      height: 40.h,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [Color(0xFFFFA726), Color(0xFFFF7043)],
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(28.r),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color(0xFFFF7043).withOpacity(0.3),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: ElevatedButton(
+                                        onPressed: _addExpense,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          shadowColor: Colors.transparent,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(28.r),
+                                          ),
+                                        ),
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            AppStrings.btnAddExpense,
+                                            maxLines: 1,
+                                            softWrap: false,
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  child: Text(
-                                    'Finalizar compra',
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                  SizedBox(width: 12.w),
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: 40.h,
+                                      child: OutlinedButton(
+                                        onPressed: _finishPurchase,
+                                        style: OutlinedButton.styleFrom(
+                                          side: const BorderSide(
+                                            color: Color(0xFFFF7043),
+                                            width: 1.5,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(28.r),
+                                          ),
+                                          backgroundColor: Colors.white,
+                                        ),
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            AppStrings.btnFinishPurchase,
+                                            maxLines: 1,
+                                            softWrap: false,
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color(0xFFFF7043),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),
@@ -416,13 +455,17 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                       ),
                       
                       SizedBox(height: 24.h),
-                      // Card de Relatórios
+
+                      // Card de Relatórios dentro do conteúdo (layout padrão)
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
                         child: _buildRecentPurchasesCard(),
                       ),
-                      // Espaço extra para scroll quando teclado aparecer
-                      SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 20.h),
+
+                      // Espaço extra para scroll quando teclado aparecer + footer
+                      SizedBox(
+                        height: MediaQuery.of(context).viewInsets.bottom + 20.h,
+                      ),
                     ],
                   ),
                 ),
@@ -439,7 +482,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
       builder: (context, controller, _) {
         final purchases = controller.purchases.toList()
           ..sort((a, b) => b.date.compareTo(a.date));
-        final recent = purchases.take(7).toList().reversed.toList();
+        final recent = purchases.take(4).toList().reversed.toList();
 
         final totalDespesa = controller.total;
         final orcamento = controller.budget;
@@ -498,11 +541,9 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header do Card
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // CONTROLE DE POSIÇÃO DO TÍTULO "Relatórios"
                   Padding(
                     padding: EdgeInsets.only(
                       left: 0.w,  // Edite aqui: Esquerda
@@ -536,39 +577,87 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                   ),
                 ],
               ),
-              
-              SizedBox(height: 32.h),
-              
-              // Gráfico
-              SizedBox(
-                height: 50.h,
-                child: LineChart(
+              SizedBox(height: 12.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        formatter.format(totalDespesa),
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFFE57373),
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      Text(
+                        'despesa',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        formatter.format(saldo),
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: saldo < 0
+                              ? const Color(0xFFE57373)
+                              : const Color(0xFF4DB6AC),
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      Text(
+                        'saldo',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                child: SizedBox(
+                  height: 90.h,
+                  child: LineChart(
                   LineChartData(
-                    gridData: FlGridData(
-                      show: true,
-                      drawVerticalLine: false,
-                      horizontalInterval: maxY / 4,
-                      getDrawingHorizontalLine: (value) {
-                        return FlLine(
-                          color: Colors.grey[200],
-                          strokeWidth: 1,
-                          dashArray: [5, 5], // Linha tracejada
-                        );
-                      },
-                    ),
+                    gridData: const FlGridData(show: false),
                     minX: 0,
                     maxX: recent.length - 1.toDouble(),
                     minY: 0,
                     maxY: maxY,
                     borderData: FlBorderData(show: false),
                     lineTouchData: LineTouchData(
+                      handleBuiltInTouches: true,
                       touchTooltipData: LineTouchTooltipData(
-                        getTooltipColor: (_) => Colors.black.withOpacity(0.8),
+                        getTooltipColor: (_) => Colors.black.withOpacity(0.85),
                         getTooltipItems: (touchedSpots) {
                           return touchedSpots.map((spot) {
+                            final idx = spot.x.round();
+                            final date = recent[idx].date;
+                            final dateLabel = DateFormat('dd/MM').format(date);
+                            final valueLabel = formatter.format(spot.y);
                             return LineTooltipItem(
-                              formatter.format(spot.y),
-                              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                              '$dateLabel\n$valueLabel',
+                              const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             );
                           }).toList();
                         },
@@ -582,25 +671,55 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
-                          reservedSize: 32,
+                          reservedSize: 46,
                           interval: 1,
                           getTitlesWidget: (value, meta) {
                             final idx = value.toInt();
                             if (idx < 0 || idx >= recent.length) return const SizedBox.shrink();
                             if (recent.length > 5 && idx % 2 != 0) return const SizedBox.shrink();
                             
-                            final date = recent[idx].date;
-                            final label = DateFormat('dd/MM').format(date);
+                            final purchase = recent[idx];
+                            final dateLabel = DateFormat('dd/MM').format(purchase.date);
+                            final valueLabel = formatter.format(purchase.total);
                             return SideTitleWidget(
                               meta: meta,
                               space: 12,
-                              child: Text(
-                                label,
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: 11.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    dateLabel,
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2.h),
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(maxWidth: 68.w),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 6.w,
+                                        vertical: 2.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF2F2F7),
+                                        borderRadius: BorderRadius.circular(12.r),
+                                      ),
+                                      child: Text(
+                                        valueLabel,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 9.sp,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           },
@@ -615,29 +734,29 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                         }).toList(),
                         isCurved: true,
                         curveSmoothness: 0.35,
-                        color: const Color(0xFFFF7043), // Laranja/Vermelho suave
-                        barWidth: 3,
+                        color: const Color(0xFFFF8A3C), // Laranja mais vibrante
+                        barWidth: 3.5,
                         isStrokeCapRound: true,
                         dotData: FlDotData(
                           show: true,
                           getDotPainter: (spot, percent, barData, index) {
                             return FlDotCirclePainter(
-                              radius: 4,
+                              radius: 5,
                               color: Colors.white,
-                              strokeWidth: 2,
-                              strokeColor: const Color(0xFFFF7043),
+                              strokeWidth: 2.5,
+                              strokeColor: const Color(0xFFFF8A3C),
                             );
                           },
                         ),
                         belowBarData: BarAreaData(
                           show: true,
-                          color: const Color(0xFFFF7043).withOpacity(0.1),
+                          color: const Color(0xFFFF8A3C).withOpacity(0.08),
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              const Color(0xFFFF7043).withOpacity(0.2),
-                              const Color(0xFFFF7043).withOpacity(0.0),
+                              const Color(0xFFFF8A3C).withOpacity(0.35),
+                              const Color(0xFFFF8A3C).withOpacity(0.0),
                             ],
                           ),
                         ),
@@ -646,64 +765,6 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                   ),
                 ),
               ),
-              
-              SizedBox(height: 24.h),
-              Divider(height: 1, color: Colors.grey[100]),
-              SizedBox(height: 24.h),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      Text(
-                        formatter.format(totalDespesa),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFFE57373),
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        'despesa',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    height: 40.h,
-                    width: 1,
-                    color: Colors.grey[200],
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        formatter.format(saldo),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: saldo < 0
-                              ? const Color(0xFFE57373)
-                              : const Color(0xFF4DB6AC),
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        'saldo',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
               ),
             ],
           ),
