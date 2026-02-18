@@ -23,7 +23,7 @@ class EncartePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      currentIndex: 2, // Índice de Encartes
+      currentIndex: 3, // Índice de Encartes
       child: Stack(
         children: [
           // 1. Imagem de Fundo (Banner)

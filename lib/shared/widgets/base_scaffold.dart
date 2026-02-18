@@ -45,10 +45,10 @@ class BaseScaffold extends StatelessWidget {
         context.go('/lista');
         break;
       case 2:
-        context.go('/encartes');
+        context.go('/orcamento');
         break;
       case 3:
-        context.go('/orcamento');
+        context.go('/encartes');
         break;
       default:
         break;
@@ -132,12 +132,12 @@ class BaseScaffold extends StatelessWidget {
               label: AppStrings.listTitle,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Iconsax.ticket_discount),
-              label: AppStrings.encartesTitle,
-            ),
-            BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.money_dollar_circle),
               label: AppStrings.budgetTitle,
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Iconsax.ticket_discount),
+              label: AppStrings.encartesTitle,
             ),
           ],
         ),
@@ -180,12 +180,12 @@ class BaseScaffold extends StatelessWidget {
             label: AppStrings.listTitle,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_offer_rounded),
-            label: AppStrings.encartesTitle,
-          ),
-          BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.money_dollar_circle),
             label: AppStrings.budgetTitle,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_offer_rounded),
+            label: AppStrings.encartesTitle,
           ),
         ],
       ),

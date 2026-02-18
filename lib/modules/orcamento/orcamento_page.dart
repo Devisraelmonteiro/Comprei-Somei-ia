@@ -120,7 +120,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      currentIndex: 3,
+      currentIndex: 2,
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(
