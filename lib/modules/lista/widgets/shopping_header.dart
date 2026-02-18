@@ -176,7 +176,7 @@ class ShoppingCategoriesSelector extends StatelessWidget {
         padding: EdgeInsets.all(8.w), // Padding interno reduzido
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20.r), // ~20px border radius
+          borderRadius: BorderRadius.circular(20.r),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -184,10 +184,12 @@ class ShoppingCategoriesSelector extends StatelessWidget {
               offset: const Offset(0, 4),
             ),
           ],
-          // Borda sutil apenas para destacar seleção, sem mudar tamanho
-          border: isSelected 
-              ? Border.all(color: Colors.grey[300]!, width: 1.5) 
-              : Border.all(color: const Color.fromARGB(21, 131, 131, 130), width: 1.5),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFFF68A07)
+                : const Color.fromARGB(21, 131, 131, 130),
+            width: 1.5,
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -228,8 +230,8 @@ class ShoppingCategoriesSelector extends StatelessWidget {
               width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 12.w),
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5), // Cinza muito claro fixo
-                borderRadius: BorderRadius.circular(10.r), // ~8-12px radius
+                color: const Color(0xFFF5F5F5),
+                borderRadius: BorderRadius.circular(10.r),
               ),
               child: Text(
                 _formatCategoryName(category),
@@ -237,7 +239,7 @@ class ShoppingCategoriesSelector extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11.sp,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey[800], // Cinza escuro
+                  color: Colors.grey[800],
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

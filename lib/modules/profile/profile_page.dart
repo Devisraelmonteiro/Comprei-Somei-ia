@@ -52,11 +52,12 @@ class _ProfilePageState extends State<ProfilePage> {
           child: GestureDetector(
             onTap: () => context.pop(),
             child: Container(
+              padding: EdgeInsets.all(8.r),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.black.withOpacity(0.06),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(CupertinoIcons.back, color: Colors.white),
+              child: Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20.sp),
             ),
           ),
         ),
@@ -103,7 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           
           SafeArea(
-            child: SingleChildScrollView(
+            child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,10 +218,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () => context.go('/login'),
                     isDestructive: true,
                   ),
-
-                  SizedBox(height: 40.h),
-
-                  // Footer
+                  const Spacer(),
                   Center(
                     child: Text(
                       'Versão 2.0.0',
@@ -230,7 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 16.h),
                 ],
               ),
             ),

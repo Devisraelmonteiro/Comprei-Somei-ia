@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:comprei_some_ia/modules/home/home_controller.dart';
@@ -332,34 +331,34 @@ class ItemsCapturedWidget extends StatelessWidget {
   }
 
   void _handleClearAll(BuildContext context) {
-    showCupertinoDialog(
+    showDialog(
       context: context,
-      builder: (BuildContext ctx) {
-        return CupertinoAlertDialog(
-          title: const Text('Limpar Lista?'),
-          content: const Text(
-            'Tem certeza que deseja excluir todos os itens?\nEsta ação não pode ser desfeita.',
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text('Limpar itens capturados?'),
+        content: const Text(
+          'Tem certeza que deseja excluir todos os itens capturados?\nEsta ação não pode ser desfeita.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
           ),
-          actions: [
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              onPressed: () {
-                Navigator.of(ctx).pop();
-              },
-              child: const Text('Cancelar'),
+          TextButton(
+            onPressed: () {
+              controller.clearAll();
+              Navigator.pop(dialogContext);
+              debugPrint('🗑️ Todos os itens limpos');
+            },
+            child: const Text(
+              'Limpar Tudo',
+              style: TextStyle(color: Colors.red),
             ),
-            CupertinoDialogAction(
-              isDestructiveAction: true,
-              onPressed: () {
-                controller.clearAll();
-                Navigator.of(ctx).pop();
-                debugPrint('🗑️ Todos os itens limpos');
-              },
-              child: const Text('Limpar Tudo'),
-            ),
-          ],
-        );
-      },
+          ),
+        ],
+      ),
     );
   }
 

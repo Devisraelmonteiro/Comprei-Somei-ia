@@ -280,10 +280,10 @@ class _CalculatorPageState extends State<CalculatorPage> {
                         child: Container(
                           padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.black.withOpacity(0.06),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
+                          child: Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20.sp),
                         ),
                       ),
                     ],

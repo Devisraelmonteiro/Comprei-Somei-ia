@@ -89,11 +89,11 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
       value = double.tryParse(cleanValue) ?? 0.0;
     } catch (_) {}
 
-    context.read<HomeController>().addManualValue(value);
+    context.read<HomeController>().setBudget(value);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Gasto adicionado: ${_moneyController.text}'),
+        content: Text('Saldo da compra definido: ${_moneyController.text}'),
         backgroundColor: Colors.green,
       ),
     );
