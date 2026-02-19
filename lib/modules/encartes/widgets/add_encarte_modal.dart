@@ -57,119 +57,120 @@ class _AddEncarteModalState extends State<AddEncarteModal> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
       padding: EdgeInsets.only(
-        left: 20.w,
-        right: 20.w,
-        top: 20.h,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              widget.encarte != null ? 'Editar Encarte' : 'Novo Encarte',
-              style: TextStyle(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-                letterSpacing: -0.5,
+      child: Container(
+        padding: EdgeInsets.all(24.r),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(24.r),
+          ),
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.encarte != null ? 'Editar Encarte' : 'Novo Encarte',
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
               ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 24.h),
-            
-            // Campo Nome
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Nome do Mercado',
-                hintText: 'Ex: Supermercado Preço Bom',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+              SizedBox(height: 20.h),
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Nome do Mercado',
+                  hintText: 'Ex: Supermercado Preço Bom',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  prefixIcon: const Icon(Icons.store_mall_directory_rounded),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: const BorderSide(color: Color(0xFF007AFF)),
-                ),
-                prefixIcon: const Icon(Icons.store_mall_directory_rounded),
-                filled: true,
-                fillColor: const Color(0xFFF5F5F7),
+                textCapitalization: TextCapitalization.sentences,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Por favor, digite o nome do mercado';
+                  }
+                  return null;
+                },
               ),
-              textCapitalization: TextCapitalization.sentences,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Por favor, digite o nome do mercado';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 16.h),
-            
-            // Campo URL
-            TextFormField(
-              controller: _urlController,
-              decoration: InputDecoration(
-                labelText: 'Link do Encarte',
-                hintText: 'Cole o link aqui',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+              SizedBox(height: 16.h),
+              TextFormField(
+                controller: _urlController,
+                decoration: InputDecoration(
+                  labelText: 'Link do Encarte',
+                  hintText: 'Cole o link aqui',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  prefixIcon: const Icon(Icons.link_rounded),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: const BorderSide(color: Color(0xFF007AFF)),
-                ),
-                prefixIcon: const Icon(Icons.link_rounded),
-                filled: true,
-                fillColor: const Color(0xFFF5F5F7),
+                keyboardType: TextInputType.url,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Por favor, cole o link do encarte';
+                  }
+                  return null;
+                },
               ),
-              keyboardType: TextInputType.url,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Por favor, cole o link do encarte';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 24.h),
-            
-            // Botão Salvar
-            ElevatedButton(
-              onPressed: _save,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF007AFF),
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 16.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                elevation: 0,
+              SizedBox(height: 24.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 14.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                      child: const Text('Cancelar'),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _save,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFF36607),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 14.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                      child: Text(
+                        widget.encarte != null
+                            ? 'Salvar Alterações'
+                            : 'Adicionar Encarte',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: Text(
-                widget.encarte != null ? 'Salvar Alterações' : 'Adicionar Encarte',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

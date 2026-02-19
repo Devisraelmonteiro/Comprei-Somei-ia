@@ -69,7 +69,7 @@ class ShoppingListView extends StatelessWidget {
           children: [
             // Ícone
             Icon(
-              Icons.shopping_basket_outlined,
+              Icons.format_list_bulleted,
               size: 64.sp,
               color: AppColors.grey300,
             ),

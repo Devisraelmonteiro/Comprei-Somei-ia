@@ -200,7 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildMenuItem(
                     icon: CupertinoIcons.flame_fill,
                     title: 'Churrascômetro',
-                    subtitle: 'Calculadora de churrasco',
+                    subtitle: 'Calcule seu churrasco',
                     onTap: () => context.push('/churrascometro'),
                   ),
                   SizedBox(height: 16.h),

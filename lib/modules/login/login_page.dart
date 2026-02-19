@@ -184,7 +184,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.push('/forgot_password');
+                          },
                           style: TextButton.styleFrom(
                             foregroundColor: const Color.fromARGB(255, 19, 89, 1).withOpacity(0.8),
                             padding: EdgeInsets.zero,

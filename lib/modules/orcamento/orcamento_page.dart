@@ -90,6 +90,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
     } catch (_) {}
 
     context.read<HomeController>().setBudget(value);
+    FocusScope.of(context).unfocus();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -111,9 +112,11 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
       return;
     }
     controller.addFinishedPurchase();
+    controller.clearAll();
+    controller.setBudget(0);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Compra finalizada e adicionada ao gráfico'),
+        content: Text('Compra finalizada, saldo e itens capturados limpos'),
         backgroundColor: Colors.green,
       ),
     );
@@ -275,19 +278,9 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                       // Card "Adicionar gasto"
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
-                        child: Container(
+                        child: _buildContentCard(
+                          backgroundColor: const Color.fromARGB(10, 244, 132, 4),
                           padding: EdgeInsets.all(20.r),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(10, 244, 132, 4),
-                            borderRadius: BorderRadius.circular(24.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 15,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -477,6 +470,33 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
     );
   }
 
+  Widget _buildContentCard({
+    EdgeInsetsGeometry? margin,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    double? borderRadius,
+    List<BoxShadow>? boxShadow,
+    required Widget child,
+  }) {
+    return Container(
+      margin: margin,
+      padding: padding ?? EdgeInsets.all(20.r),
+      decoration: BoxDecoration(
+        color: backgroundColor ?? Colors.white,
+        borderRadius: BorderRadius.circular(borderRadius ?? 24.r),
+        boxShadow: boxShadow ??
+            [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
+      ),
+      child: child,
+    );
+  }
+
   Widget _buildRecentPurchasesCard() {
     return Consumer<HomeController>(
       builder: (context, controller, _) {
@@ -490,19 +510,9 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
         final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
         if (recent.isEmpty) {
-          return Container(
+          return _buildContentCard(
             padding: EdgeInsets.all(24.r),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
+            borderRadius: 20.r,
             child: Center(
               child: Column(
                 children: [
@@ -525,19 +535,15 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
         final values = recent.map((e) => e.total).toList();
         final maxY = (values.isEmpty ? 100.0 : values.reduce((a, b) => a > b ? a : b)) * 1.25;
 
-        return Container(
+        return _buildContentCard(
           padding: EdgeInsets.fromLTRB(20.r, 24.r, 20.r, 20.r),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24.r), // Bordas mais arredondadas como na imagem
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.06),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -712,7 +718,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
                                         style: TextStyle(
-                                          color: Colors.grey[700],
+                                          color: const Color.fromARGB(255, 14, 126, 4),
                                           fontSize: 9.sp,
                                           fontWeight: FontWeight.w500,
                                         ),

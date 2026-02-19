@@ -15,6 +15,7 @@ import 'package:comprei_some_ia/modules/profile/profile_page.dart';
 import 'package:comprei_some_ia/modules/profile/edit_profile_page.dart';
 import 'package:comprei_some_ia/modules/calculator/calculator_page.dart';
 import 'package:comprei_some_ia/modules/help/help_page.dart';
+import 'package:comprei_some_ia/modules/login/forgot_password_page.dart';
 
 final router = GoRouter(
   initialLocation: '/splash', // Define Splash como inicial
@@ -41,6 +42,10 @@ final router = GoRouter(
     GoRoute(
       path: '/login',
       pageBuilder: (context, state) => _fadeTransition(context, state, const LoginPage()),
+    ),
+    GoRoute(
+      path: '/forgot_password',
+      pageBuilder: (context, state) => _fadeTransition(context, state, const ForgotPasswordPage()),
     ),
     
     // CADASTRO

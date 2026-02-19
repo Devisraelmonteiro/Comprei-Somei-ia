@@ -23,7 +23,7 @@ class EncartePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      currentIndex: 3, // Índice de Encartes
+      currentIndex: 3,
       child: Stack(
         children: [
           // 1. Imagem de Fundo (Banner)
@@ -135,7 +135,6 @@ class EncartePage extends StatelessWidget {
             ),
           ),
 
-          // 3. Conteúdo Principal (Folha Sobreposta)
           Positioned.fill(
             top: 160.h,
             child: Container(
@@ -161,12 +160,26 @@ class EncartePage extends StatelessWidget {
                   return RefreshIndicator(
                     onRefresh: controller.loadEncartes,
                     color: const Color(0xFF007AFF),
-                    child: ListView.builder(
-                      padding: EdgeInsets.only(top: 20.h, bottom: 100.h),
+                    child: ListView.separated(
+                      padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 100.h),
                       itemCount: controller.encartes.length,
+                      separatorBuilder: (context, index) => SizedBox(height: 12.h),
                       itemBuilder: (context, index) {
                         final encarte = controller.encartes[index];
-                        return EncarteCard(encarte: encarte);
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: EncarteCard(encarte: encarte),
+                        );
                       },
                     ),
                   );

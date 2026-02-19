@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:comprei_some_ia/shared/widgets/base_scaffold.dart';
 import 'package:comprei_some_ia/shared/constants/app_colors.dart';
 import 'package:comprei_some_ia/shared/constants/app_strings.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 
 class HelpPage extends StatelessWidget {
   const HelpPage({super.key});
@@ -25,37 +26,37 @@ class HelpPage extends StatelessWidget {
       currentIndex: 0,
       showBottomNav: false,
       child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (context.canPop()) {
-                        context.pop();
-                      } else {
-                        context.go('/profile');
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(8.r),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.06),
-                        shape: BoxShape.circle,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppSizes.screenPadding.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 10.h, bottom: 10.h),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (context.canPop()) {
+                          context.pop();
+                        } else {
+                          context.go('/profile');
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(8.r),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.06),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20.sp),
                       ),
-                      child: Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20.sp),
                     ),
-                  ),
-                  const Spacer(),
-                ],
+                    const Spacer(),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Text(
+              Text(
                 'Ajuda',
                 style: TextStyle(
                   fontSize: 18.sp,
@@ -63,15 +64,12 @@ class HelpPage extends StatelessWidget {
                   color: Colors.black87,
                 ),
               ),
-            ),
-            SizedBox(height: 12.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Container(
-                padding: EdgeInsets.all(16.r),
+              SizedBox(height: AppSizes.spacingMedium),
+              Container(
+                padding: EdgeInsets.all(AppSizes.cardPadding),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.r),
+                  borderRadius: BorderRadius.circular(AppSizes.cardRadius * 2),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.06),
@@ -86,20 +84,20 @@ class HelpPage extends StatelessWidget {
                     Text(
                       'Suporte via WhatsApp',
                       style: TextStyle(
-                        fontSize: 14.sp,
+                        fontSize: AppSizes.titleSmall,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),
                     ),
-                    SizedBox(height: 6.h),
+                    SizedBox(height: AppSizes.spacingSmall),
                     Text(
                       '',
                       style: TextStyle(
-                        fontSize: 12.sp,
+                        fontSize: AppSizes.labelMedium,
                         color: Colors.grey[700],
                       ),
                     ),
-                    SizedBox(height: 12.h),
+                    SizedBox(height: AppSizes.spacingMedium),
                     SizedBox(
                       height: 40.h,
                       child: ElevatedButton(
@@ -113,7 +111,7 @@ class HelpPage extends StatelessWidget {
                         child: Text(
                           'Chamar no WhatsApp',
                           style: TextStyle(
-                            fontSize: 14.sp,
+                            fontSize: AppSizes.titleSmall,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -123,13 +121,10 @@ class HelpPage extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-            SizedBox(height: 16.h),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
+              SizedBox(height: AppSizes.spacingLarge),
+              Expanded(
                 child: ListView(
-                  children: [
+                  children: const [
                     _FaqItem(
                       question: 'Como adicionar gastos?',
                       answer: 'No Controle de Gastos, digite o valor e toque em “Adicionar gasto”.',
@@ -153,8 +148,8 @@ class HelpPage extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -176,10 +171,10 @@ class _FaqItemState extends State<_FaqItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 8.h),
+      margin: EdgeInsets.only(bottom: AppSizes.spacingSmall),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(AppSizes.cardRadius * 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),

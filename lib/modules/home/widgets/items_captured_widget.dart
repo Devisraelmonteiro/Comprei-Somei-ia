@@ -153,7 +153,7 @@ class ItemsCapturedWidget extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: Icon(
-        Icons.shopping_basket_outlined,
+        Icons.attach_money,
         size: AppSizes.iconExtraLarge + 2.sp,
         color: Colors.grey.shade400,
       ),

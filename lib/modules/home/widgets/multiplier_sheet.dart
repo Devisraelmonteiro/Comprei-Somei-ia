@@ -271,7 +271,7 @@ class _MultiplierSheetState extends State<MultiplierSheet> {
                                 color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(24.r),
                                 border: Border.all(
-                                  color: const Color.fromARGB(255, 1, 76, 12), // Verde iOS
+                                  color: const Color.fromARGB(255, 4, 142, 25), // Verde iOS
                                   width: 1.5,
                                 ),
                               ),
@@ -281,7 +281,7 @@ class _MultiplierSheetState extends State<MultiplierSheet> {
                                   style: TextStyle(
                                     fontSize: 13.sp,
                                     fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF32D74B), // Texto Verde
+                                    color: const Color.fromARGB(255, 3, 146, 24), // Texto Verde
                                     letterSpacing: 1.0,
                                   ),
                                 ),

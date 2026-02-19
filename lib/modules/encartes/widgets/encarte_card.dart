@@ -124,95 +124,82 @@ class EncarteCard extends StatelessWidget {
         _confirmDelete(context);
         return false; // Don't dismiss automatically, let the dialog handle it
       },
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-        decoration: BoxDecoration(
-          color: Colors.white,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16.r),
+        child: InkWell(
+          onTap: () => _launchUrl(context),
+          onLongPress: () => _showOptions(context),
           borderRadius: BorderRadius.circular(16.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(16.r),
-          child: InkWell(
-            onTap: () => _launchUrl(context),
-            onLongPress: () => _showOptions(context),
-            borderRadius: BorderRadius.circular(16.r),
-            child: Padding(
-              padding: EdgeInsets.all(12.r),
-              child: Row(
-                children: [
-                  // Avatar
-                  CircleAvatar(
-                    radius: 20.r,
-                    backgroundColor: _getAvatarColor(encarte.name),
-                    child: Text(
-                      _getInitials(encarte.name),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+            child: Row(
+              children: [
+                // Avatar
+                CircleAvatar(
+                  radius: 18.r,
+                  backgroundColor: _getAvatarColor(encarte.name),
+                  child: Text(
+                    _getInitials(encarte.name),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10.w),
+                
+                // Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        encarte.name,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  
-                  // Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          encarte.name,
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      SizedBox(height: 2.h),
+                      Text(
+                        encarte.url,
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: Colors.grey.shade600,
                         ),
-                        SizedBox(height: 2.h),
-                        Text(
-                          encarte.url,
-                          style: TextStyle(
-                            fontSize: 10.sp,
-                            color: Colors.grey.shade500,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  
-                  // Actions
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    icon: Icon(
-                      encarte.isFavorite ? Icons.star_rounded : Icons.star_outline_rounded,
-                      color: encarte.isFavorite ? const Color(0xFFFFCC00) : Colors.grey.shade400,
-                      size: 24.sp,
-                    ),
-                    onPressed: () {
-                      context.read<EncarteController>().toggleFavorite(encarte.id);
-                    },
-                  ),
-                  SizedBox(width: 8.w),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    color: Colors.grey.shade300,
+                ),
+                
+                // Actions
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+                  icon: Icon(
+                    encarte.isFavorite ? Icons.star_rounded : Icons.star_outline_rounded,
+                    color: encarte.isFavorite ? const Color(0xFFFFCC00) : Colors.grey.shade400,
                     size: 20.sp,
                   ),
-                ],
-              ),
+                  onPressed: () {
+                    context.read<EncarteController>().toggleFavorite(encarte.id);
+                  },
+                ),
+                SizedBox(width: 6.w),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.grey.shade300,
+                  size: 18.sp,
+                ),
+              ],
             ),
           ),
         ),

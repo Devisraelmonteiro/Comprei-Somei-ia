@@ -20,6 +20,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
   late final TextEditingController _nameController;
   late final TextEditingController _quantityController;
   final _formKey = GlobalKey<FormState>();
+  late final FocusNode _nameFocusNode;
 
   bool get isEditing => widget.itemToEdit != null;
 
@@ -32,12 +33,14 @@ class _AddItemDialogState extends State<AddItemDialog> {
     _quantityController = TextEditingController(
       text: widget.itemToEdit?.quantity.toString() ?? '1',
     );
+    _nameFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _quantityController.dispose();
+    _nameFocusNode.dispose();
     super.dispose();
   }
 
@@ -84,6 +87,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
               // Campo Nome
               TextFormField(
                 controller: _nameController,
+                focusNode: _nameFocusNode,
                 decoration: InputDecoration(
                   labelText: 'Nome do Produto',
                   hintText: 'Ex: Arroz, Feijão, Macarrão',
@@ -94,6 +98,11 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 ),
                 textCapitalization: TextCapitalization.words,
                 autofocus: !isEditing,
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: (_) {
+                  FocusScope.of(context).unfocus();
+                  Navigator.pop(context);
+                },
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Digite o nome do produto';
@@ -203,8 +212,9 @@ class _AddItemDialogState extends State<AddItemDialog> {
         category: controller.selectedCategory,
       );
       controller.addItem(newItem);
-      
-      Navigator.pop(context);
+      _nameController.text = '';
+      _quantityController.text = '1';
+      FocusScope.of(context).requestFocus(_nameFocusNode);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('✅ Item adicionado!'),
