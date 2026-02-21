@@ -129,7 +129,7 @@ class AppSizes {
   static double get bottomNavHeight => 50.h;
   
   static double get bottomNavRadius => 25.r;
-  static double get bottomNavPaddingHorizontal => 32.w;
+  static double get bottomNavPaddingHorizontal => 16.w;
   
   /// Espaço acima do bottom nav (mínimo)
   static double get bottomNavPaddingTop => 2.h;

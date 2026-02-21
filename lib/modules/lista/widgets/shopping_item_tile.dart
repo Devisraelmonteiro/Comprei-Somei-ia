@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
 import 'package:comprei_some_ia/modules/lista/widgets/add_item_dialog.dart';
+import 'package:comprei_some_ia/shared/constants/app_colors.dart';
 
 /// 🛒 Card de Item COMPLETO
 class ShoppingItemTile extends StatelessWidget {
@@ -18,8 +19,20 @@ class ShoppingItemTile extends StatelessWidget {
     final controller = context.read<ShoppingListController>();
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.black.withOpacity(0.35),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: InkWell(
         onTap: () => controller.toggleItemCheck(item.id),

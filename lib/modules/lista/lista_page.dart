@@ -7,6 +7,7 @@ import 'package:comprei_some_ia/modules/lista/widgets/shopping_header.dart';
 import 'package:comprei_some_ia/modules/lista/widgets/progress_indicators.dart';
 import 'package:comprei_some_ia/modules/lista/widgets/shopping_list_view.dart';
 import 'package:comprei_some_ia/modules/lista/widgets/add_item_dialog.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 
 /// 🛒 Lista Page COMPLETA - VERSÃO 2025
 class ListaPage extends StatefulWidget {
@@ -30,7 +31,7 @@ class _ListaPageState extends State<ListaPage> {
     final safeAreaBottom = MediaQuery.of(context).padding.bottom;
 
     return BaseScaffold(
-      currentIndex: 1,
+      currentIndex: 2,
       child: Consumer<ShoppingListController>(
         builder: (context, controller, _) {
           final hasItems = controller.hasItems;
@@ -211,6 +212,7 @@ class _ListaPageState extends State<ListaPage> {
       ),
     );
   }
+
 
   Widget _buildFloatingActionButton({
     required BuildContext context,

@@ -66,7 +66,7 @@ class FavoritosGrid extends StatelessWidget {
               Expanded(
                 child: ButtonCompreiSomei(
                   label: AppStrings.btnManual,
-                  icon: Icons.create_outlined,
+                  icon: Icons.add_circle_outline,
                   onTap: onManual,
                 ),
               ),

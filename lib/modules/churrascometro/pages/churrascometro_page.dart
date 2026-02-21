@@ -14,7 +14,6 @@ class ChurrascometroPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseScaffold(
       currentIndex: 4,
-      showBottomNav: false,
       child: Stack(
         children: [
           SizedBox(
@@ -43,11 +42,35 @@ class ChurrascometroPage extends StatelessWidget {
             ),
           ),
           Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: Container(
-                color: Colors.black.withOpacity(0.1),
-              ),
+            child: Stack(
+              children: [
+                // Imagem de churrasco ocupando o header e invadindo status bar
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 180.h,
+                  child: Image.asset(
+                    'assets/images/churrasco.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                // Fume escuro igual outras páginas
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.3),
+                          Colors.black.withOpacity(0.7),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
@@ -78,7 +101,7 @@ class ChurrascometroPage extends StatelessWidget {
                               color: Colors.black.withOpacity(0.06),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20.sp),
+                            child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
                           ),
                         ),
                         const Spacer(),
@@ -97,26 +120,14 @@ class ChurrascometroPage extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 8.h),
-                    ShaderMask(
-                      shaderCallback: (Rect bounds) {
-                        return const LinearGradient(
-                          colors: [
-                            Color(0xFFFFA726),
-                            Color(0xFFFF6D00),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ).createShader(bounds);
-                      },
-                      child: Text(
-                        'Churrascômetro',
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          height: 1.1,
-                          letterSpacing: -0.5,
-                        ),
+                    Text(
+                      'Churrascômetro',
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        height: 1.1,
+                        letterSpacing: -0.5,
                       ),
                     ),
                   ],
@@ -128,198 +139,209 @@ class ChurrascometroPage extends StatelessWidget {
           Positioned.fill(
             top: 140.h,
             bottom: 0,
-            child: Consumer<ChurrascometroController>(
-              builder: (context, controller, _) {
-                final model = controller.model;
-                return SingleChildScrollView(
-                  padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 24.h),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSectionTitle('CONVIDADOS'),
-                      SizedBox(height: 8.h),
-                      _buildGlassCard(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildCompactGuestCounter(
-                              'Adultos',
-                              model.adultos,
-                              (v) => controller.updateAdultos(v),
-                              'assets/images/homem.jpg',
-                              Colors.blue,
-                            ),
-                            Container(height: 30.h, width: 1, color: Colors.grey[200]),
-                            _buildCompactGuestCounter(
-                              'Crianças',
-                              model.criancas,
-                              (v) => controller.updateCriancas(v),
-                              'assets/images/crianca.jpg',
-                              const Color.fromARGB(255, 255, 102, 0),
-                            ),
-                          ],
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30.r),
+                  topRight: Radius.circular(30.r),
+                ),
+              ),
+              child: Consumer<ChurrascometroController>(
+                builder: (context, controller, _) {
+                  final model = controller.model;
+                  return Padding(
+                    padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 24.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionTitle('CONVIDADOS'),
+                        SizedBox(height: 8.h),
+                        _buildGlassCard(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildCompactGuestCounter(
+                                'Adultos',
+                                model.adultos,
+                                (v) => controller.updateAdultos(v),
+                                'assets/images/homem.jpg',
+                                Colors.blue,
+                              ),
+                              Container(height: 30.h, width: 1, color: Colors.grey[200]),
+                              _buildCompactGuestCounter(
+                                'Crianças',
+                                model.criancas,
+                                (v) => controller.updateCriancas(v),
+                                'assets/images/crianca.jpg',
+                                const Color.fromARGB(255, 255, 102, 0),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 24.h),
-                      _buildGlassCard(
-                        padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 12.w),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.timer_outlined, color: Colors.orange, size: 16.sp),
-                                    SizedBox(width: 8.w),
-                                    Text('Duração', style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600)),
-                                  ],
-                                ),
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
-                                  decoration: BoxDecoration(
-                                    color: Colors.orange.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(20.r),
+                        SizedBox(height: 24.h),
+                        _buildGlassCard(
+                          padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 12.w),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.timer_outlined, color: Colors.orange, size: 16.sp),
+                                      SizedBox(width: 8.w),
+                                      Text('Duração', style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600)),
+                                    ],
                                   ),
-                                  child: Text('${model.duracaoHoras}h', style: TextStyle(fontSize: 11.sp, color: Colors.orange, fontWeight: FontWeight.bold)),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(20.r),
+                                    ),
+                                    child: Text('${model.duracaoHoras}h', style: TextStyle(fontSize: 11.sp, color: Colors.orange, fontWeight: FontWeight.bold)),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 0.h),
+                              SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  activeTrackColor: Colors.orange,
+                                  inactiveTrackColor: Colors.grey[200],
+                                  thumbColor: Colors.white,
+                                  trackHeight: 3.h,
+                                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r, elevation: 3),
+                                  overlayShape: RoundSliderOverlayShape(overlayRadius: 12.r),
                                 ),
-                              ],
-                            ),
-                            SizedBox(height: 0.h),
-                            SliderTheme(
-                              data: SliderTheme.of(context).copyWith(
-                                activeTrackColor: Colors.orange,
-                                inactiveTrackColor: Colors.grey[200],
-                                thumbColor: Colors.white,
-                                trackHeight: 3.h,
-                                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r, elevation: 3),
-                                overlayShape: RoundSliderOverlayShape(overlayRadius: 12.r),
+                                child: Slider(
+                                  value: model.duracaoHoras.toDouble(),
+                                  min: 2,
+                                  max: 12,
+                                  divisions: 10,
+                                  onChanged: (v) => controller.updateDuracao(v.round()),
+                                ),
                               ),
-                              child: Slider(
-                                value: model.duracaoHoras.toDouble(),
-                                min: 2,
-                                max: 12,
-                                divisions: 10,
-                                onChanged: (v) => controller.updateDuracao(v.round()),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 12.h),
-                      _buildSectionTitle('OPÇÕES EXTRAS'),
-                      SizedBox(height: 8.h),
-                      _buildGlassCard(
-                        padding: EdgeInsets.all(12.r),
-                        child: Wrap(
-                          spacing: 12.w,
-                          runSpacing: 12.h,
-                          alignment: WrapAlignment.spaceBetween,
-                          children: [
-                            _buildToggleTile(
-                              context,
-                              'Cerveja',
-                              model.bebidaAlcoolica,
-                              (v) => controller.toggleBebidaAlcoolica(v),
-                              'assets/images/cerveja.jpg',
-                              Colors.amber,
-                            ),
-                            _buildToggleTile(
-                              context,
-                              'Pão Alho',
-                              model.paoDeAlho,
-                              (v) => controller.togglePaoDeAlho(v),
-                              'assets/images/pao_de_alho.jpg',
-                              Colors.brown,
-                            ),
-                            _buildToggleTile(
-                              context,
-                              'Carvão',
-                              model.carvao,
-                              (v) => controller.toggleCarvao(v),
-                              'assets/images/carvao.jpg',
-                              Colors.grey,
-                            ),
-                            _buildToggleTile(
-                              context,
-                              'Gelo',
-                              model.gelo,
-                              (v) => controller.toggleGelo(v),
-                              'assets/images/gelo.jpg',
-                              Colors.cyan,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 12.h),
-                      _buildSectionTitle('LISTA DE CHURRASCO'),
-                      SizedBox(height: 8.h),
-                      _buildGlassCard(
-                        margin: EdgeInsets.only(bottom: 8.h),
-                        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
-                        child: Column(
-                          children: [
-                            _buildResultItem(
-                              context,
-                              'Carne',
-                              model.carneTotalKg.toStringAsFixed(1),
-                              'Quilos',
-                              'assets/images/carne.jpg',
-                              Colors.red,
-                              isFirst: true,
-                            ),
-                            if (model.bebidaAlcoolica)
-                              _buildResultItem(
+                        SizedBox(height: 12.h),
+                        _buildSectionTitle('OPÇÕES EXTRAS'),
+                        SizedBox(height: 8.h),
+                        _buildGlassCard(
+                          padding: EdgeInsets.all(12.r),
+                          child: Wrap(
+                            spacing: 12.w,
+                            runSpacing: 12.h,
+                            alignment: WrapAlignment.spaceBetween,
+                            children: [
+                              _buildToggleTile(
                                 context,
                                 'Cerveja',
-                                model.cervejaTotalLitros.toStringAsFixed(1),
-                                'Litros',
+                                model.bebidaAlcoolica,
+                                (v) => controller.toggleBebidaAlcoolica(v),
                                 'assets/images/cerveja.jpg',
                                 Colors.amber,
                               ),
-                            _buildResultItem(
-                              context,
-                              'Bebidas',
-                              model.refrigeranteTotalLitros.toStringAsFixed(1),
-                              'Litros',
-                              'assets/images/bebidas.png',
-                              Colors.blue,
-                            ),
-                            if (model.paoDeAlho)
-                              _buildResultItem(
+                              _buildToggleTile(
                                 context,
                                 'Pão Alho',
-                                '${model.paoDeAlhoUnidades}',
-                                'Pacotes',
+                                model.paoDeAlho,
+                                (v) => controller.togglePaoDeAlho(v),
                                 'assets/images/pao_de_alho.jpg',
                                 Colors.brown,
                               ),
-                            if (model.carvao)
-                              _buildResultItem(
+                              _buildToggleTile(
                                 context,
                                 'Carvão',
-                                '${model.carvaoSacos}',
-                                'Sacos',
+                                model.carvao,
+                                (v) => controller.toggleCarvao(v),
                                 'assets/images/carvao.jpg',
                                 Colors.grey,
                               ),
-                            if (model.gelo)
-                              _buildResultItem(
+                              _buildToggleTile(
                                 context,
                                 'Gelo',
-                                '${model.geloSacos}',
-                                'Sacos',
+                                model.gelo,
+                                (v) => controller.toggleGelo(v),
                                 'assets/images/gelo.jpg',
                                 Colors.cyan,
                               ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                        SizedBox(height: 12.h),
+                        _buildSectionTitle('LISTA DE CHURRASCO'),
+                        SizedBox(height: 8.h),
+                        Expanded(
+                          child: _buildGlassCard(
+                            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                            child: ListView(
+                              physics: const BouncingScrollPhysics(),
+                              children: [
+                                _buildResultItem(
+                                  context,
+                                  'Carne',
+                                  model.carneTotalKg.toStringAsFixed(1),
+                                  'Quilos',
+                                  'assets/images/carne.jpg',
+                                  Colors.red,
+                                  isFirst: true,
+                                ),
+                                if (model.bebidaAlcoolica)
+                                  _buildResultItem(
+                                    context,
+                                    'Cerveja',
+                                    model.cervejaTotalLitros.toStringAsFixed(1),
+                                    'Litros',
+                                    'assets/images/cerveja.jpg',
+                                    Colors.amber,
+                                  ),
+                                _buildResultItem(
+                                  context,
+                                  'Bebidas',
+                                  model.refrigeranteTotalLitros.toStringAsFixed(1),
+                                  'Litros',
+                                  'assets/images/bebidas.png',
+                                  Colors.blue,
+                                ),
+                                if (model.paoDeAlho)
+                                  _buildResultItem(
+                                    context,
+                                    'Pão Alho',
+                                    '${model.paoDeAlhoUnidades}',
+                                    'Pacotes',
+                                    'assets/images/pao_de_alho.jpg',
+                                    Colors.brown,
+                                  ),
+                                if (model.carvao)
+                                  _buildResultItem(
+                                    context,
+                                    'Carvão',
+                                    '${model.carvaoSacos}',
+                                    'Sacos',
+                                    'assets/images/carvao.jpg',
+                                    Colors.grey,
+                                  ),
+                                if (model.gelo)
+                                  _buildResultItem(
+                                    context,
+                                    'Gelo',
+                                    '${model.geloSacos}',
+                                    'Sacos',
+                                    'assets/images/gelo.jpg',
+                                    Colors.cyan,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],

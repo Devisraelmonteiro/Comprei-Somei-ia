@@ -41,12 +41,7 @@ class ShoppingListView extends StatelessWidget {
             vertical: 4.h,
           ),
           itemCount: items.length,
-          separatorBuilder: (context, index) => Divider(
-            height: 1,
-            color: Colors.grey[200],
-            indent: 16.w,
-            endIndent: 16.w,
-          ),
+          separatorBuilder: (context, index) => SizedBox(height: 12.h),
           itemBuilder: (context, index) {
             final item = items[index];
             return ShoppingItemTile(

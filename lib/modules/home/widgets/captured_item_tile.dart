@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:comprei_some_ia/modules/home/models/captured_item.dart';
 import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
+import 'package:comprei_some_ia/shared/constants/app_colors.dart';
 
 /// 📋 Widget de um item capturado individual - SEM NUMERAÇÃO
 /// 
@@ -37,13 +38,10 @@ class CapturedItemTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        // ⬇️ COMENTADO A PEDIDO (BORDAS COLORIDAS)
-        /*
         border: Border.all(
           color: _getBorderColor(),
           width: 1,
         ),
-        */
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
@@ -148,7 +146,7 @@ class CapturedItemTile extends StatelessWidget {
         tooltip = 'Capturado automaticamente';
         break;
       case CaptureType.manual:
-        icon = Icons.create_outlined; // Ícone do botão Manual (Lápis)
+        icon = Icons.add_circle_outline; // Ícone do botão Manual (sinal de soma)
         color = const Color.fromARGB(255, 243, 122, 41); // Laranja App
         tooltip = 'Adicionado manualmente';
         break;
@@ -222,14 +220,7 @@ class CapturedItemTile extends StatelessWidget {
 
   /// 🎨 Cor da borda baseada no tipo
   Color _getBorderColor() {
-    switch (item.type) {
-      case CaptureType.automatic:
-        return const Color.fromARGB(0, 2, 83, 22).withOpacity(0.5); // Verde iOS Oficial
-      case CaptureType.manual:
-        return const Color.fromARGB(0, 236, 106, 6).withOpacity(0.5); // Laranja
-      case CaptureType.multiplied:
-        return const Color.fromARGB(0, 10, 86, 167).withOpacity(0.5); // Azul
-    }
+    return AppColors.primaryWithOpacity(0.35);
   }
 
   /// 🕐 Formata horário

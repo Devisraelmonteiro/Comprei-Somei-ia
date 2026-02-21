@@ -158,7 +158,7 @@ class _OrcamentoPageState extends State<OrcamentoPage> {
     //   • Rótulos bottom: reservedSize 46, tag valor com maxWidth ~68.w e ellipsis
 
     return BaseScaffold(
-      currentIndex: 2,
+      currentIndex: 1,
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(

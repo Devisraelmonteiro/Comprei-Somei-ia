@@ -198,13 +198,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   SizedBox(height: 16.h),
                   _buildMenuItem(
-                    icon: CupertinoIcons.flame_fill,
-                    title: 'Churrascômetro',
-                    subtitle: 'Calcule seu churrasco',
-                    onTap: () => context.push('/churrascometro'),
-                  ),
-                  SizedBox(height: 16.h),
-                  _buildMenuItem(
                     icon: CupertinoIcons.question_circle,
                     title: 'Ajuda',
                     subtitle: 'Dúvidas e suporte',

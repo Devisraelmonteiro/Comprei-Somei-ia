@@ -95,7 +95,7 @@ class EncartePage extends StatelessWidget {
                           child: Container(
                             padding: EdgeInsets.all(8.r),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: const Color(0xFFF36607),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(Icons.add, color: Colors.white, size: 20.sp),
