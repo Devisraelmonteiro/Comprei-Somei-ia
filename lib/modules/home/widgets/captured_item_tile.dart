@@ -4,7 +4,7 @@ import 'package:comprei_some_ia/modules/home/models/captured_item.dart';
 import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 import 'package:comprei_some_ia/shared/constants/app_colors.dart';
 
-/// 📋 Widget de um item capturado individual - SEM NUMERAÇÃO
+/// 📋 Widget de um item capturado individual - COM NUMERAÇÃO OPCIONAL
 /// 
 /// ✅ Apenas ícone de câmera (sem números)
 /// ✅ Usa AppSizes (código sênior)
@@ -44,7 +44,7 @@ class CapturedItemTile extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -87,7 +87,7 @@ class CapturedItemTile extends StatelessWidget {
         width: 32.w,
         height: 32.w,
         decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.1),
+          color: Colors.red.withValues(alpha: 0.1),
           shape: BoxShape.circle,
         ),
         child: Icon(
@@ -105,12 +105,12 @@ class CapturedItemTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Nome/label SEM numeração! ✅
+        // Nome/label
         Row(
           children: [
             Flexible(
               child: Text(
-                item.displayLabel,  // ← SEM '${index + 1}'!
+                item.displayLabel,
                 style: TextStyle(
                   fontSize: 11.sp,  // ← MENOR (era 13sp)
                   fontWeight: FontWeight.w600,

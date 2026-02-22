@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
 
@@ -21,6 +21,13 @@ class _AddItemDialogState extends State<AddItemDialog> {
   late final TextEditingController _quantityController;
   final _formKey = GlobalKey<FormState>();
   late final FocusNode _nameFocusNode;
+  late String _selectedUnit;
+  late final Map<String, List<Map<String, String>>> _unitCategories;
+  bool _showUnitMenu = false;
+  // Ajuste de altura da folha (0.30 = 30% da tela, 0.80 = 80% da tela)
+  double _sheetHeightFactor = 0.48; // EDITAR AQUI para altura desejada
+  // Ajuste fino para espaço acima do teclado quando focar campos
+  double _keyboardOffset = 18; // EDITAR AQUI para subir mais/menos com teclado
 
   bool get isEditing => widget.itemToEdit != null;
 
@@ -31,9 +38,49 @@ class _AddItemDialogState extends State<AddItemDialog> {
       text: widget.itemToEdit?.name ?? '',
     );
     _quantityController = TextEditingController(
-      text: widget.itemToEdit?.quantity.toString() ?? '1',
+      text: widget.itemToEdit != null ? widget.itemToEdit!.quantity.toString() : '',
     );
     _nameFocusNode = FocusNode();
+    _selectedUnit = widget.itemToEdit?.unitLabel != null && widget.itemToEdit!.unitLabel!.isNotEmpty
+        ? widget.itemToEdit!.unitLabel!
+        : 'un';
+    _unitCategories = {
+      'Massa': [
+        {'abbr': 'mg', 'name': 'miligrama'},
+        {'abbr': 'g', 'name': 'grama'},
+        {'abbr': 'kg', 'name': 'quilograma'},
+      ],
+      'Volume': [
+        {'abbr': 'ml', 'name': 'mililitro'},
+        {'abbr': 'L', 'name': 'litro'},
+        {'abbr': 'peso líq.', 'name': 'peso líquido'},
+      ],
+      'Contagem': [
+        {'abbr': 'un', 'name': 'unidade'},
+        {'abbr': 'pç', 'name': 'peça'},
+        {'abbr': 'dz', 'name': 'dúzia'},
+        {'abbr': 'qtd.', 'name': 'quantidade'},
+      ],
+      'Embalagens': [
+        {'abbr': 'pct', 'name': 'pacote'},
+        {'abbr': 'cx', 'name': 'caixa'},
+        {'abbr': 'ct', 'name': 'cartela'},
+        {'abbr': 'fd', 'name': 'fardo'},
+        {'abbr': 'rl', 'name': 'rolo'},
+        {'abbr': 'kit', 'name': 'conjunto'},
+      ],
+      'Comprimento': [
+        {'abbr': 'mm', 'name': 'milímetros'},
+        {'abbr': 'cm', 'name': 'centímetros'},
+        {'abbr': 'm', 'name': 'metros'},
+      ],
+      'Papel': [
+        {'abbr': 'folh', 'name': 'folhas'},
+      ],
+      'Outros': [
+        {'abbr': 'a granel', 'name': 'a granel'},
+      ],
+    };
   }
 
   @override
@@ -50,29 +97,32 @@ class _AddItemDialogState extends State<AddItemDialog> {
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: Container(
+      child: SizedBox(
+        height: _computeSheetHeight(context), // Altura controlada
+        child: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(24),
+            top: Radius.circular(20),
           ),
         ),
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Form(
-          key: _formKey,
-          child: Column(
+            key: _formKey,
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Título
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    isEditing ? 'Editar Produto' : 'Adicionar Produto',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      isEditing ? 'Editar Produto' : 'Adicionar Produto',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -82,7 +132,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 ],
               ),
               
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               
               // Campo Nome
               TextFormField(
@@ -90,15 +140,19 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 focusNode: _nameFocusNode,
                 decoration: InputDecoration(
                   labelText: 'Nome do Produto',
-                  hintText: 'Ex: Arroz, Feijão, Macarrão',
+                  labelStyle: const TextStyle(fontSize: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  prefixIcon: const Icon(Icons.shopping_cart_outlined),
+                  suffixIcon: const Icon(Icons.shopping_bag_outlined, color: Color(0xFFF36607), size: 18),
                 ),
+                style: const TextStyle(fontSize: 14),
                 textCapitalization: TextCapitalization.words,
                 autofocus: !isEditing,
                 textInputAction: TextInputAction.done,
+                scrollPadding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 80,
+                ),
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).unfocus();
                   Navigator.pop(context);
@@ -111,36 +165,163 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 },
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               
-              // Campo Quantidade
-              TextFormField(
-                controller: _quantityController,
-                decoration: InputDecoration(
-                  labelText: 'Quantidade',
-                  hintText: '1',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+              // Linha: Quantidade (valor digitado) + Unidade (dropdown laranja com rolagem)
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _quantityController,
+                      decoration: InputDecoration(
+                        labelText: 'Medida',
+                        labelStyle: const TextStyle(fontSize: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        suffixIcon: const Icon(Icons.straighten, color: Color(0xFFF36607), size: 18),
+                        counterText: '',
+                      ),
+                      style: const TextStyle(fontSize: 14),
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.done,
+                      scrollPadding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom + _keyboardOffset,
+                      ),
+                      maxLength: 5,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Digite a quantidade';
+                        }
+                        final qty = int.tryParse(value);
+                        if (qty == null || qty <= 0) {
+                          return 'Quantidade deve ser maior que zero';
+                        }
+                        if (qty > 9999) {
+                          return 'Quantidade máxima é 9999';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
-                  prefixIcon: const Icon(Icons.numbers),
-                ),
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _showUnitMenu = !_showUnitMenu;
+                            });
+                          },
+                          child: InputDecorator(
+                            isFocused: _showUnitMenu,
+                            decoration: InputDecoration(
+                              labelText: 'Unidade',
+                              labelStyle: const TextStyle(fontSize: 12),
+                              filled: true,
+                              fillColor: Colors.orange.shade50,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0xFFF36607)),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: Color(0xFFF36607)),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(12)),
+                                borderSide: BorderSide(color: Color(0xFFF36607), width: 1.5),
+                              ),
+                              suffixIcon: SizedBox(
+                                width: 44,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.scale_outlined, color: Color(0xFFF36607), size: 18),
+                                    const SizedBox(width: 4),
+                                    Icon(
+                                      _showUnitMenu ? Icons.expand_less : Icons.expand_more,
+                                      color: const Color(0xFFF36607),
+                                      size: 18,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.circle, size: 6, color: Color(0xFFF36607)),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _selectedUnit.toUpperCase(),
+                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.black87),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _unitLongName(_selectedUnit),
+                                  style: const TextStyle(fontSize: 10, color: Colors.black54),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (_showUnitMenu) ...[
+                          const SizedBox(height: 6),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.orange.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: const Color(0xFFF36607)),
+                            ),
+                            constraints: const BoxConstraints(maxHeight: 160), // ~4 itens visíveis
+                            child: ListView.separated(
+                              padding: const EdgeInsets.symmetric(vertical: 6),
+                              itemBuilder: (context, index) {
+                                final entries = _flattenUnits();
+                                final u = entries[index];
+                                return InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedUnit = u['abbr']!;
+                                      _showUnitMenu = false;
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.circle, size: 6, color: Color(0xFFF36607)),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          u['abbr']!.toUpperCase(),
+                                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.black87),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          u['name']!,
+                                          style: TextStyle(color: Colors.grey.shade700, fontSize: 10),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              separatorBuilder: (_, __) => Divider(height: 1, color: Colors.orange.shade100),
+                              itemCount: _flattenUnits().length,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Digite a quantidade';
-                  }
-                  final qty = int.tryParse(value);
-                  if (qty == null || qty <= 0) {
-                    return 'Quantidade deve ser maior que zero';
-                  }
-                  return null;
-                },
               ),
               
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              
+              // Dica: unidade já está incluída na seleção de quantidade acima
               
               // Botões
               Row(
@@ -149,7 +330,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -157,14 +338,14 @@ class _AddItemDialogState extends State<AddItemDialog> {
                       child: const Text('Cancelar'),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _handleSubmit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFF36607),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -175,6 +356,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 ],
               ),
             ],
+            ),
           ),
         ),
       ),
@@ -193,6 +375,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
       final updatedItem = widget.itemToEdit!.copyWith(
         name: name,
         quantity: quantity,
+        unitLabel: _selectedUnit,
       );
       controller.updateItem(updatedItem);
       
@@ -210,10 +393,12 @@ class _AddItemDialogState extends State<AddItemDialog> {
         name: name,
         quantity: quantity,
         category: controller.selectedCategory,
+        unitLabel: _selectedUnit,
       );
       controller.addItem(newItem);
       _nameController.text = '';
-      _quantityController.text = '1';
+      _selectedUnit = 'un';
+      _quantityController.text = '';
       FocusScope.of(context).requestFocus(_nameFocusNode);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -223,5 +408,37 @@ class _AddItemDialogState extends State<AddItemDialog> {
         ),
       );
     }
+  }
+  
+  List<Map<String, String>> _flattenUnits() {
+    final list = <Map<String, String>>[];
+    _unitCategories.forEach((category, units) {
+      for (final u in units) {
+        list.add({'abbr': u['abbr']!, 'name': u['name']!, 'category': category});
+      }
+    });
+    return list;
+  }
+  
+ 
+  
+  String _unitLongName(String abbr) {
+    for (final entry in _unitCategories.entries) {
+      for (final u in entry.value) {
+        if (u['abbr'] == abbr) return u['name']!;
+      }
+    }
+    return abbr;
+  }
+  
+  // Cálculo da altura da folha baseado em _sheetHeightFactor e teclado
+  double _computeSheetHeight(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final keyboard = MediaQuery.of(context).viewInsets.bottom;
+    final desired = size.height * _sheetHeightFactor;
+    final available = size.height - keyboard;
+    // Garante mínimo confortável e não ultrapassar área disponível
+    final clamped = desired.clamp(240.0, available);
+    return clamped.toDouble();
   }
 }

@@ -53,7 +53,7 @@ class ItemsCapturedWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppSizes.cardRadius * 2),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.06),
+          color: Colors.black.withValues(alpha: 0.06),
           blurRadius: 12,
           offset: const Offset(0, 3),
         ),
@@ -101,10 +101,10 @@ class ItemsCapturedWidget extends StatelessWidget {
         vertical: 5.h,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFF36607).withOpacity(0.1),
+        color: const Color(0xFFF36607).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppSizes.cardRadius),
         border: Border.all(
-          color: const Color(0xFFF36607).withOpacity(0.2),
+          color: const Color(0xFFF36607).withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -188,6 +188,7 @@ class ItemsCapturedWidget extends StatelessWidget {
       // ✅ PADDING ZERO - itens ficam colados!
       padding: EdgeInsets.zero,
       physics: const BouncingScrollPhysics(),
+      reverse: true, // rolagem ao contrário: últimos embaixo, antigos ao rolar para cima
       itemCount: items.length,
       separatorBuilder: (_, __) => const SizedBox(height: 8),
       itemBuilder: (context, index) => _buildAnimatedItem(items[index], index),
@@ -202,7 +203,7 @@ class ItemsCapturedWidget extends StatelessWidget {
         key: ValueKey(item.id),
         item: item,
         index: index,
-        onDelete: () => _handleDeleteItem(index),
+        onDelete: () => _handleDeleteItemById(item.id),
         onTap: () => _handleEditItem(item),
       ),
     );
@@ -314,16 +315,16 @@ class ItemsCapturedWidget extends StatelessWidget {
   BoxDecoration _buildClearButtonDecoration() {
     return BoxDecoration(
       border: Border.all(
-        color: Colors.red.withOpacity(0.3),
+        color: Colors.red.withValues(alpha: 0.3),
         width: 1.5,
       ),
       borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
     );
   }
 
-  void _handleDeleteItem(int index) {
-    controller.deleteItem(index);
-    debugPrint('🗑️ Item $index deletado');
+  void _handleDeleteItemById(String id) {
+    controller.deleteItemById(id);
+    debugPrint('🗑️ Item $id deletado');
   }
 
   void _handleEditItem(CapturedItem item) {

@@ -22,6 +22,15 @@ class HomeController extends ChangeNotifier {
   
   /// Estado de loading
   bool _loading = false;
+  
+  /// Nome do item da lista selecionado para vincular à captura
+  String? _selectedItemNameForCapture;
+  
+  /// Unidade do item selecionado para vincular à captura
+  String? _selectedUnitLabelForCapture;
+  
+  /// Quantidade do item selecionado para vincular à captura
+  int? _selectedQuantityForCapture;
 
   // === GETTERS ===
   
@@ -44,6 +53,15 @@ class HomeController extends ChangeNotifier {
   
   /// Estado de loading
   bool get loading => _loading;
+  
+  /// Nome do item atualmente selecionado para vincular
+  String? get selectedItemNameForCapture => _selectedItemNameForCapture;
+  
+  /// Unidade do item atualmente selecionado para vincular
+  String? get selectedUnitLabelForCapture => _selectedUnitLabelForCapture;
+  
+  /// Quantidade atualmente selecionada para vincular
+  int? get selectedQuantityForCapture => _selectedQuantityForCapture;
 
   // === MÉTODOS PÚBLICOS ===
   
@@ -54,10 +72,16 @@ class HomeController extends ChangeNotifier {
     final item = CapturedItem(
       value: _capturedValue,
       type: CaptureType.automatic,
+      customName: _selectedItemNameForCapture,
+      unitLabel: _selectedUnitLabelForCapture,
+      quantity: _selectedQuantityForCapture,
     );
     
     _items.insert(0, item); // Adiciona no início da lista
     _capturedValue = 0.0;
+    _selectedItemNameForCapture = null;
+    _selectedUnitLabelForCapture = null;
+    _selectedQuantityForCapture = null;
     notifyListeners();
   }
 
@@ -68,10 +92,15 @@ class HomeController extends ChangeNotifier {
     final item = CapturedItem(
       value: value,
       type: CaptureType.manual,
-      customName: customName,
+      customName: customName ?? _selectedItemNameForCapture,
+      unitLabel: _selectedUnitLabelForCapture,
+      quantity: _selectedQuantityForCapture,
     );
     
     _items.insert(0, item); // Adiciona no início da lista
+    _selectedItemNameForCapture = null;
+    _selectedUnitLabelForCapture = null;
+    _selectedQuantityForCapture = null;
     notifyListeners();
   }
 
@@ -83,6 +112,9 @@ class HomeController extends ChangeNotifier {
       value: baseValue,
       type: CaptureType.multiplied,
       multiplier: multiplier,
+      customName: _selectedItemNameForCapture,
+      unitLabel: _selectedUnitLabelForCapture,
+      quantity: _selectedQuantityForCapture,
     );
     
     _items.insert(0, item); // Adiciona no início da lista
@@ -93,6 +125,14 @@ class HomeController extends ChangeNotifier {
   /// 🔢 Define valor sendo capturado
   void setCapturedValue(double value) {
     _capturedValue = value;
+    notifyListeners();
+  }
+  
+  /// Define o item da lista selecionado para vincular à próxima captura
+  void setSelectedItemForCapture(String? name, {String? unitLabel, int? quantity}) {
+    _selectedItemNameForCapture = name;
+    _selectedUnitLabelForCapture = unitLabel;
+    _selectedQuantityForCapture = quantity;
     notifyListeners();
   }
 

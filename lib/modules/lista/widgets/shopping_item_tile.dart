@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:comprei_some_ia/modules/home/home_controller.dart';
+import 'package:go_router/go_router.dart';
 import 'package:comprei_some_ia/modules/lista/controllers/shopping_list_controller.dart';
-import 'package:comprei_some_ia/modules/lista/widgets/add_item_dialog.dart';
-import 'package:comprei_some_ia/shared/constants/app_colors.dart';
 
 /// 🛒 Card de Item COMPLETO
 class ShoppingItemTile extends StatelessWidget {
@@ -23,12 +23,12 @@ class ShoppingItemTile extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: Colors.black.withOpacity(0.35),
+          color: Colors.black.withValues(alpha: 0.35),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -68,14 +68,29 @@ class ShoppingItemTile extends StatelessWidget {
                     
                     SizedBox(height: 2.h), // Reduzido
                     
-                    // Quantidade
+                    // Quantidade + Unidade (sem prefixo "Qtd")
                     Text(
-                      'Qtd: ${item.quantity}',
+                      '${item.quantity}${item.unitLabel != null && item.unitLabel!.isNotEmpty ? ' ${item.unitLabel}' : ''}',
                       style: TextStyle(
-                        fontSize: 11.sp, // Reduzido (antes 13)
+                        fontSize: 11.sp,
                         color: Colors.grey.shade600,
                       ),
                     ),
+                    
+                    // Preço (se disponível)
+                    if (item.totalPrice != null || item.unitPrice != null) ...[
+                      SizedBox(height: 2.h),
+                      Text(
+                        _priceLabel(),
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -84,12 +99,12 @@ class ShoppingItemTile extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Editar
+                  // Selecionar para captura (vincular nome)
                   _buildActionIcon(
-                    icon: Icons.edit_outlined,
-                    color: const Color.fromARGB(255, 0, 0, 0),
-                    onTap: () => _showEditDialog(context),
-                    enabled: !item.isChecked,
+                    icon: item.isChecked ? Icons.camera_alt : Icons.camera_alt_outlined,
+                    color: item.isChecked ? const Color(0xFF4CAF50) : Colors.black87,
+                    onTap: () => _selectForCapture(context),
+                    enabled: true,
                   ),
                   
                   SizedBox(width: 4.w),
@@ -110,13 +125,24 @@ class ShoppingItemTile extends StatelessWidget {
     );
   }
 
-  /// Cor do indicador baseado no nome (Simulação para demo)
-  Color _getItemIndicatorColor(String name) {
-    // Demo logic conforme imagem
-    if (name.toLowerCase().contains('arroz')) return const Color(0xFFFF8C42); // Laranja
-    if (name.toLowerCase().contains('feijão')) return const Color(0xFFE84545); // Vermelho
-    if (name.toLowerCase().contains('maarn')) return const Color(0xFFE84545); // Vermelho
-    return Colors.grey.shade400; // Padrão
+  void _selectForCapture(BuildContext context) {
+    final list = context.read<ShoppingListController>();
+    final home = context.read<HomeController>();
+    list.setItemCheck(item.id, true);
+    home.setSelectedItemForCapture(item.name, unitLabel: item.unitLabel, quantity: item.quantity);
+    context.go('/home');
+  }
+
+  String _priceLabel() {
+    if (item.totalPrice != null) {
+      return 'Total: R\$ ${item.totalPrice!.toStringAsFixed(2)}';
+    }
+    if (item.unitPrice != null) {
+      final unit = (item.unitLabel ?? '').trim();
+      final suffix = unit.isNotEmpty ? ' / $unit' : '';
+      return 'Preço: R\$ ${item.unitPrice!.toStringAsFixed(2)}$suffix';
+    }
+    return '';
   }
 
   /// Checkbox circular
@@ -166,7 +192,7 @@ class ShoppingItemTile extends StatelessWidget {
           height: 32.w,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.grey.withOpacity(0.1), // Fundo mais suave
+            color: Colors.grey.withValues(alpha: 0.1), // Fundo mais suave
           ),
           child: Icon(
             icon,
@@ -178,33 +204,6 @@ class ShoppingItemTile extends StatelessWidget {
     );
   }
 
-  /// Mostra dialog de edição
-  void _showEditDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => AddItemDialog(itemToEdit: item),
-    );
-  }
-
-  /// Duplica o item
-  void _duplicateItem(BuildContext context, ShoppingListController controller) {
-    final newItem = ShoppingItem(
-      name: '${item.name} (cópia)',
-      quantity: item.quantity,
-      category: item.category,
-    );
-    controller.addItem(newItem);
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('✅ Item duplicado!'),
-        duration: Duration(seconds: 2),
-        backgroundColor: Color(0xFF4CAF50),
-      ),
-    );
-  }
 
   /// Confirma exclusão
   void _confirmDelete(BuildContext context, ShoppingListController controller) {

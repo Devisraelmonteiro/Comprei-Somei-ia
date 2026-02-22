@@ -86,6 +86,16 @@ class ShoppingListController extends ChangeNotifier {
       _persist();
     }
   }
+  
+  /// Marca/desmarca explicitamente um item
+  void setItemCheck(String id, bool checked) {
+    final index = _items.indexWhere((item) => item.id == id);
+    if (index != -1) {
+      _items[index] = _items[index].copyWith(isChecked: checked);
+      notifyListeners();
+      _persist();
+    }
+  }
 
   Future<void> addItem(ShoppingItem item) async {
     _items.add(item);
@@ -196,6 +206,9 @@ class ShoppingItem {
   final String category;
   final bool isChecked;
   final DateTime createdAt;
+  final double? unitPrice; // preço unitário (ex: por unidade/pacote)
+  final String? unitLabel; // ex: un, pacote, kg, g, L
+  final double? totalPrice; // valor total (quantity * unitPrice)
 
   ShoppingItem({
     String? id,
@@ -204,6 +217,9 @@ class ShoppingItem {
     required this.category,
     this.isChecked = false,
     DateTime? createdAt,
+    this.unitPrice,
+    this.unitLabel,
+    this.totalPrice,
   })  : id = id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         createdAt = createdAt ?? DateTime.now();
 
@@ -212,6 +228,9 @@ class ShoppingItem {
     int? quantity,
     String? category,
     bool? isChecked,
+    double? unitPrice,
+    String? unitLabel,
+    double? totalPrice,
   }) {
     return ShoppingItem(
       id: id,
@@ -220,6 +239,9 @@ class ShoppingItem {
       category: category ?? this.category,
       isChecked: isChecked ?? this.isChecked,
       createdAt: createdAt,
+      unitPrice: unitPrice ?? this.unitPrice,
+      unitLabel: unitLabel ?? this.unitLabel,
+      totalPrice: totalPrice ?? this.totalPrice,
     );
   }
 
@@ -230,6 +252,9 @@ class ShoppingItem {
     'category': category,
     'isChecked': isChecked,
     'createdAt': createdAt.toIso8601String(),
+    'unitPrice': unitPrice,
+    'unitLabel': unitLabel,
+    'totalPrice': totalPrice,
   };
 
   factory ShoppingItem.fromJson(Map<String, dynamic> json) {
@@ -242,6 +267,9 @@ class ShoppingItem {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
+      unitPrice: (json['unitPrice'] as num?)?.toDouble(),
+      unitLabel: json['unitLabel'] as String?,
+      totalPrice: (json['totalPrice'] as num?)?.toDouble(),
     );
   }
 }

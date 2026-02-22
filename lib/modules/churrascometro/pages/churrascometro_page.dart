@@ -373,11 +373,11 @@ class ChurrascometroPage extends StatelessWidget {
       margin: margin,
       padding: padding,
       decoration: BoxDecoration(
-        color: AppColors.whiteWithOpacity(0.18),
+        color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.1),
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(
-          color: Colors.white.withOpacity(0.55),
-          width: 1.1,
+          color: const Color.fromARGB(255, 235, 234, 234).withOpacity(0.45),
+          width: 1.6,
         ),
         boxShadow: [
           BoxShadow(
@@ -386,6 +386,13 @@ class ChurrascometroPage extends StatelessWidget {
             offset: const Offset(0, 5),
           ),
         ],
+      ),
+      foregroundDecoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: Colors.black.withOpacity(0.12),
+          width: 1.0,
+        ),
       ),
       child: child,
     );

@@ -21,6 +21,12 @@ class CapturedItem {
   
   /// Nome customizado (opcional, para itens manuais)
   final String? customName;
+  
+  /// Unidade selecionada no item da lista (opcional)
+  final String? unitLabel;
+  
+  /// Quantidade selecionada no item da lista (opcional)
+  final int? quantity;
 
   CapturedItem({
     String? id,
@@ -29,6 +35,8 @@ class CapturedItem {
     this.type = CaptureType.automatic,
     this.multiplier = 1,
     this.customName,
+    this.unitLabel,
+    this.quantity,
   })  : id = id ?? '${DateTime.now().microsecondsSinceEpoch}${Random().nextInt(9999)}',
         capturedAt = capturedAt ?? DateTime.now();
 
@@ -37,8 +45,16 @@ class CapturedItem {
 
   /// Label para exibição
   String get displayLabel {
-    if (customName != null && customName!.isNotEmpty) return customName!;
-    return type == CaptureType.automatic ? 'Preço Capturado' : 'Valor Manual';
+    final base = (customName != null && customName!.isNotEmpty)
+        ? customName!
+        : (type == CaptureType.automatic ? 'Preço Capturado' : 'Valor Manual');
+    if (quantity != null && unitLabel != null && unitLabel!.isNotEmpty) {
+      return '$base $quantity ${unitLabel!}';
+    }
+    if (unitLabel != null && unitLabel!.isNotEmpty) {
+      return '$base • ${unitLabel!}';
+    }
+    return base;
   }
 
   /// Cria cópia com alterações
@@ -49,6 +65,8 @@ class CapturedItem {
     CaptureType? type,
     int? multiplier,
     String? customName,
+    String? unitLabel,
+    int? quantity,
   }) {
     return CapturedItem(
       id: id ?? this.id,
@@ -57,6 +75,8 @@ class CapturedItem {
       type: type ?? this.type,
       multiplier: multiplier ?? this.multiplier,
       customName: customName ?? this.customName,
+      unitLabel: unitLabel ?? this.unitLabel,
+      quantity: quantity ?? this.quantity,
     );
   }
 
@@ -69,6 +89,8 @@ class CapturedItem {
       'type': type.name,
       'multiplier': multiplier,
       'customName': customName,
+      'unitLabel': unitLabel,
+      'quantity': quantity,
     };
   }
 
@@ -84,6 +106,8 @@ class CapturedItem {
       ),
       multiplier: json['multiplier'] as int? ?? 1,
       customName: json['customName'] as String?,
+      unitLabel: json['unitLabel'] as String?,
+      quantity: json['quantity'] as int?,
     );
   }
 
