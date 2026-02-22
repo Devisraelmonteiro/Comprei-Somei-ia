@@ -256,7 +256,7 @@ class _FooterRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = <_NavItem>[
-      _NavItem(0, 'Início', CupertinoIcons.house_alt),
+      _NavItem(0, 'Início', CupertinoIcons.house),
       _NavItem(1, 'Gasto', CupertinoIcons.money_dollar_circle),
       _NavItem(3, 'Encartes', CupertinoIcons.doc_text_search),
       _NavItem(4, 'Churrasco', CupertinoIcons.flame),
