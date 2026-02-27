@@ -31,7 +31,7 @@ class PriceOcrService {
     'reais','cent','centavo','centavos','pct','pacote','cx','caixa','fd','fardo',
     'rolo','rolos','lata','garrafa','pet','sache','sachê','pack','kit','leve',
     'pague','grátis','gratis','economize','unitário','unitario','por kg','por l',
-    'por lt','por litro','por 100g'
+    'por lt','por litro','por 100g','varejo','atacado'
   };
 
   // Regex Robusto para Preços (BRL)
@@ -180,7 +180,7 @@ class PriceOcrService {
       final List<TextLine> allLines = [];
       for (final block in recognizedText.blocks) {
         for (final l in block.lines) {
-          if (roiRect.overlaps(l.boundingBox)) {
+          if (roiRect.contains(l.boundingBox.center)) {
             allLines.add(l);
           }
         }
@@ -224,14 +224,16 @@ class PriceOcrService {
         }
         if (v == null || !_isValidPrice(v)) continue;
         final hNorm = line.boundingBox.height / imgHeight;
-        if (hNorm < (hasCurrency ? _minDigitCurrencyMain : _minDigitNoCurrencyMain)) continue;
+        final minH = hasCurrency ? _minDigitCurrencyMain : _minDigitNoCurrencyMain;
+        if (hNorm < minH * 0.8) continue;
         if (!hasDec && !hasCurrency) continue;
         final centerScore = 1.0 -
             (line.boundingBox.center.dx - imgWidth / 2).abs() / (imgWidth / 2);
         final heightScore = hNorm * 5.0;
         final decScore = hasDec ? 0.6 : 0.0;
         final curScore = hasCurrency ? 0.6 : 0.0;
-        final score = heightScore + centerScore + decScore + curScore;
+        final roiBonus = roiRect.contains(line.boundingBox.center) ? 0.8 : 0.0;
+        final score = heightScore + centerScore + decScore + curScore + roiBonus;
         cand1.add({'v': v, 'line': line, 'score': score});
       }
       if (cand1.isNotEmpty) {
@@ -364,7 +366,7 @@ class PriceOcrService {
       final List<TextLine> allLines2 = [];
       for (final block in recognizedText.blocks) {
         for (final l in block.lines) {
-          if (roiRect2.overlaps(l.boundingBox)) {
+          if (roiRect2.contains(l.boundingBox.center)) {
             allLines2.add(l);
           }
         }
@@ -391,7 +393,8 @@ class PriceOcrService {
             _currencyMarkers.any((t) => rawLower.contains(t));
         final hasDec = RegExp(r'[,.]\s*\d{2}').hasMatch(raw);
         final hNorm = line.boundingBox.height / imgHeight2;
-        if (hNorm < (hasCurrency ? _minDigitCurrencyFallback : _minDigitNoCurrencyFallback)) continue;
+        final minH2 = hasCurrency ? _minDigitCurrencyFallback : _minDigitNoCurrencyFallback;
+        if (hNorm < minH2 * 0.8) continue;
         if (!hasDec && !hasCurrency) continue;
         String ctxText = '';
         Rect? ctxBox;

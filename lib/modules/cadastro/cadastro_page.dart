@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../shared/constants/app_colors.dart';
+import '../../shared/constants/app_sizes.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -105,11 +106,11 @@ class _CadastroPageState extends State<CadastroPage> {
           // 4. CONTEÚDO PRINCIPAL
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32.w),
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.screenPadding * 2),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(height: 20.h),
+                    SizedBox(height: AppSizes.spacingLarge),
                     
                     _buildAppleTextField(
                       controller: _emailController,
@@ -145,15 +146,15 @@ class _CadastroPageState extends State<CadastroPage> {
                       onToggleVisibility: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                     ),
                     
-                    SizedBox(height: 40.h),
+                    SizedBox(height: AppSizes.spacingExtraLarge),
                     
                     // Botão Cadastrar (Gradiente Laranja - Footer Style)
                     Container(
                       width: double.infinity,
-                      height: 50.h,
+                      height: AppSizes.buttonHeight,
                       decoration: BoxDecoration(
                         gradient: AppColors.bottomNavGradient,
-                        borderRadius: BorderRadius.circular(100.r),
+                        borderRadius: BorderRadius.circular(AppSizes.buttonRadius * 2),
                       ),
                       child: ElevatedButton(
                         onPressed: () {
@@ -166,20 +167,20 @@ class _CadastroPageState extends State<CadastroPage> {
                           elevation: 0,
                           shadowColor: Colors.transparent,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(100.r),
+                            borderRadius: BorderRadius.circular(AppSizes.buttonRadius * 2),
                           ),
                         ),
                         child: Text(
                           'Cadastrar',
                           style: GoogleFonts.poppins(
-                            fontSize: 16.sp,
+                            fontSize: AppSizes.titleMedium,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.5,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(height: 32.h),
+                    SizedBox(height: AppSizes.spacingLarge),
                   ],
                 ),
               ),

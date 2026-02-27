@@ -23,6 +23,9 @@ class ScannerCardWidget extends StatelessWidget {
   /// Preço detectado pelo OCR (null se nenhum)
   final double? detectedPrice;
 
+  /// Nome/label detectado pelo OCR (null se nenhum)
+  final String? detectedLabel;
+
   /// Valor capturado atual
   final double capturedValue;
 
@@ -38,6 +41,7 @@ class ScannerCardWidget extends StatelessWidget {
     required this.isCameraInitialized,
     required this.cameraError,
     required this.detectedPrice,
+    this.detectedLabel,
     required this.capturedValue,
     required this.onRetry,
     required this.onOpenSettings,
@@ -74,6 +78,9 @@ class ScannerCardWidget extends StatelessWidget {
             _buildCameraPreview(),
             if (isCameraInitialized) _buildScannerOverlay(),
             if (isCameraInitialized) _buildCapturedValue(),
+            if (detectedLabel != null &&
+                detectedLabel!.trim().isNotEmpty)
+              _buildTopLabel(),
           ],
         ),
       ),
@@ -265,6 +272,34 @@ class ScannerCardWidget extends StatelessWidget {
   );
 }
 
+  Widget _buildTopLabel() {
+    return Positioned(
+      top: 2,
+      left: 2,
+      right: 2,
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            detectedLabel!.trim(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
   /// ✨ Valor com animação
   Widget _buildAnimatedValue() {
     final valueText = Text(

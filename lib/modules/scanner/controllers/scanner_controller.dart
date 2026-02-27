@@ -26,10 +26,10 @@ class ScannerController extends ChangeNotifier {
   String? _detectedLabel;
   bool _isPaused = false;
   
-  // Estabilização (confirmação em 2 frames)
-  double? _candidatePrice;
-  String? _candidateLabel;
-  int _candidateCount = 0;
+  // Janela deslizante para consenso multi-frame
+  final List<_OCRSample> _recentSamples = <_OCRSample>[];
+  static const int _maxSamples = 5;      // armazena até 5 leituras recentes
+  static const int _minConsensus = 3;    // exige pelo menos 3 iguais para confirmar
   
   // Getters
   CameraController? get cameraController => _cameraController;
@@ -132,24 +132,54 @@ class ScannerController extends ChangeNotifier {
 
         if (result != null) {
           final val = double.parse(result.value.toStringAsFixed(2));
-          if (_candidatePrice == null || (val - _candidatePrice!).abs() > 0.02) {
-            _candidatePrice = val;
-            _candidateLabel = result.contextText;
-            _candidateCount = 1;
-          } else {
-            _candidateCount += 1;
-            if (_candidateCount >= 2) {
-              _detectedPrice = _candidatePrice;
-              _detectedLabel = _candidateLabel;
-              _candidatePrice = null;
-              _candidateLabel = null;
-              _candidateCount = 0;
-              notifyListeners(); // Notifica a UI que achou um preço estável
-              
-              // 📳 Feedback Hápitico (UX)
-              if ((await Vibration.hasVibrator()) == true) {
-                Vibration.vibrate(duration: 200);
+          final label = _normalizeLabel(result.contextText);
+          
+          // Adiciona leitura na janela
+          _recentSamples.add(_OCRSample(val, label));
+          while (_recentSamples.length > _maxSamples) {
+            _recentSamples.removeAt(0);
+          }
+
+          // Agrupa por valor (string com 2 casas) e conta frequências
+          final Map<String, List<_OCRSample>> byPrice = {};
+          for (final s in _recentSamples) {
+            final k = s.price.toStringAsFixed(2);
+            byPrice.putIfAbsent(k, () => <_OCRSample>[]).add(s);
+          }
+          // Encontra o grupo com maior suporte
+          String? bestKey;
+          int bestCount = 0;
+          byPrice.forEach((k, list) {
+            if (list.length > bestCount) {
+              bestKey = k;
+              bestCount = list.length;
+            }
+          });
+
+          if (bestKey != null && bestCount >= _minConsensus) {
+            // Dentro do grupo vencedor, pega o label mais frequente
+            final samples = byPrice[bestKey]!;
+            final Map<String, int> labelFreq = {};
+            for (final s in samples) {
+              labelFreq[s.label] = (labelFreq[s.label] ?? 0) + 1;
+            }
+            String bestLabel = samples.first.label;
+            int bestLabelCount = 0;
+            labelFreq.forEach((l, c) {
+              if (c > bestLabelCount) {
+                bestLabel = l;
+                bestLabelCount = c;
               }
+            });
+
+            _detectedPrice = double.parse(bestKey!);
+            _detectedLabel = bestLabel;
+            _recentSamples.clear();
+            notifyListeners(); // Notifica a UI
+            
+            // 📳 Feedback háptico
+            if ((await Vibration.hasVibrator()) == true) {
+              Vibration.vibrate(duration: 200);
             }
           }
 
@@ -174,9 +204,7 @@ class ScannerController extends ChangeNotifier {
   void clearDetectedPrice() {
     _detectedPrice = null;
     _detectedLabel = null;
-    _candidatePrice = null;
-    _candidateLabel = null;
-    _candidateCount = 0;
+    _recentSamples.clear();
     notifyListeners();
   }
 
@@ -187,4 +215,22 @@ class ScannerController extends ChangeNotifier {
     _ocrService.dispose();
     super.dispose();
   }
+}
+
+class _OCRSample {
+  final double price;
+  final String label;
+  _OCRSample(this.price, this.label);
+}
+
+String _normalizeLabel(String input) {
+  var s = input.trim();
+  // Preserva espaços e hífens; remove ruídos
+  s = s.replaceAll(RegExp(r'[^A-Za-zÀ-ÿ0-9\-\s]'), '');
+  // Insere espaço entre letras e números colados (ex.: 500ML -> 500 ML)
+  s = s.replaceAllMapped(RegExp(r'([A-Za-zÀ-ÿ])(\d)'), (m) => '${m.group(1)} ${m.group(2)}');
+  s = s.replaceAllMapped(RegExp(r'(\d)([A-Za-zÀ-ÿ])'), (m) => '${m.group(1)} ${m.group(2)}');
+  // Colapsa múltiplos espaços em um
+  s = s.replaceAll(RegExp(r'\s{2,}'), ' ');
+  return s;
 }

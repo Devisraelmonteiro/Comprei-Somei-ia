@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:comprei_some_ia/shared/widgets/base_scaffold.dart';
 import 'package:comprei_some_ia/shared/constants/app_colors.dart';
+import 'package:comprei_some_ia/shared/constants/app_sizes.dart';
 import '../controllers/churrascometro_controller.dart';
 
 class ChurrascometroPage extends StatelessWidget {
@@ -174,7 +175,7 @@ class ChurrascometroPage extends StatelessWidget {
                                 'Crianças',
                                 model.criancas,
                                 (v) => controller.updateCriancas(v),
-                                'assets/images/crianca.jpg',
+                                'assets/images/homem.jpg',
                                 const Color.fromARGB(255, 255, 102, 0),
                               ),
                             ],
@@ -276,9 +277,23 @@ class ChurrascometroPage extends StatelessWidget {
                         SizedBox(height: 8.h),
                         Expanded(
                           child: _buildGlassCard(
-                            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                            // ⚠️ Margem inferior para o card não ficar sob o footer (edite aqui)
+                            margin: EdgeInsets.only(
+                              bottom: AppSizes.bottomNavHeight +
+                                  MediaQuery.of(context).padding.bottom +
+                                  16.h,
+                            ),
+                            padding: EdgeInsets.fromLTRB(12.w, 2.h, 12.w, 2.h), // topo do card mais próximo (edite aqui)
                             child: ListView(
                               physics: const BouncingScrollPhysics(),
+                              // ⚠️ Espaço inferior para NÃO ficar atrás do footer
+                              // Edite o valor base (120.h) se mudar a altura do footer
+                              padding: EdgeInsets.fromLTRB(
+                                0,        // left
+                                2.h,      // top (edite aqui)
+                                0,        // right
+                                100.h + MediaQuery.of(context).padding.bottom, // bottom (edite aqui)
+                              ), 
                               children: [
                                 _buildResultItem(
                                   context,
@@ -373,11 +388,11 @@ class ChurrascometroPage extends StatelessWidget {
       margin: margin,
       padding: padding,
       decoration: BoxDecoration(
-        color: AppColors.whiteWithOpacity(0.18),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(
-          color: Colors.white.withOpacity(0.55),
-          width: 1.1,
+          color: const Color.fromARGB(255, 214, 210, 210).withOpacity(0.35),
+          width: 1.0,
         ),
         boxShadow: [
           BoxShadow(

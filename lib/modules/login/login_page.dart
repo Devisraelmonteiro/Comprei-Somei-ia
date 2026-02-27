@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'login_controller.dart';
 import '../../shared/constants/app_colors.dart';
+import '../../shared/constants/app_sizes.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -121,7 +122,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           // 4. CONTEÚDO PRINCIPAL (Animado)
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32.w),
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.screenPadding * 2),
               child: SlideTransition(
                 position: _slideAnimation,
                 child: FadeTransition(
@@ -158,7 +159,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                       ),
 
-                      SizedBox(height: 60.h),
+                      SizedBox(height: AppSizes.spacingHuge),
 
                       // INPUTS MINIMALISTAS (Apple Style)
                       // "Campos parecidos com esse da imagem" (Linha fina, sem borda boxy)
@@ -213,10 +214,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                               // Botão Acessar (Gradiente Laranja - Footer Style)
                               Container(
                                 width: double.infinity,
-                                height: 50.h,
+                                height: AppSizes.buttonHeight,
                                 decoration: BoxDecoration(
                                   gradient: AppColors.bottomNavGradient,
-                                  borderRadius: BorderRadius.circular(100.r),
+                                  borderRadius: BorderRadius.circular(AppSizes.buttonRadius * 2),
                                 ),
                                 child: ElevatedButton(
                                   onPressed: controller.isLoading
@@ -247,7 +248,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     elevation: 0,
                                     shadowColor: Colors.transparent,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(100.r),
+                                      borderRadius: BorderRadius.circular(AppSizes.buttonRadius * 2),
                                     ),
                                   ),
                                   child: controller.isLoading
@@ -275,7 +276,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                               // Botão Cadastrar (Secundário - Outline Laranja)
                               SizedBox(
                                 width: double.infinity,
-                                height: 56.h,
+                                height: AppSizes.buttonHeight,
                                 child: OutlinedButton(
                                   onPressed: () {
                                     context.push('/cadastro');
@@ -284,7 +285,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     side: const BorderSide(color: AppColors.primary, width: 2), // Borda Laranja
                                     foregroundColor: AppColors.primary, // Texto Laranja
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(100.r),
+                                      borderRadius: BorderRadius.circular(AppSizes.buttonRadius * 2),
                                     ),
                                   ),
                                   child: Text(

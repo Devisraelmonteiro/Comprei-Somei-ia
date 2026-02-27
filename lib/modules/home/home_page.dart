@@ -124,6 +124,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     isCameraInitialized: _scannerController.isCameraInitialized,
                     cameraError: _scannerController.cameraError,
                     detectedPrice: _scannerController.detectedPrice,
+                    detectedLabel: _scannerController.detectedLabel,
                     capturedValue: controller.capturedValue,
                     onRetry: _scannerController.initializeCamera,
                     onOpenSettings: openAppSettings,
