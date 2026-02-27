@@ -20,6 +20,9 @@ class HomeController extends ChangeNotifier {
   /// Valor sendo capturado no momento
   double _capturedValue = 0.0;
   
+  /// Texto do produto capturado (quando disponível via OCR)
+  String? _capturedLabel;
+  
   /// Estado de loading
   bool _loading = false;
 
@@ -42,33 +45,39 @@ class HomeController extends ChangeNotifier {
   /// Valor atual sendo capturado
   double get capturedValue => _capturedValue;
   
+  /// Label atual sendo capturado
+  String? get capturedLabel => _capturedLabel;
+  
   /// Estado de loading
   bool get loading => _loading;
 
   // === MÉTODOS PÚBLICOS ===
   
   /// 📸 Adiciona item capturado automaticamente
-  Future<void> addCapturedValue() async {
+  Future<void> addCapturedValue({String? customName}) async {
     if (_capturedValue <= 0) return;
     
     final item = CapturedItem(
       value: _capturedValue,
       type: CaptureType.automatic,
+      customName: customName ?? _capturedLabel,
     );
     
     _items.insert(0, item); // Adiciona no início da lista
     _capturedValue = 0.0;
+    _capturedLabel = null;
     notifyListeners();
   }
 
   /// ✏️ Adiciona item manual
-  Future<void> addManualValue(double value, {String? customName}) async {
-    if (value <= 0) return;
+  Future<void> addManualValue(double value, {String? customName, int multiplier = 1}) async {
+    if (value <= 0 || multiplier <= 0) return;
     
     final item = CapturedItem(
       value: value,
       type: CaptureType.manual,
       customName: customName,
+      multiplier: multiplier,
     );
     
     _items.insert(0, item); // Adiciona no início da lista
@@ -76,23 +85,31 @@ class HomeController extends ChangeNotifier {
   }
 
   /// ✖️ Adiciona item multiplicado
-  Future<void> addMultipliedValue(double baseValue, int multiplier) async {
+  Future<void> addMultipliedValue(double baseValue, int multiplier, {String? customName}) async {
     if (baseValue <= 0 || multiplier <= 0) return;
     
     final item = CapturedItem(
       value: baseValue,
       type: CaptureType.multiplied,
       multiplier: multiplier,
+      customName: customName ?? _capturedLabel,
     );
     
     _items.insert(0, item); // Adiciona no início da lista
     _capturedValue = 0.0;
+    _capturedLabel = null;
     notifyListeners();
   }
 
   /// 🔢 Define valor sendo capturado
   void setCapturedValue(double value) {
     _capturedValue = value;
+    notifyListeners();
+  }
+  
+  /// 🏷️ Define/limpa label do produto capturado
+  void setCapturedLabel(String? label) {
+    _capturedLabel = label;
     notifyListeners();
   }
 

@@ -35,8 +35,8 @@ class ShoppingHeader extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.3),
-                    Colors.black.withOpacity(0.7),
+                    Colors.black.withValues(alpha: 0.3),
+                    Colors.black.withValues(alpha: 0.7),
                   ],
                 ),
               ),
@@ -69,7 +69,7 @@ class ShoppingHeader extends StatelessWidget {
                           child: Container(
                             padding: EdgeInsets.all(8.w),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18.sp),
@@ -78,7 +78,7 @@ class ShoppingHeader extends StatelessWidget {
                         const Spacer(),
                         CircleAvatar(
                           radius: 18.r,
-                          backgroundColor: Colors.white.withOpacity(0.9),
+                          backgroundColor: Colors.white.withValues(alpha: 0.9),
                           backgroundImage: const AssetImage('assets/images/logo.png'),
                         ),
                       ],
@@ -110,7 +110,7 @@ class ShoppingHeader extends StatelessWidget {
                       '',
                       style: TextStyle(
                         fontSize: 12.sp,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -127,7 +127,8 @@ class ShoppingHeader extends StatelessWidget {
 
 /// 📱 Seletor de Categorias (Extraído para Folha Sobreposta)
 class ShoppingCategoriesSelector extends StatelessWidget {
-  const ShoppingCategoriesSelector({super.key});
+  final void Function(int index, String category)? onCategorySelected;
+  const ShoppingCategoriesSelector({super.key, this.onCategorySelected});
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +152,10 @@ class ShoppingCategoriesSelector extends StatelessWidget {
               return _buildCategoryCard(
                 category: category,
                 isSelected: controller.selectedCategory == category,
-                onTap: () => controller.selectCategory(category),
+                onTap: () {
+                  controller.selectCategory(category);
+                  onCategorySelected?.call(index, category);
+                },
                 width: itemWidth,
               );
             },
@@ -179,7 +183,7 @@ class ShoppingCategoriesSelector extends StatelessWidget {
           borderRadius: BorderRadius.circular(20.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -206,7 +210,7 @@ class ShoppingCategoriesSelector extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 6,
                     offset: const Offset(0, 3),
                   ),

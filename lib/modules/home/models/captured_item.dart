@@ -38,7 +38,8 @@ class CapturedItem {
   /// Label para exibição
   String get displayLabel {
     if (customName != null && customName!.isNotEmpty) return customName!;
-    return type == CaptureType.automatic ? 'Preço Capturado' : 'Valor Manual';
+    if (type == CaptureType.manual) return 'Valor Manual';
+    return 'Preço Capturado';
   }
 
   /// Cria cópia com alterações

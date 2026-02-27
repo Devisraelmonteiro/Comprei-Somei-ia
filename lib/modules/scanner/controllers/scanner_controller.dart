@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vibration/vibration.dart';
 import 'package:comprei_some_ia/core/services/ocr_service.dart';
-import '../models/scanned_value.dart';
 
 /// 📸 Controller responsável pela lógica da Câmera e OCR
 /// 
@@ -24,13 +23,20 @@ class ScannerController extends ChangeNotifier {
   
   // Estado do valor detectado
   double? _detectedPrice;
+  String? _detectedLabel;
   bool _isPaused = false;
+  
+  // Estabilização (confirmação em 2 frames)
+  double? _candidatePrice;
+  String? _candidateLabel;
+  int _candidateCount = 0;
   
   // Getters
   CameraController? get cameraController => _cameraController;
   bool get isCameraInitialized => _isCameraInitialized;
   String? get cameraError => _cameraError;
   double? get detectedPrice => _detectedPrice;
+  String? get detectedLabel => _detectedLabel;
   bool get isProcessing => _isProcessing;
   bool get isPaused => _isPaused;
 
@@ -119,19 +125,34 @@ class ScannerController extends ChangeNotifier {
       // Não notificamos listeners aqui para evitar rebuilds excessivos (60fps)
 
       try {
-        final price = await _ocrService.detectPriceFromImage(
+        final result = await _ocrService.detectPriceWithContextFromImage(
           image: image,
           camera: _cameraController!.description,
         );
 
-        if (price != null) {
-          _detectedPrice = price;
-          notifyListeners(); // Notifica a UI que achou um preço
-
-          // 📳 Feedback Hápitico (UX)
-          if (await Vibration.hasVibrator() ?? false) {
-            Vibration.vibrate(duration: 200);
+        if (result != null) {
+          final val = double.parse(result.value.toStringAsFixed(2));
+          if (_candidatePrice == null || (val - _candidatePrice!).abs() > 0.02) {
+            _candidatePrice = val;
+            _candidateLabel = result.contextText;
+            _candidateCount = 1;
+          } else {
+            _candidateCount += 1;
+            if (_candidateCount >= 2) {
+              _detectedPrice = _candidatePrice;
+              _detectedLabel = _candidateLabel;
+              _candidatePrice = null;
+              _candidateLabel = null;
+              _candidateCount = 0;
+              notifyListeners(); // Notifica a UI que achou um preço estável
+              
+              // 📳 Feedback Hápitico (UX)
+              if ((await Vibration.hasVibrator()) == true) {
+                Vibration.vibrate(duration: 200);
+              }
+            }
           }
+
         }
       } catch (e) {
         debugPrint("Erro no OCR: $e");
@@ -152,6 +173,10 @@ class ScannerController extends ChangeNotifier {
   /// 🧹 Limpa o valor detectado e destrava o scanner para novas leituras
   void clearDetectedPrice() {
     _detectedPrice = null;
+    _detectedLabel = null;
+    _candidatePrice = null;
+    _candidateLabel = null;
+    _candidateCount = 0;
     notifyListeners();
   }
 

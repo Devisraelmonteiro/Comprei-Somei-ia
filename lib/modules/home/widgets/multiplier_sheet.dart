@@ -15,13 +15,15 @@ class MultiplierSheet extends StatefulWidget {
 }
 
 class _MultiplierSheetState extends State<MultiplierSheet> {
-  int _multiplier = 1;
+  int _multiplier = 0;
   double _baseValue = 0.0;
+  String? _baseLabel;
 
   @override
   void initState() {
     super.initState();
     _baseValue = widget.controller.capturedValue;
+    _baseLabel = widget.controller.capturedLabel;
     // Se não houver valor capturado, assume 0 (ou poderia ser 1 para teste)
     if (_baseValue <= 0) _baseValue = 0.0;
   }
@@ -32,7 +34,7 @@ class _MultiplierSheetState extends State<MultiplierSheet> {
       if (key == 'backspace') {
         _removeDigit();
       } else if (key == 'C') {
-        _multiplier = 1;
+        _multiplier = 0;
       } else {
         _addDigit(int.parse(key));
       }
@@ -40,29 +42,14 @@ class _MultiplierSheetState extends State<MultiplierSheet> {
   }
 
   void _addDigit(int digit) {
-    // Limita a 99x para evitar números absurdos
-    if (_multiplier.toString().length >= 2) return;
-    
     setState(() {
-      // Se for 1 (padrão) e digitar algo, substitui o 1 inicial se for a primeira interação
-      // Mas a lógica mais segura é tratar como string ou int
-      if (_multiplier == 1 && digit != 0) {
-         // Se o usuário digitar '5', queremos 5, não 15?
-         // Geralmente em multiplicadores, se começa com 1 (x1). 
-         // Se digitar 5, vira x5. Se digitar 2, vira x2.
-         // Se já for x5 e digitar 0, vira x50.
-         _multiplier = digit;
-      } else {
-         _multiplier = _multiplier * 10 + digit;
-      }
-      if (_multiplier == 0) _multiplier = 1; // Evita x0
+      _multiplier = _multiplier * 10 + digit;
     });
   }
 
   void _removeDigit() {
     setState(() {
       _multiplier = (_multiplier / 10).floor();
-      if (_multiplier == 0) _multiplier = 1; // Volta para x1 se apagar tudo
     });
   }
 
@@ -188,7 +175,7 @@ class _MultiplierSheetState extends State<MultiplierSheet> {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          'x$_multiplier',
+                          'x${_multiplier == 0 ? 1 : _multiplier}',
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
@@ -261,7 +248,12 @@ class _MultiplierSheetState extends State<MultiplierSheet> {
                             onTap: () {
                               if (_baseValue > 0) {
                                 HapticFeedback.mediumImpact();
-                                widget.controller.addMultipliedValue(_baseValue, _multiplier);
+                                final applied = _multiplier == 0 ? 1 : _multiplier;
+                                widget.controller.addMultipliedValue(
+                                  _baseValue,
+                                  applied,
+                                  customName: _baseLabel,
+                                );
                                 Navigator.pop(context);
                               }
                             },

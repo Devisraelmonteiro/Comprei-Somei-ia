@@ -18,9 +18,12 @@ class ListaPage extends StatefulWidget {
 }
 
 class _ListaPageState extends State<ListaPage> {
+  late final PageController _pageController;
+  bool _syncedInitialPage = false;
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ShoppingListController>().loadItems();
     });
@@ -62,7 +65,17 @@ class _ListaPageState extends State<ListaPage> {
                       SizedBox(height: 20.h), // Espaço topo da folha
                       
                       // Categorias (Agora dentro da folha)
-                      const ShoppingCategoriesSelector(),
+                      ShoppingCategoriesSelector(
+                        onCategorySelected: (index, category) {
+                          if (_pageController.hasClients) {
+                            _pageController.animateToPage(
+                              index,
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeOutCubic,
+                            );
+                          }
+                        },
+                      ),
                       
                       SizedBox(height: 4.h),
 
@@ -152,13 +165,33 @@ class _ListaPageState extends State<ListaPage> {
                                   borderRadius: BorderRadius.circular(14.r),
                                 ),
                                 clipBehavior: Clip.antiAlias,
-                                child: Column(
-                                  children: [
-                                    // Lista com Scroll Interno
-                                    const Expanded(
-                                      child: ShoppingListView(),
-                                    ),
-                                  ],
+                                child: Consumer<ShoppingListController>(
+                                  builder: (context, controller, _) {
+                                    final categories = ShoppingListController.categories;
+                                    final currentIndex = categories.indexOf(controller.selectedCategory);
+                                    if (!_syncedInitialPage && currentIndex >= 0) {
+                                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                                        if (mounted && _pageController.hasClients) {
+                                          _pageController.jumpToPage(currentIndex);
+                                        }
+                                      });
+                                      _syncedInitialPage = true;
+                                    }
+                                    return PageView.builder(
+                                      controller: _pageController,
+                                      itemCount: categories.length,
+                                      onPageChanged: (index) {
+                                        final nextCategory = categories[index];
+                                        if (nextCategory != controller.selectedCategory) {
+                                          controller.selectCategory(nextCategory);
+                                        }
+                                      },
+                                      itemBuilder: (context, index) {
+                                        final category = categories[index];
+                                        return ShoppingListView(category: category);
+                                      },
+                                    );
+                                  },
                                 ),
                               ),
                             ),
@@ -227,7 +260,7 @@ class _ListaPageState extends State<ListaPage> {
         borderRadius: BorderRadius.circular(20.r), // Mais compacto
         boxShadow: [
           BoxShadow(
-            color: backgroundColor.withOpacity(0.3),
+            color: backgroundColor.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

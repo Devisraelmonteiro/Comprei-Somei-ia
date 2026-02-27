@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     // A lógica de "lock" já está encapsulada no ScannerController
     if (_scannerController.detectedPrice != null) {
       context.read<HomeController>().setCapturedValue(_scannerController.detectedPrice!);
+      context.read<HomeController>().setCapturedLabel(_scannerController.detectedLabel);
     }
   }
 
@@ -183,7 +184,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   void _onConfirm(HomeController controller) async {
     if (controller.capturedValue <= 0) return;
-    await controller.addCapturedValue();
+    await controller.addCapturedValue(customName: controller.capturedLabel);
     controller.setCapturedValue(0);
     _scannerController.clearDetectedPrice(); // Destrava o scanner para próxima leitura
   }

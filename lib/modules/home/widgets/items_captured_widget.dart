@@ -187,6 +187,7 @@ class ItemsCapturedWidget extends StatelessWidget {
     return ListView.separated(
       // ✅ PADDING ZERO - itens ficam colados!
       padding: EdgeInsets.zero,
+      reverse: true,
       physics: const BouncingScrollPhysics(),
       itemCount: items.length,
       separatorBuilder: (_, __) => const SizedBox(height: 8),

@@ -12,13 +12,16 @@ import 'shopping_item_tile.dart';
 /// ListView com itens filtrados por categoria.
 /// Mostra estado vazio quando não há itens.
 class ShoppingListView extends StatelessWidget {
-  const ShoppingListView({super.key});
+  final String? category;
+
+  const ShoppingListView({super.key, this.category});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ShoppingListController>(
       builder: (context, controller, _) {
-        final items = controller.filteredItems;
+        final selected = category ?? controller.selectedCategory;
+        final items = controller.items.where((i) => i.category == selected).toList();
 
         // Estado de loading
         if (controller.loading) {

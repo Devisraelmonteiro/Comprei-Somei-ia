@@ -171,12 +171,14 @@ class CapturedItemTile extends StatelessWidget {
   Widget _buildExtraInfo() {
     final extras = <String>[];
 
-    // Multiplicador (se > 1)
-    if (item.multiplier > 1) {
-      extras.add('x${item.multiplier}');
+    if (item.type == CaptureType.manual) {
+      extras.add('Qtd: ${item.multiplier}');
+    } else {
+      if (item.multiplier > 1) {
+        extras.add('x${item.multiplier}');
+      }
     }
 
-    // Horário
     final time = _formatTime(item.capturedAt);
     extras.add(time);
 
